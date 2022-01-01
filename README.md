@@ -4,7 +4,7 @@ A simple content site framework that harnesses the power of Django without the h
 
 ## Features
 
-- Renders markdown files automatically without dealing with urls.py
+- Renders markdown files automatically
 - Can use data from JSON files in templates and content
 - All the power of Django templates, template tags, and filters
 - Can include other Django apps
@@ -96,3 +96,12 @@ Create a file named `templates/static_site/content.html` to override the content
 - Management command to render all markdown to HTML for actually serving static HTML files
 - Cookiecutter to create a site easily
 - Publish to PyPI
+
+## Thanks
+
+- https://twitter.com/willmcgugan/status/1477283879841157123 for the initial inspiration
+- https://github.com/wsvincent/django-microframework for the `app.py` idea
+- https://olifante.blogs.com/covil/2010/04/minimal-django.html
+- https://simonwillison.net/2009/May/19/djng/
+- https://stackoverflow.com/questions/1297873/how-do-i-write-a-single-file-django-application
+- https://github.com/trentm/python-markdown2
