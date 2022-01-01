@@ -1,0 +1,61 @@
+[project]
+name = "django-static-site"
+authors = [{name = "Adam Hill", email = "adam@adamghill.com"}]
+
+[tool.poetry]
+name = "django-static-site"
+version = "0.1.0"
+description = "Use Django as a static site"
+authors = ["adamghill <adam@adamghill.com>"]
+license = "MIT"
+packages = [
+    { include = "static_site" }
+]
+readme = "README.md"
+keywords = ["django", "python", "static", "markdown"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Django = "^4.0"
+gunicorn = { version = "^20.1.0", optional = true }
+python-dotenv = "^0.19.2"
+markdown2 = "^2.4.2"
+
+[tool.poetry.extras]
+gunicorn = ["gunicorn"]
+
+[tool.poetry.dev-dependencies]
+poethepoet = "^0.11.0"
+black = "^21.12b0"
+flake9 = "^3.8.3"
+isort = "^5.10.1"
+pytest = "^6.2.5"
+pytest-django = "^4.5.2"
+pywatchman = "^1.4.1"
+
+[tool.isort]
+default_section = "THIRDPARTY"
+known_first_party = ["static_site", "example"]
+known_django = "django"
+sections = ["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+lines_after_imports = 2
+multi_line_output = 3
+include_trailing_comma = true
+skip_glob = "*/migrations/*.py"
+profile = "black"
+
+[tool.pytest.ini_options]
+addopts = "--quiet --failed-first --reuse-db --nomigrations -p no:warnings -m 'not slow'"
+testpaths = [
+    "tests"
+]
+markers = [
+    "slow: marks tests as slow",
+]
+
+[tool.poe.tasks]
+r = { cmd = "example/app.py runserver 0:8045", help = "Start dev server" }
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
