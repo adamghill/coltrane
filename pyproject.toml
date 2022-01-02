@@ -1,15 +1,16 @@
 [project]
-name = "coltrane"
+name = "coltrane-web"
 authors = [{name = "Adam Hill", email = "adam@adamghill.com"}]
 
 [tool.poetry]
-name = "coltrane"
+name = "coltrane-web"
 version = "0.1.0"
 description = "Use Django as a static site"
 authors = ["adamghill <adam@adamghill.com>"]
 license = "MIT"
 readme = "README.md"
 keywords = ["django", "python", "static", "markdown"]
+packages = [{ include = "coltrane" }]
 
 [tool.poetry.scripts]
 coltrane = "coltrane.console:cli"
