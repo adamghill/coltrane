@@ -55,8 +55,8 @@ markers = [
 ]
 
 [tool.poe.tasks]
-r = { cmd = "example/app.py runserver 0:8045", help = "Start dev server" }
-g = { cmd = "gunicorn -b localhost:8045 example.app:wsgi", help = "Start gunicorn" }
+r = { cmd = "example_standalone/app.py runserver 0:8045", help = "Start dev server" }
+g = { cmd = "gunicorn -b localhost:8045 example_standalone.app:wsgi", help = "Start gunicorn" }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -16,8 +16,8 @@ from django.core.management import execute_from_command_line
 
 from coltrane import initialize
 
-initialize()
 
+wsgi = initialize()
 
 if __name__ == "__main__":
     execute_from_command_line()
@@ -96,16 +96,16 @@ def play(port, manage):
 
 
 @click.command(help="Generates HTML output; alias: build.")
-@click.option("--output", default=".", help="Output directory")
+@click.option("--output", default="output", help="Output directory")
 @click.option("--manage", default="app.py", help="File name for Django's manage.py")
-def record(directory, manage):
+def record(output, manage):
     file_path = _get_manage_file_path(manage)
 
     run_process(
         [
             file_path,
             "build",
-            directory,
+            output,
         ]
     )
 

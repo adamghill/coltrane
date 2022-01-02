@@ -29,7 +29,7 @@ Still a little experimental. ;)
 
 Coming soon.
 
-## Create content
+## Render markdown files
 
 `coltrane` takes the URL slug and looks up a corresponding markdown file in the `content` directory.
 
@@ -109,14 +109,9 @@ Create a file named `templates/coltrane/content.html` in your app to override th
 {% block content %}{{ content }}{% endblock content %}
 ```
 
-## Todo
+## Build static HTML
 
-- Publish to PyPI
-- Tests + coverage.py
-- Management command to render all markdown to HTML for actually serving static HTML files
-- Handle directories in content directory
-- Handle directories in data directory
-- Get gunicorn working
+`coltrane record` will build the static HTML. Not currently implemented.
 
 ## Thanks
 
