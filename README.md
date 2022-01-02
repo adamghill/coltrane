@@ -1,38 +1,45 @@
-# django-static-site
+# coltrane
 
 A simple content site framework that harnesses the power of Django without the hassle.
 
 ## Features
 
+- Can be a standalone static site or added to `INSTALLED_APPS` to integrate into an existing Django site
 - Renders markdown files automatically
 - Can use data from JSON files in templates and content
 - All the power of Django templates, template tags, and filters
 - Can include other Django apps
-- Generate HTML output for a true static site (coming soon)
+- Build HTML output for a true static site (coming soon)
 
 Still a little experimental. ;)
 
-## Create a new site
+## Install
 
-1. `git clone git@github.com:adamghill/django-static-site.git`
-1. `poetry add .`
-1. Copy `app.py` from https://raw.githubusercontent.com/adamghill/django-static-site/main/example/app.py
-1. `mkdir content`
-1. `echo "# Index" >> content/index.md`
-1. `echo "DEBUG=True\nSECRET_KEY=" >> .env`
-1. Create secret key at https://djecrety.ir/ and update .env file above with it
-1. `python app.py runserver`
+### Create a standalone site
+
+1. Make a new directory for your site and traverse into it: `mkdir new-site && cd new-site`
+1. Install `poetry` (if needed): `curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -`
+1. Add `coltrane` dependency: `poetry init --dependency coltrane:0.1.0 && poetry install`
+1. Initialize `coltrane`: `poetry run coltrane init`
+1. Create secret key at https://djecrety.ir/ and update SECRET_KEY in .env
+1. Start local development server: `poetry run coltrane play`
 1. Go to localhost:8000 in web browser
+
+### Add to an existing Django site
+
+Coming soon.
 
 ## Create content
 
-`django-static-site` takes the URL slug and looks up a corresponding markdown file in the `content` directory.
+`coltrane` takes the URL slug and looks up a corresponding markdown file in the `content` directory.
 
-For example: http://localhost:8000/this-is-a-good-example/ will render the markdown in `content/this-is-a-good-example.md`. If the file cannot be found, the response will be a 404.
+For example: http://localhost:8000/this-is-a-good-example/ will render the markdown in `content/this-is-a-good-example.md`. The root (i.e. http://localhost:8000/) will look for `content/index.md`.
 
-## Use data
+If a markdown file cannot be found, the response will be a 404.
 
-`django-static-site` is designed to be used without a database, however, sometimes it's useful to have access to data in the templates.
+## Use JSON data
+
+`coltrane` is designed to be used without a database, however, sometimes it's useful to have access to data inside your templates.
 
 ### data.json
 
@@ -42,60 +49,74 @@ Create a file named `data.json`: `echo {} >> data.json`. Add whatever data you w
 
 ```JSON
 {
-    {"index": {"answer": 42}}
+    {"answer": 42}
 }
 ```
 
 ```markdown
 # index.md
 
-{{ data.index.answer }}
+{{ data.answer }} == 42
 ```
 
-## data directory
+```html
+<h1>index.md</h1>
 
-Create a directory named `data`: `mkdir data`. Create as many JSON files as you want. The name of the file will be used as the key in the context data.
+42 == 42
+```
 
-`data/index.json`
+### JSON data directory
+
+Create a directory named `data`: `mkdir data`. Create as many JSON files as you want. The name of the file (without the `json` extension) will be used as the key in the context data.
+
+`data/author.json`
 
 ```JSON
 {
-    {"author": "Douglas Adams"}
+    {"name": "Douglas Adams"}
 }
 ```
 
 ```markdown
 # index.md
 
-{{ data.index.author }}
+{{ data.author.name }} == Douglas Adams
+```
+
+```html
+<h1>index.md</h1>
+
+Douglas Adams == Douglas Adams
 ```
 
 ## Override templates
 
-Overriding templates should work just like Django normally does.
+Overriding templates work just like in Django.
 
-### Base template
+### Override base template
 
-Create a file named `templates/static_site/base.html` to override the base template. By default, it needs to include a `content` block.
+Create a file named `templates/coltrane/base.html` in your app to override the base template. By default, it needs to include a `content` block.
 
 ```html
 {% block content %}{% endblock content %}
 ```
 
-### Content template
+### Override content template
 
-Create a file named `templates/static_site/content.html` to override the content template. By default, it needs to include a `content` block and `{{ content|safe }}` to render the markdown.
+Create a file named `templates/coltrane/content.html` in your app to override the content template. By default, it needs to include a `content` block for the base template and `{{ content }}` to render the markdown.
 
 ```html
-{% block content %}{{ content|safe }}{% endblock content %}
+{% block content %}{{ content }}{% endblock content %}
 ```
 
 ## Todo
 
-- Rename `django-static-site` to something better
-- Management command to render all markdown to HTML for actually serving static HTML files
-- Cookiecutter to create a site easily
 - Publish to PyPI
+- Tests + coverage.py
+- Management command to render all markdown to HTML for actually serving static HTML files
+- Handle directories in content directory
+- Handle directories in data directory
+- Get gunicorn working
 
 ## Thanks
 

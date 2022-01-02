@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):
-    help = "Generate all static HTML files and put them into the output directory."
+    help = "Build all static HTML files and put them into the output directory."
 
     def add_arguments(self, parser):
         parser.add_argument("output", type=str)
