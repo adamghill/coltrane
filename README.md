@@ -19,7 +19,7 @@ Still a little experimental. ;)
 
 1. Make a new directory for your site and traverse into it: `mkdir new-site && cd new-site`
 1. Install `poetry` (if needed): `curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -`
-1. Add `coltrane` dependency: `poetry init --dependency coltrane:0.1.0 && poetry install`
+1. Add `coltrane` dependency: `poetry init --dependency coltrane-web:0.1.0 && poetry install`
 1. Initialize `coltrane`: `poetry run coltrane init`
 1. Create secret key at https://djecrety.ir/ and update SECRET_KEY in .env
 1. Start local development server: `poetry run coltrane play`
@@ -112,6 +112,10 @@ Create a file named `templates/coltrane/content.html` in your app to override th
 ## Build static HTML
 
 `coltrane record` will build the static HTML. Not currently implemented.
+
+## What's with the name?
+
+`coltrane` is built on top of the Django web framework, which is named after the Jazz musician Django Reinhardt. `coltrane` is named after another Jazz musician, John Coltrane.
 
 ## Thanks
 
