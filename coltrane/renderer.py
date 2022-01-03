@@ -33,14 +33,14 @@ def _get_markdown_content_as_html(slug: str) -> str:
         ],
     )
 
-    return content
+    return str(content)
 
 
 def _get_rendered_content(markdown_content: str, data: Dict) -> str:
     django_engine = engines["django"]
     template = django_engine.from_string(markdown_content)
 
-    return template.render(context={"data": data})
+    return str(template.render(context={"data": data}))
 
 
 def render_markdown(slug: str) -> Tuple[str, Dict]:

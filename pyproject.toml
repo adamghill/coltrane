@@ -34,6 +34,9 @@ isort = "^5.10.1"
 pytest = "^6.2.5"
 pytest-django = "^4.5.2"
 pywatchman = "^1.4.1"
+django-stubs = "^1.9.0"
+coverage = {extras = ["toml"], version = "^6.2"}
+pytest-cov = "^3.0.0"
 
 [tool.isort]
 default_section = "THIRDPARTY"
@@ -47,17 +50,46 @@ skip_glob = "*/migrations/*.py"
 profile = "black"
 
 [tool.pytest.ini_options]
-addopts = "--quiet --failed-first --reuse-db --nomigrations -p no:warnings -m 'not slow'"
+addopts = "--quiet --failed-first --reuse-db --nomigrations -p no:warnings -m 'not integration'"
 testpaths = [
     "tests"
 ]
 markers = [
-    "slow: marks tests as slow",
+    "integration: marks tests as integration",
 ]
+
+[tool.flake8]
+ignore = "E203,E266,H106,H904"
+max-line-length = 88
+
+[tool.coverage.run]
+branch = true
+parallel = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+skip_empty = true
+sort = "cover"
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+module = ["markdown2"]
+ignore_missing_imports = true
 
 [tool.poe.tasks]
 r = { cmd = "example_standalone/app.py runserver 0:8045", help = "Start dev server" }
 g = { cmd = "gunicorn -b localhost:8045 example_standalone.app:wsgi", help = "Start gunicorn" }
+t = { cmd = "pytest --cov=coltrane", help = "Run tests" }
+cr = { cmd = "coverage report", help = "Show coverage report" }
+my = { cmd = "mypy .", help = "Run mypy" }
+b = { cmd = "black . --check --quiet", help = "Run black" }
+i = { cmd = "isort . --check --quiet", help = "Run isort" }
+tm = ["b", "i", "t", "my"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -9,10 +9,16 @@ from django.urls import include, path
 
 from dotenv import load_dotenv
 
+from coltrane.views import DEFAULT_VIEW_CACHE_SECONDS
+
 from .utils import dict_merge
 
 
 logger = logging.getLogger(__name__)
+
+__all__ = [
+    "initialize",
+]
 
 
 urlpatterns = [
@@ -20,25 +26,30 @@ urlpatterns = [
 ]
 
 
-def _get_installed_apps(django_settings: Dict[str, Any]) -> List[str]:
-    installed_apps = django_settings.get("INSTALLED_APPS", [])
+def _get_base_dir(base_dir: Optional[Path]) -> Path:
+    if base_dir is None:
+        base_dir = Path(".")
+    elif isinstance(base_dir, str):
+        base_dir = Path(base_dir)
+
+    return base_dir
+
+
+def _merge_installed_apps(django_settings: Dict[str, Any]) -> List[str]:
+    """
+    Gets the installed apps from the passed-in settings and adds `coltrane` to it.
+    """
+
+    installed_apps = list(django_settings.get("INSTALLED_APPS", []))
     installed_apps.append("coltrane")
 
     return installed_apps
 
 
-def initialize(
-    base_dir: Optional[Path] = None,
-    **django_settings: Dict[str, Any],
-) -> WSGIHandler:
+def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Initializes the Django static site.
+    Merges the passed-in settings into the default `coltrane` settings. Passed-in settings will override the defaults.
     """
-
-    if base_dir is None:
-        base_dir = Path(".")
-
-    load_dotenv(base_dir / ".env")
 
     caches = {
         "default": {
@@ -57,7 +68,7 @@ def initialize(
         "ROOT_URLCONF": __name__,
         "DEBUG": getenv("DEBUG", "True") == "True",
         "SECRET_KEY": getenv("SECRET_KEY"),
-        "INSTALLED_APPS": _get_installed_apps(django_settings),
+        "INSTALLED_APPS": _merge_installed_apps(django_settings),
         "CACHES": caches,
         "MIDDLWARE": middleware,
         "TEMPLATES": [
@@ -66,7 +77,7 @@ def initialize(
                 "APP_DIRS": True,
             },
         ],
-        "COLTRAN": {"VIEW_CACHE_SECONDS": 60 * 60},
+        "COLTRAN": {"VIEW_CACHE_SECONDS": DEFAULT_VIEW_CACHE_SECONDS},
     }
 
     django_settings = dict_merge(
@@ -74,6 +85,30 @@ def initialize(
     )
     logger.debug(f"Merged settings: {django_settings}")
 
+    return django_settings
+
+
+def _configure_settings(django_settings: Dict[str, Any]) -> None:
+    """
+    Configures the settings in Django.
+    """
+
     settings.configure(**django_settings)
+
+
+def initialize(
+    base_dir: Optional[Path] = None,
+    **django_settings: Dict[str, Any],
+) -> WSGIHandler:
+    """
+    Initializes the Django static site.
+    """
+
+    base_dir = _get_base_dir(base_dir)
+
+    load_dotenv(base_dir / ".env")
+
+    django_settings = _merge_settings(base_dir, django_settings)
+    _configure_settings(django_settings)
 
     return WSGIHandler()

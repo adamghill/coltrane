@@ -1,5 +1,5 @@
 import logging
-from typing import Dict
+from typing import Dict, List
 
 
 logger = logging.getLogger(__name__)
@@ -9,7 +9,7 @@ def dict_merge(
     source: Dict,
     destination: Dict,
     destination_overrides_source=False,
-    path: str = None,
+    path: List[str] = None,
 ) -> Dict:
     """
     Deep merge two dictionaries.
