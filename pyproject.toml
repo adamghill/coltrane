@@ -4,7 +4,7 @@ authors = [{name = "Adam Hill", email = "adam@adamghill.com"}]
 
 [tool.poetry]
 name = "coltrane-web"
-version = "0.2.0"
+version = "0.3.0"
 description = "Use Django as a static site"
 authors = ["adamghill <adam@adamghill.com>"]
 license = "MIT"
