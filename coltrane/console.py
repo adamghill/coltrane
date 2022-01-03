@@ -53,7 +53,7 @@ def init():
         app_file.chmod(app_file.stat().st_mode | S_IEXEC)
 
         print("Creating .env...")
-        (Path("content") / ".env").write_text(DEFAULT_ENV)
+        Path(".env").write_text(DEFAULT_ENV)
 
         print("Creating content directory...")
         Path("content").mkdir()
