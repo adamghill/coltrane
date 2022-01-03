@@ -18,10 +18,10 @@ Still a little experimental. ;)
 ### Create a standalone site
 
 1. Make a new directory for your site and traverse into it: `mkdir new-site && cd new-site`
-1. Install `poetry` (if needed): `curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -`
-1. Add `coltrane` dependency: `poetry init --dependency coltrane-web:latest && poetry install`
-1. Initialize `coltrane`: `poetry run coltrane init`
-1. Create secret key at https://djecrety.ir/ and update SECRET_KEY in .env
+1. Install `poetry` (if not already installed) to handle Python packages: `curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -`
+1. Create `poetry` project, add `coltrane` dependency, and install Python packages: `poetry init --no-interaction --dependency coltrane-web:latest && poetry install`
+1. Start a new `coltrane` site: `poetry run coltrane create`
+1. Gnerate a secret key at https://djecrety.ir/ and update SECRET_KEY in .env
 1. Start local development server: `poetry run coltrane play`
 1. Go to localhost:8000 in web browser
 
@@ -115,7 +115,7 @@ Create a file named `templates/coltrane/content.html` in your app to override th
 
 ## What's with the name?
 
-`coltrane` is built on top of the Django web framework, which is named after the Jazz musician Django Reinhardt. `coltrane` is named after another Jazz musician, John Coltrane.
+`coltrane` is built on top of the Django web framework, which is named after [Django Reinhardt](https://en.wikipedia.org/wiki/Django_Reinhardt). Following in that tradition, I named this static site framework after [John Coltrane](https://en.wikipedia.org/wiki/John_Coltrane), another Jazz musician.
 
 ## Thanks
 

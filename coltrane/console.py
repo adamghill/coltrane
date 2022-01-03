@@ -43,7 +43,7 @@ def cli():
 
 
 @click.command(help="Create a coltrane site.")
-def init():
+def create():
     app_file = Path("app.py")
 
     if not app_file.exists():
@@ -110,12 +110,13 @@ def record(output, manage):
     )
 
 
-cli.add_command(init)
+cli.add_command(create)
 cli.add_command(play)
 cli.add_command(record)
 
 
 ALIASES = {
+    "init": "create",
     "serve": play,
     "pl": play,
     "build": record,
