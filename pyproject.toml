@@ -11,17 +11,22 @@ license = "MIT"
 readme = "README.md"
 keywords = ["django", "python", "static", "markdown"]
 packages = [{ include = "coltrane" }]
+repository = "https://github.com/adamghill/coltrane/"
+homepage = "https://github.com/adamghill/coltrane/"
+
+[tool.poetry.urls]
+"Funding" = "https://github.com/sponsors/adamghill"
 
 [tool.poetry.scripts]
 coltrane = "coltrane.console:cli"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-Django = "^4.0"
+Django = ">3.0"
 gunicorn = { version = "^20.1.0", optional = true }
-python-dotenv = "^0.19.2"
+python-dotenv = ">0.17"
 markdown2 = "^2.4.2"
-click = "^8.0.3"
+click = "^8.0.0"
 
 [tool.poetry.extras]
 gunicorn = ["gunicorn"]
