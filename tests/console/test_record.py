@@ -1,0 +1,45 @@
+from unittest.mock import patch
+
+from click.testing import CliRunner
+
+from coltrane.console import cli
+
+
+def test_record():
+    runner = CliRunner()
+
+    with patch("coltrane.console._run_manangement_command") as _run_manangement_command:
+        result = runner.invoke(cli, ["record"])
+        assert result.exit_code == 0
+
+        _run_manangement_command.assert_called_once_with("build", "output")
+
+
+def test_record_with_port():
+    runner = CliRunner()
+
+    with patch("coltrane.console._run_manangement_command") as _run_manangement_command:
+        result = runner.invoke(cli, ["record", "--output=test-output"])
+        assert result.exit_code == 0
+
+        _run_manangement_command.assert_called_once_with("build", "test-output")
+
+
+def test_build_alias():
+    runner = CliRunner()
+
+    with patch("coltrane.console._run_manangement_command") as _run_manangement_command:
+        result = runner.invoke(cli, ["build"])
+        assert result.exit_code == 0
+
+        _run_manangement_command.assert_called_once_with("build", "output")
+
+
+def test_rec_alias():
+    runner = CliRunner()
+
+    with patch("coltrane.console._run_manangement_command") as _run_manangement_command:
+        result = runner.invoke(cli, ["rec"])
+        assert result.exit_code == 0
+
+        _run_manangement_command.assert_called_once_with("build", "output")

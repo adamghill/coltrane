@@ -7,6 +7,8 @@ from pathlib import Path
 from stat import S_IEXEC
 from subprocess import run as run_process
 
+from django.core.management.utils import get_random_secret_key
+
 import click
 
 
@@ -24,8 +26,20 @@ if __name__ == "__main__":
 """
 
 DEFAULT_ENV = """DEBUG=True
-SECRET_KEY=this-is-a-secret
-"""
+SECRET_KEY="""
+
+
+def _run_manangement_command(command_name, *args):
+    current_directory = getcwd()
+    file_path = Path(current_directory) / "app.py"
+
+    run_process(
+        [
+            file_path,
+            command_name,
+        ]
+        + list(args)
+    )
 
 
 class AliasedGroup(click.Group):
@@ -42,72 +56,53 @@ def cli():
     pass
 
 
-@click.command(help="Create a coltrane site.")
+@click.command(help="Create a new coltrane site (create | init).")
 def create():
     app_file = Path("app.py")
 
-    if not app_file.exists():
-        print("Creating app.py...")
+    if app_file.exists():
+        click.secho(
+            "Skipping project creation becase the app.py file alrady exists.", fg="red"
+        )
+    else:
+        click.secho("Creating files...", fg="green")
+
+        click.secho("Creating app.py...", fg="yellow")
         app_file.write_text(DEFAULT_APP)
-        print("Set app.py as executable...")
+
+        click.secho("Set app.py as executable...", fg="yellow")
         app_file.chmod(app_file.stat().st_mode | S_IEXEC)
 
-        print("Creating .env...")
-        Path(".env").write_text(DEFAULT_ENV)
+        click.secho("Creating .env...", fg="yellow")
+        Path(".env").write_text(DEFAULT_ENV + get_random_secret_key())
 
-        print("Creating content directory...")
+        click.secho("Creating content directory...", fg="yellow")
         Path("content").mkdir()
         (Path("content") / "index.md").write_text("# index.md")
 
-        print("Creating data directory...")
+        click.secho("Creating data directory...", fg="yellow")
         Path("data").mkdir()
 
-        print("Finished!")
-        print()
-        print(
-            "Run `coltrane serve` for local development or `coltrane build` to generate HTML output."
-        )
+        click.secho("Finished!", fg="green")
+
+    click.secho()
+
+    click.secho("For local development: ", nl=False, fg="green")
+    click.secho("poetry run coltrane play")
+    click.secho("Generate HTML output: ", nl=False, fg="green")
+    click.secho("poetry run coltrane record")
 
 
-def _get_manage_file_path(manage: str) -> Path:
-    current_directory = getcwd()
-    file_path = Path(current_directory) / manage
-
-    if not file_path.exists():
-        # Try the default manage.py
-        file_path = Path(current_directory) / "manage.py"
-
-    return file_path
+@click.command(help="Start a local development server (play | serve).")
+@click.option("--port", default=8000, help="Port to serve localhost from")
+def play(port):
+    _run_manangement_command("runserver", f"0:{port}")
 
 
-@click.command(help="Start a local development server; alias: serve.")
-@click.option("--port", default=8000, help="Port to serve from")
-@click.option("--manage", default="app.py", help="File name for Django's manage.py")
-def play(port, manage):
-    file_path = _get_manage_file_path(manage)
-
-    run_process(
-        [
-            file_path,
-            "runserver",
-            f"0:{port}",
-        ]
-    )
-
-
-@click.command(help="Generates HTML output; alias: build.")
+@click.command(help="Generates HTML output (record | rec | build).")
 @click.option("--output", default="output", help="Output directory")
-@click.option("--manage", default="app.py", help="File name for Django's manage.py")
-def record(output, manage):
-    file_path = _get_manage_file_path(manage)
-
-    run_process(
-        [
-            file_path,
-            "build",
-            output,
-        ]
-    )
+def record(output):
+    _run_manangement_command("build", output)
 
 
 cli.add_command(create)
@@ -116,9 +111,8 @@ cli.add_command(record)
 
 
 ALIASES = {
-    "init": "create",
+    "init": create,
     "serve": play,
-    "pl": play,
     "build": record,
     "rec": record,
 }

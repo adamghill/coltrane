@@ -11,7 +11,7 @@ DEFAULT_SETTINGS = {
     "BASE_DIR": Path("."),
     "ROOT_URLCONF": "coltrane",
     "DEBUG": True,
-    "SECRET_KEY": None,
+    "SECRET_KEY": ANY,
     "INSTALLED_APPS": ["coltrane"],
     "CACHES": {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}},
     "MIDDLWARE": [
