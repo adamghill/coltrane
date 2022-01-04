@@ -1,6 +1,8 @@
 import json
 import logging
-from typing import Dict
+from os import getcwd
+from pathlib import Path
+from typing import Dict, List
 
 from django.conf import settings
 
@@ -32,3 +34,19 @@ def get_data() -> Dict:
         logger.debug("Missing data directory")
 
     return data
+
+
+def get_content() -> List[Path]:
+    current_dir = Path(getcwd())
+    paths = []
+
+    def _get_markdown_file_paths(directory):
+        for path in (directory).iterdir():
+            if path.is_dir():
+                _get_markdown_file_paths(path)
+            elif path.is_file:
+                paths.append(path)
+
+    _get_markdown_file_paths(current_dir / "content")
+
+    return paths

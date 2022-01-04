@@ -77,11 +77,11 @@ def create():
         Path(".env").write_text(DEFAULT_ENV + get_random_secret_key())
 
         click.secho("Creating content directory...", fg="yellow")
-        Path("content").mkdir()
+        Path("content").mkdir(exist_ok=True)
         (Path("content") / "index.md").write_text("# index.md")
 
         click.secho("Creating data directory...", fg="yellow")
-        Path("data").mkdir()
+        Path("data").mkdir(exist_ok=True)
 
         click.secho("Finished!", fg="green")
 
@@ -100,9 +100,9 @@ def play(port):
 
 
 @click.command(help="Generates HTML output (record | rec | build).")
-@click.option("--output", default="output", help="Output directory")
-def record(output):
-    _run_manangement_command("build", output)
+# @click.option("--output", default="output", help="Output directory")
+def record():
+    _run_manangement_command("build")
 
 
 cli.add_command(create)
