@@ -21,7 +21,6 @@ Still a little experimental. ;)
 1. Install `poetry` (if not already installed) to handle Python packages: `curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -`
 1. Create `poetry` project, add `coltrane` dependency, and install Python packages: `poetry init --no-interaction --dependency coltrane-web:latest && poetry install`
 1. Start a new `coltrane` site: `poetry run coltrane create`
-1. Gnerate a secret key at https://djecrety.ir/ and update SECRET_KEY in .env
 1. Start local development server: `poetry run coltrane play`
 1. Go to localhost:8000 in web browser
 
@@ -41,11 +40,11 @@ If a markdown file cannot be found, the response will be a 404.
 
 `coltrane` is designed to be used without a database, however, sometimes it's useful to have access to data inside your templates.
 
-### data.json
+### JSON data file
 
-Create a file named `data.json`: `echo {} >> data.json`. Add whatever data you want to that file and it will be included in the template context.
+Create a file named `data.json` in your project folder: `touch data.json`. Add whatever data you want to that file and it will be included in the template context.
 
-`data.json`
+#### `data.json`
 
 ```JSON
 {
@@ -53,23 +52,27 @@ Create a file named `data.json`: `echo {} >> data.json`. Add whatever data you w
 }
 ```
 
-```markdown
-# index.md
+#### `index.md` file
 
-{{ data.answer }} == 42
+```markdown
+# index
+
+The answer to everything is {{ data.answer }}
 ```
 
-```html
-<h1>index.md</h1>
+#### Generated `index.html`
 
-42 == 42
+```html
+<h1>index</h1>
+
+<p>The answer to everything is 42</p>
 ```
 
 ### JSON data directory
 
-Create a directory named `data`: `mkdir data`. Create as many JSON files as you want. The name of the file (without the `json` extension) will be used as the key in the context data.
+Create a directory named `data` in your project folder: `mkdir data`. Create as many JSON files as you want. The name of the file (without the `json` extension) will be used as the key in the context data.
 
-`data/author.json`
+#### `data/author.json`
 
 ```JSON
 {
@@ -77,21 +80,25 @@ Create a directory named `data`: `mkdir data`. Create as many JSON files as you 
 }
 ```
 
-```markdown
-# index.md
+#### `index.md` file
 
-{{ data.author.name }} == Douglas Adams
+```markdown
+# index
+
+{{ data.author.name }} is the author
 ```
+
+#### Generated `index.html`
 
 ```html
 <h1>index.md</h1>
 
-Douglas Adams == Douglas Adams
+<p>Douglas Adams is the author</p>
 ```
 
 ## Override templates
 
-Overriding templates work just like in Django.
+Overriding templates work just like in Django. `coltrane` comes with two minimal templates: `base.html` and `content.html`.
 
 ### Override base template
 
@@ -105,17 +112,19 @@ Create a file named `templates/coltrane/base.html` in your app to override the b
 
 Create a file named `templates/coltrane/content.html` in your app to override the content template. By default, it needs to include a `content` block for the base template and `{{ content }}` to render the markdown.
 
+Note: `content` is already marked safe so the rendered HTML will be output correctly and you do not need to use a `safe` filter for the content template variable.
+
 ```html
 {% block content %}{{ content }}{% endblock content %}
 ```
 
 ## Build static HTML
 
-`coltrane record` will build the static HTML. Not currently implemented.
+`coltrane record` will build the static HTML. Coming soon.
 
 ## What's with the name?
 
-`coltrane` is built on top of the Django web framework, which is named after [Django Reinhardt](https://en.wikipedia.org/wiki/Django_Reinhardt). Following in that tradition, I named this static site framework after [John Coltrane](https://en.wikipedia.org/wiki/John_Coltrane), another Jazz musician.
+`coltrane` is built on top of the Django web framework, which is named after [Django Reinhardt](https://en.wikipedia.org/wiki/Django_Reinhardt). Following in that tradition, I named this static site framework after [John Coltrane](https://en.wikipedia.org/wiki/John_Coltrane), another jazz musician.
 
 ## Thanks
 
