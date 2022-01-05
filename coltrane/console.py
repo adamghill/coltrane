@@ -66,6 +66,7 @@ def create():
         )
     else:
         click.secho("Creating files...", fg="green")
+        Path("__init__.py").touch()
 
         click.secho("Creating app.py...", fg="yellow")
         app_file.write_text(DEFAULT_APP)
