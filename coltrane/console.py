@@ -101,7 +101,6 @@ def play(port):
 
 
 @click.command(help="Generates HTML output (record | rec | build).")
-# @click.option("--output", default="output", help="Output directory")
 def record():
     _run_manangement_command("build")
 
