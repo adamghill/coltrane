@@ -37,11 +37,18 @@ def get_data() -> Dict:
 
 
 def get_content() -> List[Path]:
+    """
+    Get a list of `Path`s for all markdown content.
+    """
+
     current_dir = Path(getcwd())
     paths = []
 
     def _get_markdown_file_paths(directory):
-        for path in (directory).iterdir():
+        if not directory.exists():
+            raise FileNotFoundError(f"Directory does not exist: {directory}")
+
+        for path in directory.rglob("*.md"):
             if path.is_dir():
                 _get_markdown_file_paths(path)
             elif path.is_file:

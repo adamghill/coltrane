@@ -126,6 +126,12 @@ Note: `content` is already marked safe so the rendered HTML will be output corre
 
 `coltrane` is built on top of the Django web framework, which is named after [Django Reinhardt](https://en.wikipedia.org/wiki/Django_Reinhardt). Following in that tradition, I named this static site framework after [John Coltrane](https://en.wikipedia.org/wiki/John_Coltrane), another jazz musician.
 
+## Other Python static site builder alternatives
+
+- [Combine](https://combine.dropseed.dev/) which uses Jinja templates under the hood
+- [Pelican](https://blog.getpelican.com/)
+- [Nikola](https://getnikola.com/)
+
 ## Thanks
 
 - https://twitter.com/willmcgugan/status/1477283879841157123 for the initial inspiration
