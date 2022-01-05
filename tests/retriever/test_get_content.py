@@ -19,6 +19,21 @@ def test_get_content(tmp_path):
     assert contents[0].name == "test-1.md"
 
 
+def test_get_content_not_markdown(tmp_path):
+    with patch("coltrane.retriever.getcwd") as getcwd:
+        getcwd.return_value = str(tmp_path)
+
+        (tmp_path / "content").mkdir()
+        (tmp_path / "content" / "test-1.md").write_text("# test 1")
+        (tmp_path / "content" / "test-2.test").write_text("# test 2")
+
+        contents = get_content()
+
+    assert contents
+    assert len(contents) == 1
+    assert contents[0].name == "test-1.md"
+
+
 def test_get_content_with_folder(tmp_path):
     with patch("coltrane.retriever.getcwd") as getcwd:
         getcwd.return_value = str(tmp_path)
@@ -33,8 +48,10 @@ def test_get_content_with_folder(tmp_path):
 
     assert contents
     assert len(contents) == 2
-    assert contents[0].name == "test-2.md"
-    assert contents[1].name == "test-1.md"
+
+    contents.sort(key=lambda c: c.name)
+    assert contents[0].name == "test-1.md"
+    assert contents[1].name == "test-2.md"
 
 
 def test_get_content_no_content(tmp_path):
