@@ -25,6 +25,30 @@ urlpatterns = [
     path("", include("coltrane.urls")),
 ]
 
+DEFAULT_CACHES_SETTINGS = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+    }
+}
+
+DEFAULT_MIDDLEWARE_SETTINGS = [
+    "django.middleware.security.SecurityMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+DEFAULT_TEMPLATES_SETTINGS = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "APP_DIRS": True,
+        "DIRS": [
+            "templates",
+        ],
+    },
+]
+
+DEFAULT_COLTRANE_SETTINGS = {"VIEW_CACHE_SECONDS": DEFAULT_VIEW_CACHE_SECONDS}
+
 
 def _get_base_dir(base_dir: Optional[Path]) -> Path:
     if base_dir is None:
@@ -51,33 +75,16 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
     Merges the passed-in settings into the default `coltrane` settings. Passed-in settings will override the defaults.
     """
 
-    caches = {
-        "default": {
-            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
-        }
-    }
-
-    middleware = [
-        "django.middleware.security.SecurityMiddleware",
-        "django.middleware.common.CommonMiddleware",
-        "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    ]
-
     default_settings = {
         "BASE_DIR": base_dir,
         "ROOT_URLCONF": __name__,
         "DEBUG": getenv("DEBUG", "True") == "True",
         "SECRET_KEY": getenv("SECRET_KEY"),
         "INSTALLED_APPS": _merge_installed_apps(django_settings),
-        "CACHES": caches,
-        "MIDDLWARE": middleware,
-        "TEMPLATES": [
-            {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
-                "APP_DIRS": True,
-            },
-        ],
-        "COLTRAN": {"VIEW_CACHE_SECONDS": DEFAULT_VIEW_CACHE_SECONDS},
+        "CACHES": DEFAULT_CACHES_SETTINGS,
+        "MIDDLWARE": DEFAULT_MIDDLEWARE_SETTINGS,
+        "TEMPLATES": DEFAULT_TEMPLATES_SETTINGS,
+        "COLTRANE": DEFAULT_COLTRANE_SETTINGS,
     }
 
     django_settings = dict_merge(

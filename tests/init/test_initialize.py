@@ -1,10 +1,13 @@
 from pathlib import Path
 from unittest.mock import ANY, patch
 
-from coltrane import initialize
-
-
-# from django.conf import settings
+from coltrane import (
+    DEFAULT_CACHES_SETTINGS,
+    DEFAULT_COLTRANE_SETTINGS,
+    DEFAULT_MIDDLEWARE_SETTINGS,
+    DEFAULT_TEMPLATES_SETTINGS,
+    initialize,
+)
 
 
 DEFAULT_SETTINGS = {
@@ -13,19 +16,10 @@ DEFAULT_SETTINGS = {
     "DEBUG": True,
     "SECRET_KEY": ANY,
     "INSTALLED_APPS": ["coltrane"],
-    "CACHES": {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}},
-    "MIDDLWARE": [
-        "django.middleware.security.SecurityMiddleware",
-        "django.middleware.common.CommonMiddleware",
-        "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    ],
-    "TEMPLATES": [
-        {
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
-            "APP_DIRS": True,
-        }
-    ],
-    "COLTRAN": {"VIEW_CACHE_SECONDS": 3600},
+    "CACHES": DEFAULT_CACHES_SETTINGS,
+    "MIDDLWARE": DEFAULT_MIDDLEWARE_SETTINGS,
+    "TEMPLATES": DEFAULT_TEMPLATES_SETTINGS,
+    "COLTRANE": DEFAULT_COLTRANE_SETTINGS,
 }
 
 
