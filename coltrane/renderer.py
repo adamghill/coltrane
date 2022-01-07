@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_TEMPLATE = "coltrane/content.html"
 
+# List of all available extras: https://github.com/trentm/python-markdown2/wiki/Extras
 DEFAULT_MARKDOWN_EXTRAS = [
     "fenced-code-blocks",
     "header-ids",
@@ -21,6 +22,12 @@ DEFAULT_MARKDOWN_EXTRAS = [
     "strike",
     "tables",
     "task_list",
+    "nofollow",
+    "code-friendly",
+    "footnotes",
+    "numbering",
+    "strike",
+    "toc",
 ]
 
 
@@ -40,6 +47,8 @@ def _get_markdown_content_as_html(slug: str) -> Dict[str, Optional[Dict]]:
         file_path,
         extras=markdown_extras,
     )
+
+    # TODO: hasattr(content, "toc_html")
 
     return (str(content), content.metadata)
 
