@@ -17,9 +17,8 @@ def test_index(client, tmp_path: Path):
     response = client.get("/")
     assert response.status_code == 200
 
-    expected = '\n<h1 id="index">index</h1>\n\n'
     actual = response.content.decode()
-    assert actual == expected
+    assert '\n<h1 id="index">index</h1>\n\n' in actual
 
 
 def test_url_slug(client, tmp_path: Path):
@@ -31,9 +30,8 @@ def test_url_slug(client, tmp_path: Path):
     response = client.get("/test-this")
     assert response.status_code == 200
 
-    expected = '\n<h1 id="test-this">test this</h1>\n\n'
     actual = response.content.decode()
-    assert actual == expected
+    assert '\n<h1 id="test-this">test this</h1>\n\n' in actual
 
 
 def test_url_slug_with_data(client, tmp_path: Path):
@@ -46,6 +44,5 @@ def test_url_slug_with_data(client, tmp_path: Path):
     response = client.get("/test-this-data")
     assert response.status_code == 200
 
-    expected = "\n<p>test data 1</p>\n\n"
     actual = response.content.decode()
-    assert actual == expected
+    assert "\n<p>test data 1</p>\n\n" in actual
