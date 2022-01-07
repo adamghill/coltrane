@@ -14,6 +14,15 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_TEMPLATE = "coltrane/content.html"
 
+DEFAULT_MARKDOWN_EXTRAS = [
+    "fenced-code-blocks",
+    "header-ids",
+    "metadata",
+    "strike",
+    "tables",
+    "task_list",
+]
+
 
 def _get_markdown_content_as_html(slug: str) -> Dict[str, Optional[Dict]]:
     """
@@ -22,18 +31,14 @@ def _get_markdown_content_as_html(slug: str) -> Dict[str, Optional[Dict]]:
 
     file_path = settings.BASE_DIR / "content" / f"{slug}.md"
 
+    markdown_extras = DEFAULT_MARKDOWN_EXTRAS
+
+    if hasattr(settings, "COLTRANE") and settings.COLTRANE.get("MARKDOWN_EXTRAS"):
+        markdown_extras = settings.COLTRANE["MARKDOWN_EXTRAS"]
+
     content = markdown_path(
         file_path,
-        extras=[
-            "fenced-code-blocks",
-            "header-ids",
-            "metadata",
-            "strike",
-            "tables",
-            "task_list",
-            # "nofollow",
-            # "code-friendly",
-        ],
+        extras=markdown_extras,
     )
 
     return (str(content), content.metadata)
