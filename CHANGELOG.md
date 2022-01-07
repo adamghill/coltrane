@@ -1,3 +1,8 @@
+# 0.6.0
+
+- Add support for markdown frontmatter
+- Support custom templates specified in markdown frontmatter
+
 # 0.5.0
 
 - Add `build` maangement command
