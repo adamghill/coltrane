@@ -13,6 +13,11 @@ from coltrane.renderer import render_markdown
 
 @dataclass
 class ManifestItem:
+    """
+    Stores information about a markdown file: the name, last modified time, and an MD5
+    hash of the file contents.
+    """
+
     _name: str
     _mtime: float
     _md5: str
@@ -24,31 +29,57 @@ class ManifestItem:
 
     @property
     def slug(self):
+        """
+        The name minus the extension. Not exactly a slug because it could contain a
+        forward slash for directories.
+        """
+
         return self.name.replace(".md", "")
 
     @property
     def name(self):
+        """
+        The name of the markdown file. Does not contain the whole path, it would contain
+        everything after the `content` directory. Does contain the extension.
+
+        For example: the `name` of `/tmp/new-site/content/2022/new-file.md`
+            would be `2022/new-file.md`.
+        """
+
         return self._name
 
     @property
     def mtime(self):
+        """
+        Last modified time of the file.
+        """
+
         return self._mtime
 
     @property
     def md5(self):
+        """
+        MD5 hash of the file contents.
+        """
+
         return self._md5
 
     def render_html(self):
-        (content, data) = render_markdown(self.slug)
+        """
+        Renders the markdown file into HTML.
+        """
 
-        rendered_html = render_to_string(
-            "coltrane/content.html", {"content": mark_safe(content), "data": data}
-        )
+        (template, context) = render_markdown(self.slug)
+        rendered_html = render_to_string(template, context)
 
         return rendered_html
 
     @staticmethod
     def create(path: Path) -> "ManifestItem":
+        """
+        Initializes a new `ManifestItem` from a `Path`.
+        """
+
         name = ManifestItem.get_name(path)
         mtime = path.stat().st_mtime
         md5 = md5_hash(path.read_bytes()).hexdigest()
@@ -57,6 +88,11 @@ class ManifestItem:
 
     @staticmethod
     def get_name(path: Path) -> str:
+        """
+        Gets the `name` portion of the path, which is everything after the
+        `content` directory.
+        """
+
         name = ""
 
         # Assumes that there isn't a sub-folder called "content"
@@ -77,15 +113,27 @@ class ManifestItem:
 
 @dataclass
 class ManifestItems:
+    """
+    A store of all the markdown files in the manifest.
+    """
+
     _data: Dict[str, ManifestItem]
 
     def __init__(self):
         self._data = {}
 
     def get(self, name: str) -> ManifestItem:
+        """
+        Gets the markdown file information by name.
+        """
+
         return self._data[name]
 
     def load(self, manifest_file: Path) -> None:
+        """
+        Retrieve the current manifest file (typically output.json) and store the data.
+        """
+
         initial_data = json.loads(manifest_file.read_bytes())
 
         for key in initial_data.keys():
@@ -101,6 +149,10 @@ class ManifestItems:
 
 @dataclass
 class Manifest:
+    """
+    Represents a manifest file (output.json) which stores data for each markdown file that was output in the last build.
+    """
+
     _manifest_file: Path
     _out: Optional[OutputWrapper]
     _items: ManifestItems
@@ -122,9 +174,17 @@ class Manifest:
 
     @property
     def is_dirty(self):
+        """
+        Whether the manifest file has been changed.
+        """
+
         return self._is_dirty
 
     def add(self, markdown_file: Path) -> ManifestItem:
+        """
+        Adds a markdown file to the manifest. Also used to update an existing file in the manifest.
+        """
+
         item = ManifestItem.create(markdown_file)
         self._items._data[item.name] = item
         self._is_dirty = True
@@ -132,6 +192,10 @@ class Manifest:
         return item
 
     def get(self, markdown_file: Path) -> Optional[ManifestItem]:
+        """
+        Gets information about a markdown file from the manifest.
+        """
+
         name = ManifestItem.get_name(markdown_file)
 
         try:
@@ -142,6 +206,10 @@ class Manifest:
         return None
 
     def write_data(self):
+        """
+        Writes the current manifest to the output file (typically output.json).
+        """
+
         data = {}
 
         for item in self._items:

@@ -4,7 +4,6 @@ from django.conf import settings
 from django.core.cache import cache
 from django.http import Http404, HttpRequest
 from django.shortcuts import render
-from django.utils.html import mark_safe  # type: ignore
 
 from .renderer import render_markdown
 
@@ -32,8 +31,8 @@ def content(request: HttpRequest, slug: str = "index"):
     from `data.json` and JSON files in the `data` directory.
     """
 
-    content = ""
-    data = {}
+    template = ""
+    context = {}
 
     # Cache the rendered content via the low-level API.
     # TODO: Use the `cache_page` decorator and figure out why the settings error is thrown.
@@ -44,16 +43,16 @@ def content(request: HttpRequest, slug: str = "index"):
         cached_value = cache.get(cache_key)
 
         if cached_value:
-            (content, data) = cached_value
+            (template, context) = cached_value
 
     try:
-        if not content:
-            (content, data) = render_markdown(slug)
+        if not template or not context:
+            (template, context) = render_markdown(slug)
 
             if not settings.DEBUG:
                 cache.set(
                     cache_key,
-                    (content, data),
+                    (template, context),
                     _get_view_cache_seconds(),
                 )
     except FileNotFoundError:
@@ -61,6 +60,6 @@ def content(request: HttpRequest, slug: str = "index"):
 
     return render(
         request,
-        "coltrane/content.html",
-        context={"content": mark_safe(content), "data": data},
+        template,
+        context=context,
     )
