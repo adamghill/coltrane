@@ -8,7 +8,19 @@ from coltrane.retriever import get_content
 class Command(BaseCommand):
     help = "Build all static HTML files and put them into a directory named output."
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--force",
+            action="store_true",
+            help="Force building all files",
+        )
+
     def handle(self, *args, **options):
+        is_force = False
+
+        if options["force"]:
+            is_force = True
+
         output_dir = settings.BASE_DIR / "output"
         output_dir.mkdir(exist_ok=True)
 
@@ -29,7 +41,7 @@ class Command(BaseCommand):
             item = ManifestItem.create(markdown_file)
             existing_item = manifest.get(markdown_file)
 
-            if existing_item:
+            if existing_item and not is_force:
                 skip_message = ""
 
                 if item.mtime == existing_item.mtime:
