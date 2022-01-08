@@ -5,24 +5,11 @@ from django.core.cache import cache
 from django.http import Http404, HttpRequest
 from django.shortcuts import render
 
+from .config import get_view_cache_seconds
 from .renderer import render_markdown
 
 
 logger = logging.getLogger(__name__)
-
-
-DEFAULT_VIEW_CACHE_SECONDS = 60 * 60
-
-
-def _get_view_cache_seconds() -> int:
-    """
-    Get the view cache seconds from settings or just send back the default of an hour.
-    """
-
-    if hasattr(settings, "COLTRANE") and isinstance(settings.COLTRANE, dict):
-        return settings.COLTRANE.get("VIEW_CACHE_SECONDS", DEFAULT_VIEW_CACHE_SECONDS)
-
-    return DEFAULT_VIEW_CACHE_SECONDS
 
 
 def content(request: HttpRequest, slug: str = "index"):
@@ -59,7 +46,7 @@ def content(request: HttpRequest, slug: str = "index"):
                 cache.set(
                     cache_key,
                     (template, context),
-                    _get_view_cache_seconds(),
+                    get_view_cache_seconds(),
                 )
     except FileNotFoundError:
         raise Http404(f"{slug} cannot be found")
