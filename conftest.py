@@ -14,4 +14,9 @@ def pytest_configure():
         INSTALLED_APPS=[
             "coltrane",
         ],
+        CACHES={
+            "default": {
+                "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+            }
+        },
     )

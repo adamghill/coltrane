@@ -6,7 +6,8 @@ from django.utils.html import mark_safe  # type: ignore
 
 from markdown2 import markdown_path
 
-from .config import get_content_directory, get_markdown_extras
+from .config.paths import get_content_directory
+from .config.settings import get_markdown_extras
 from .retriever import get_data
 
 

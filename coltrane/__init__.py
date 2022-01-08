@@ -9,7 +9,7 @@ from django.urls import include, path
 
 from dotenv import load_dotenv
 
-from coltrane.config import DEFAULT_COLTRANE_SETTINGS
+from coltrane.config.settings import DEFAULT_COLTRANE_SETTINGS
 
 from .utils import dict_merge
 

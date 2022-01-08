@@ -2,7 +2,7 @@ from django.conf import settings
 
 import pytest
 
-from coltrane.config import DEFAULT_COLTRANE_SETTINGS, get_coltrane_settings
+from coltrane.config.settings import DEFAULT_COLTRANE_SETTINGS, get_coltrane_settings
 
 
 def test_get_coltrane_settings_none():

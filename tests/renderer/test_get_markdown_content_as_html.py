@@ -2,7 +2,7 @@ from pathlib import Path
 
 from django.conf import settings
 
-from coltrane.config import DEFAULT_MARKDOWN_EXTRAS
+from coltrane.config.settings import DEFAULT_MARKDOWN_EXTRAS
 from coltrane.renderer import _get_markdown_content_as_html
 
 

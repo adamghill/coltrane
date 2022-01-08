@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from coltrane.config import get_output_directory, get_output_json
+from coltrane.config.paths import get_output_directory, get_output_json
 from coltrane.manifest import Manifest, ManifestItem
 from coltrane.retriever import get_content
 

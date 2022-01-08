@@ -188,17 +188,50 @@ Settings specified in a `COLTRANE` dictionary.
 ```python
 # settings.py
 
+# default `coltrane` settings
 COLTRANE = {
-    VIEW_CACHE_SECONDS=60*60,
-    MARKDOWN_EXTRAS=[
+    "MARKDOWN_EXTRAS": [
+        "fenced-code-blocks",
+        "header-ids",
         "metadata",
+        "strike",
+        "tables",
+        "task_list",
+        "nofollow",
+        "code-friendly",
+        "footnotes",
+        "numbering",
+        "strike",
+        "toc",
     ]
 }
 ```
 
-## VIEW_CACHE_SECONDS
+### VIEW_CACHE
+
+Caches the rendered HTML. Enabled by adding the `SECONDS` key to a `VIEW_CACHE` dictionary.
+
+#### SECONDS
 
 Specifies how long the markdown should be cached when Django is dynamically serving the markdown.
+
+```python
+COLTRANE = {
+    # other settings
+    "VIEW_CACHE": {"SECONDS": 60 * 15},
+}
+```
+
+#### CACHE_NAME
+
+Specifies a name for the cache to use. Defaults to "default".
+
+```python
+COLTRANE = {
+    # other settings
+    "VIEW_CACHE": {"SECONDS": 60 * 15, "CACHE_NAME": "coltrane-view-cache"},
+}
+```
 
 ## MARKDOWN_EXTRAS
 
@@ -212,6 +245,12 @@ The features that should be enabled when rendering markdown. A list of all avail
     "strike",
     "tables",
     "task_list",
+    "nofollow",
+    "code-friendly",
+    "footnotes",
+    "numbering",
+    "strike",
+    "toc",
 ]
 ```
 

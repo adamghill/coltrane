@@ -3,13 +3,13 @@ from unittest.mock import patch
 
 from django.conf import settings
 
-from coltrane.config import get_base_directory
+from coltrane.config.paths import get_base_directory
 
 
 def test_get_base_directory_no_base_dir_setting():
     delattr(settings, "BASE_DIR")
 
-    with patch("coltrane.config.getcwd", return_value="1234"):
+    with patch("coltrane.config.paths.getcwd", return_value="1234"):
         expected = Path("1234")
         actual = get_base_directory()
 
