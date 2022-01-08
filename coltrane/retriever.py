@@ -1,11 +1,9 @@
 import json
 import logging
-from os import getcwd
 from pathlib import Path
 from typing import Dict, List
 
-from django.conf import settings
-
+from .config import get_content_directory, get_data_directory, get_data_json
 from .utils import dict_merge
 
 
@@ -14,24 +12,37 @@ logger = logging.getLogger(__name__)
 
 def get_data() -> Dict:
     """
-    Get and merge data from `data.json` and any JSON files in the `data` directory.
+    Get and merge data from `data.json` and any JSON files recursively found in the
+    `data` directory.
     """
 
     data = {}
 
     try:
-        with open(settings.BASE_DIR / "data.json", "r") as f:
-            data = json.loads(f.read())
+        data = json.loads(get_data_json().read_bytes())
     except FileNotFoundError:
         logger.debug("Missing data.json file")
 
-    try:
-        for file in (settings.BASE_DIR / "data").iterdir():
-            if file.name.endswith(".json"):
-                file_name = file.name.replace(".json", "")
-                data = dict_merge(data, {file_name: json.loads(file.read_text())})
-    except FileNotFoundError:
-        logger.debug("Missing data directory")
+    data_directory = get_data_directory()
+
+    for path in data_directory.rglob("*.json"):
+        if path.is_file:
+            directory_without_base_and_file_name = (
+                (str(path)).replace(str(data_directory), "").replace(path.name, "")
+            )
+
+            file_name = path.name.replace(".json", "")
+            new_data = {file_name: json.loads(path.read_bytes())}
+
+            # For each part of the path between BASE_DIR/data and the JSON file,
+            # add a new level (i.e. key) in the data dictionary; for example:
+            # base_dir/data/some/new/test/here.json with {"one": "two"} ==
+            # {"some": {"new": {"test": {"here": {"one": "two"}}}}}
+            for key in reversed(directory_without_base_and_file_name.split("/")):
+                if key:
+                    new_data = {key: new_data}
+
+            data = dict_merge(data, new_data)
 
     return data
 
@@ -41,19 +52,14 @@ def get_content() -> List[Path]:
     Get a list of `Path`s for all markdown content.
     """
 
-    current_dir = Path(getcwd())
     paths = []
+    directory = get_content_directory()
 
-    def _get_markdown_file_paths(directory):
-        if not directory.exists():
-            raise FileNotFoundError(f"Directory does not exist: {directory}")
+    if not directory.exists():
+        raise FileNotFoundError(f"Directory does not exist: {directory}")
 
-        for path in directory.rglob("*.md"):
-            if path.is_dir():
-                _get_markdown_file_paths(path)
-            elif path.is_file:
-                paths.append(path)
-
-    _get_markdown_file_paths(current_dir / "content")
+    for path in directory.rglob("*.md"):
+        if path.is_file:
+            paths.append(path)
 
     return paths

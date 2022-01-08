@@ -1,6 +1,6 @@
-from django.conf import settings
 from django.core.management.base import BaseCommand
 
+from coltrane.config import get_output_directory, get_output_json
 from coltrane.manifest import Manifest, ManifestItem
 from coltrane.retriever import get_content
 
@@ -21,19 +21,17 @@ class Command(BaseCommand):
         if options["force"]:
             is_force = True
 
-        output_dir = settings.BASE_DIR / "output"
-        output_dir.mkdir(exist_ok=True)
+        output_directory = get_output_directory()
+        output_directory.mkdir(exist_ok=True)
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Start to generate HTML and store in the '{output_dir}' directory..."
+                f"Start to generate HTML and store in the '{output_directory}' directory..."
             )
         )
 
         content_paths = get_content()
-        manifest = Manifest(
-            manifest_file=settings.BASE_DIR / "output.json", out=self.stdout
-        )
+        manifest = Manifest(manifest_file=get_output_json(), out=self.stdout)
 
         self.stdout.write()
 
@@ -60,8 +58,8 @@ class Command(BaseCommand):
 
             rendered_html = item.render_html()
 
-            (output_dir / item.slug).mkdir(exist_ok=True)
-            generated_file = output_dir / item.slug / "index.html"
+            (output_directory / item.slug).mkdir(exist_ok=True)
+            generated_file = output_directory / item.slug / "index.html"
 
             action = "Create"
 

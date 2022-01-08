@@ -7,6 +7,7 @@ from django.utils.html import mark_safe  # type: ignore
 
 from markdown2 import markdown_path
 
+from .config import get_content_directory
 from .retriever import get_data
 
 
@@ -36,7 +37,7 @@ def _get_markdown_content_as_html(slug: str) -> Dict[str, Optional[Dict]]:
     Converts markdown file based on the slug into HTML.
     """
 
-    file_path = settings.BASE_DIR / "content" / f"{slug}.md"
+    file_path = get_content_directory() / f"{slug}.md"
 
     markdown_extras = DEFAULT_MARKDOWN_EXTRAS
 

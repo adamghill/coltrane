@@ -3,12 +3,31 @@ from pathlib import Path
 from django.conf import settings
 
 
-def test_404(client):
+def test_404(client, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+    (tmp_path / "content").mkdir()
+
     response = client.get("/")
     assert response.status_code == 404
 
 
-def test_index(client, tmp_path: Path):
+def test_404_directory_parent_traversal(client, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+    (tmp_path / "content").mkdir()
+
+    response = client.get("/../")
+    assert response.status_code == 404
+
+
+def test_404_directory_home_traversal(client, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+    (tmp_path / "content").mkdir()
+
+    response = client.get("/../")
+    assert response.status_code == 404
+
+
+def test_index_with_slash(client, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
     (tmp_path / "content").mkdir()
@@ -18,7 +37,20 @@ def test_index(client, tmp_path: Path):
     assert response.status_code == 200
 
     actual = response.content.decode()
-    assert '\n<h1 id="index">index</h1>\n\n' in actual
+    assert '<h1 id="index">index</h1>' in actual
+
+
+def test_index_without_slash(client, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content" / "index.md").write_text("# index")
+
+    response = client.get("")
+    assert response.status_code == 200
+
+    actual = response.content.decode()
+    assert '<h1 id="index">index</h1>' in actual
 
 
 def test_url_slug(client, tmp_path: Path):

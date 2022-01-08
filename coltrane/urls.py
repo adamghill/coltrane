@@ -1,11 +1,10 @@
-from django.urls import path, re_path
+from django.urls import re_path
 
 from . import views
 
 
+app_name = "coltrane"
+
 urlpatterns = [
-    path("<str:slug>/", views.content),
-    path("<str:slug>", views.content),
-    path("", views.content),
-    # re_path("", views.content),
+    re_path(r"^(?P<slug>(\w|-|\/)*)", views.content, name="content"),
 ]

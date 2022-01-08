@@ -26,7 +26,23 @@ Still a little experimental. ;)
 
 ### Add to an existing Django site
 
-Coming soon.
+1. `poetry add coltrane-web`
+1. Add `coltrane` to the list of `INSTALLED_APPS` in settings file
+1. Add `path("", include("coltrane.urls")),` to the bottom of `urlpatterns` in root urls.py (i.e. the urls.py specified by `ROOT_URLCONF` setting)
+
+## Integrating with an existing Django app
+
+### Linking
+
+Django templates can link to `coltrane` markdown content with the `url` template tag and the slug of the markdown file.
+
+```
+/content/about.md
+```
+
+```html
+<a href="{% url 'coltrane:content' 'about' %}">About</a>
+```
 
 ## Render markdown files
 

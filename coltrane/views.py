@@ -34,6 +34,12 @@ def content(request: HttpRequest, slug: str = "index"):
     template = ""
     context = {}
 
+    if slug.endswith("/"):
+        slug = slug[:-1]
+
+    if slug == "":
+        slug = "index"
+
     # Cache the rendered content via the low-level API.
     # TODO: Use the `cache_page` decorator and figure out why the settings error is thrown.
     # TODO: Use `django.views.decorators.http.condition` decorator for proper Etags
