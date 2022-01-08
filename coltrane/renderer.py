@@ -1,35 +1,18 @@
 import logging
 from typing import Dict, Optional, Tuple
 
-from django.conf import settings
 from django.template import engines
 from django.utils.html import mark_safe  # type: ignore
 
 from markdown2 import markdown_path
 
-from .config import get_content_directory
+from .config import get_content_directory, get_markdown_extras
 from .retriever import get_data
 
 
 logger = logging.getLogger(__name__)
 
 DEFAULT_TEMPLATE = "coltrane/content.html"
-
-# List of all available extras: https://github.com/trentm/python-markdown2/wiki/Extras
-DEFAULT_MARKDOWN_EXTRAS = [
-    "fenced-code-blocks",
-    "header-ids",
-    "metadata",
-    "strike",
-    "tables",
-    "task_list",
-    "nofollow",
-    "code-friendly",
-    "footnotes",
-    "numbering",
-    "strike",
-    "toc",
-]
 
 
 def _get_markdown_content_as_html(slug: str) -> Dict[str, Optional[Dict]]:
@@ -38,11 +21,7 @@ def _get_markdown_content_as_html(slug: str) -> Dict[str, Optional[Dict]]:
     """
 
     file_path = get_content_directory() / f"{slug}.md"
-
-    markdown_extras = DEFAULT_MARKDOWN_EXTRAS
-
-    if hasattr(settings, "COLTRANE") and settings.COLTRANE.get("MARKDOWN_EXTRAS"):
-        markdown_extras = settings.COLTRANE["MARKDOWN_EXTRAS"]
+    markdown_extras = get_markdown_extras()
 
     content = markdown_path(
         file_path,

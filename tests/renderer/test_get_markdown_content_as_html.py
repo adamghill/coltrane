@@ -2,7 +2,8 @@ from pathlib import Path
 
 from django.conf import settings
 
-from coltrane.renderer import DEFAULT_MARKDOWN_EXTRAS, _get_markdown_content_as_html
+from coltrane.config import DEFAULT_MARKDOWN_EXTRAS
+from coltrane.renderer import _get_markdown_content_as_html
 
 
 def test_get_markdown_content_as_html_with_frontmatter(tmp_path: Path):

@@ -9,7 +9,7 @@ from django.urls import include, path
 
 from dotenv import load_dotenv
 
-from coltrane.views import DEFAULT_VIEW_CACHE_SECONDS
+from coltrane.config import DEFAULT_COLTRANE_SETTINGS
 
 from .utils import dict_merge
 
@@ -46,8 +46,6 @@ DEFAULT_TEMPLATES_SETTINGS = [
         ],
     },
 ]
-
-DEFAULT_COLTRANE_SETTINGS = {"VIEW_CACHE_SECONDS": DEFAULT_VIEW_CACHE_SECONDS}
 
 
 def _get_base_dir(base_dir: Optional[Path]) -> Path:
