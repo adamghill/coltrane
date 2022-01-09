@@ -12,4 +12,4 @@ A simple content site framework that harnesses the power of Django without the h
 
 Still a little experimental. ;)
 
-Read the documentation at: .
+Documentation at https://coltrane.readthedocs.io.
