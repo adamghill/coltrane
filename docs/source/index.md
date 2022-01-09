@@ -1,6 +1,6 @@
 # Introduction
 
-`coltrane` is a content site framework that harnesses the power of Django without the hassle. It can be used to generate a static site for easy serving of HTML files, or as an opinionated Django package to render markdown.
+`coltrane` is a content site framework that harnesses the power of Django without the hassle. It can be used to generate a static site for easy serving of HTML files or as an opinionated Django package to render markdown.
 
 ## Features
 
@@ -16,9 +16,9 @@ Still a little experimental. ;)
 
 Because `coltrane` can be used in a few different ways, the documentation is split into different pieces depending on the desired outcome.
 
-- [Static site](static/installation) (i.e. markdown is rendered into HTML and output to a folder on disk)
-- [Dynamic standalone site](dynamic/installation) (i.e. Django dynamically renders the markdown from a simplified Django project)
-- [Integrated into existing Django project](integrated/installation) (i.e. Django dynamically renders the markdown)
+- [Static site](static/index) (i.e. markdown is rendered into HTML and output to a folder on disk)
+- [Dynamic standalone site](dynamic/index) (i.e. Django dynamically renders the markdown from a simplified Django project)
+- [Integrated into existing Django project](integrated/index) (i.e. Django dynamically renders the markdown)
 
 ## What's with the name?
 

@@ -10,6 +10,6 @@ A simple content site framework that harnesses the power of Django without the h
 - Renders markdown files automatically (for a dynamic site)
 - Can include other Django apps
 
-Still a little experimental. ;)
+## Documentation
 
-Documentation at https://coltrane.readthedocs.io.
+https://coltrane.readthedocs.io

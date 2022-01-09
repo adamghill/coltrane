@@ -22,7 +22,20 @@ COLTRANE = {
 }
 ```
 
-## MARKDOWN_EXTRAS
+````{note}
+When `coltrane` is integrated into an existing Django site the `coltrane` settings are used like a normal Django site. However, when `coltrane` is used as a static or dynamic site (i.e. if there is an `app.py` file in the project folder), the settings are passed into the `initialize()` method in `app.py` as `kwargs`.
+
+```python
+# existing app.py file
+wsgi = initialize(MARKDOWN_EXTRAS=["metadata",])
+# rest of the app.py file
+```
+
+````
+
+## Keys
+
+### MARKDOWN_EXTRAS
 
 The features that should be enabled when rendering markdown. A list of all available features: https://github.com/trentm/python-markdown2/wiki/Extras. The default extras are:
 
@@ -43,11 +56,11 @@ The features that should be enabled when rendering markdown. A list of all avail
 ]
 ```
 
-## VIEW_CACHE
+### VIEW_CACHE
 
 Caches the rendered HTML when dynamically rendering. Enabled by adding the `SECONDS` key to a `VIEW_CACHE` dictionary. Not used for static sites.
 
-### SECONDS
+#### SECONDS
 
 Specifies how long the markdown should be cached when Django is dynamically serving the markdown.
 
@@ -58,7 +71,7 @@ COLTRANE = {
 }
 ```
 
-### CACHE_NAME
+#### CACHE_NAME
 
 Specifies a name for the cache to use. Defaults to "default".
 
