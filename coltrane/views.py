@@ -5,12 +5,7 @@ from django.http import Http404, HttpRequest
 from django.shortcuts import render
 from django.utils.cache import patch_response_headers
 
-from .config.cache import (
-    get_view_cache,
-    get_view_cache_enabled,
-    get_view_cache_key,
-    get_view_cache_seconds,
-)
+from .config.cache import ViewCache
 from .renderer import render_markdown
 
 
@@ -40,11 +35,11 @@ def _get_from_cache_if_enabled(slug: str) -> Tuple[str, Dict]:
 
     template = None
     context = None
+    view_cache = ViewCache()
 
-    if get_view_cache_enabled():
-        cache_key = get_view_cache_key(slug)
-        cache = get_view_cache()
-        cached_value = cache.get(cache_key)
+    if view_cache.is_enabled:
+        cache_key = f"{view_cache.cache_key_namespace}{slug}"
+        cached_value = view_cache.cache.get(cache_key)
 
         if cached_value:
             (template, context) = cached_value
@@ -57,13 +52,14 @@ def _set_in_cache_if_enabled(slug: str, template: str, context: Dict) -> None:
     Sets everything in the cache if it's enabled.
     """
 
-    if get_view_cache_enabled():
-        cache_key = get_view_cache_key(slug)
-        cache = get_view_cache()
-        cache.set(
+    view_cache = ViewCache()
+
+    if view_cache.is_enabled:
+        cache_key = f"{view_cache.cache_key_namespace}{slug}"
+        view_cache.cache.set(
             cache_key,
             (template, context),
-            get_view_cache_seconds(),
+            view_cache.seconds,
         )
 
 
@@ -93,7 +89,9 @@ def content(request: HttpRequest, slug: str = "index"):
         context=context,
     )
 
-    if get_view_cache_enabled():
-        patch_response_headers(response, cache_timeout=get_view_cache_seconds())
+    view_cache = ViewCache()
+
+    if view_cache.is_enabled:
+        patch_response_headers(response, cache_timeout=view_cache.seconds)
 
     return response

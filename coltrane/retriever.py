@@ -3,7 +3,8 @@ import logging
 from pathlib import Path
 from typing import Dict, List
 
-from .config import get_content_directory, get_data_directory, get_data_json
+from .config.cache import DataCache
+from .config.paths import get_content_directory, get_data_directory, get_data_json
 from .utils import dict_merge
 
 
@@ -17,6 +18,15 @@ def get_data() -> Dict:
     """
 
     data = {}
+    data_cache = DataCache()
+    cache_key = ""
+
+    if data_cache.is_enabled:
+        cache_key = f"{data_cache.cache_key_namespace}data"
+        data = data_cache.cache.get(cache_key, {})
+
+        if data:
+            return data
 
     try:
         data = json.loads(get_data_json().read_bytes())
@@ -43,6 +53,9 @@ def get_data() -> Dict:
                     new_data = {key: new_data}
 
             data = dict_merge(data, new_data)
+
+    if data_cache.is_enabled:
+        data_cache.cache.set(cache_key, data, timeout=data_cache.seconds)
 
     return data
 
