@@ -6,8 +6,8 @@ project = "coltrane"
 copyright = "2021, Adam Hill"
 author = "Adam Hill"
 
-release = "0.6.0"
-version = "0.6.0"
+release = "0.7.0"
+version = "0.7.0"
 
 # -- General configuration
 

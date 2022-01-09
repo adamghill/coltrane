@@ -1,3 +1,8 @@
+# 0.7.0
+
+- Support nested directories for content and data
+- Update default makrdown extras
+
 # 0.6.0
 
 - Add support for markdown frontmatter
