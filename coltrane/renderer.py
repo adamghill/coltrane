@@ -1,8 +1,10 @@
 import logging
 from typing import Dict, Optional, Tuple
 
+from django.http import HttpRequest
 from django.template import engines
 from django.utils.html import mark_safe  # type: ignore
+from django.utils.timezone import now
 
 from markdown2 import markdown_path
 
@@ -34,7 +36,9 @@ def _get_markdown_content_as_html(slug: str) -> Dict[str, Optional[Dict]]:
     return (str(content), content.metadata)
 
 
-def _render_html_with_django(html: str, context: Dict) -> str:
+def _render_html_with_django(
+    html: str, context: Dict, request: HttpRequest = None
+) -> str:
     """
     Takes the rendered HTML from the markdown uses Django to fill in any template
     variables from the `context` dictionary.
@@ -43,10 +47,10 @@ def _render_html_with_django(html: str, context: Dict) -> str:
     django_engine = engines["django"]
     template = django_engine.from_string(html)
 
-    return str(template.render(context=context))
+    return str(template.render(context=context, request=request))
 
 
-def render_markdown(slug: str) -> Tuple[str, Dict]:
+def render_markdown(slug: str, request: HttpRequest = None) -> Tuple[str, Dict]:
     """
     Renders the markdown from the `slug` by:
     1. Rendering the markdown file into HTML
@@ -65,15 +69,17 @@ def render_markdown(slug: str) -> Tuple[str, Dict]:
     if "template" not in metadata:
         metadata["template"] = DEFAULT_TEMPLATE
 
+    context = {"now": now}
+
     # Start with any metadata from the markdown frontmatter
-    context = metadata
+    context.update(metadata)
 
     # Add JSON data to the context
     data = get_data()
     context["data"] = data
 
     # Add rendered content to the context
-    content = _render_html_with_django(html, context)
+    content = _render_html_with_django(html, context, request)
     context["content"] = mark_safe(content)
     template = context["template"]
 

@@ -2,14 +2,16 @@ from pathlib import Path
 
 from django.conf import settings
 
-from coltrane import DEFAULT_TEMPLATES_SETTINGS
+from coltrane import _get_default_template_settings
 
 
 def pytest_configure():
+    base_dir = Path(".")
+
     settings.configure(
-        BASE_DIR=Path("."),
+        BASE_DIR=base_dir,
         SECRET_KEY="this-is-a-secret",
-        TEMPLATES=DEFAULT_TEMPLATES_SETTINGS,
+        TEMPLATES=_get_default_template_settings(base_dir),
         ROOT_URLCONF="coltrane.urls",
         INSTALLED_APPS=[
             "coltrane",

@@ -78,7 +78,7 @@ def content(request: HttpRequest, slug: str = "index"):
 
     try:
         if not template or not context:
-            (template, context) = render_markdown(slug)
+            (template, context) = render_markdown(slug, request=request)
             _set_in_cache_if_enabled(slug, template, context)
     except FileNotFoundError:
         raise Http404(f"{slug} cannot be found")

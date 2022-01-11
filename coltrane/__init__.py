@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional
 
 from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
+from django.template.library import InvalidTemplateLibrary, import_library
 from django.urls import include, path
 
 from dotenv import load_dotenv
@@ -37,14 +38,9 @@ DEFAULT_MIDDLEWARE_SETTINGS = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-DEFAULT_TEMPLATES_SETTINGS = [
-    {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "APP_DIRS": True,
-        "DIRS": [
-            "templates",
-        ],
-    },
+DEFAULT_INSTALLED_APPS = [
+    "django.contrib.humanize",
+    "coltrane",
 ]
 
 
@@ -57,13 +53,73 @@ def _get_base_dir(base_dir: Optional[Path]) -> Path:
     return base_dir
 
 
+def _get_template_tag_module_name(base_dir: Path, file: Path) -> str:
+    """
+    Get a dot notation module name if a particular file path is a template tag.
+    """
+
+    # TODO: Cleaner way to convert a string path to a module dot notation?
+    module_name = str(file).replace(str(base_dir), "")
+    module_name = module_name.replace("/", ".")
+
+    if module_name.startswith("."):
+        module_name = module_name[1:]
+
+    if module_name.endswith(".py"):
+        module_name = module_name[:-3]
+
+    import_library(module_name)
+    return module_name
+
+
+def _get_default_template_settings(base_dir: Path):
+    """
+    Gets default template settings, including templates and built-in template tags.
+    """
+
+    template_dir = base_dir / "templates"
+    templatetags_dir = base_dir / "templatetags"
+    template_tags = []
+
+    if templatetags_dir.exists():
+        for template_tag_path in templatetags_dir.rglob("*.py"):
+            if template_tag_path.is_file():
+                try:
+                    module_name = _get_template_tag_module_name(
+                        base_dir, template_tag_path
+                    )
+                    template_tags.append(module_name)
+                except InvalidTemplateLibrary:
+                    pass
+
+    builtins = [
+        "django.contrib.humanize.templatetags.humanize",
+    ]
+    builtins.extend(template_tags)
+
+    return [
+        {
+            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "APP_DIRS": True,
+            "DIRS": [template_dir],
+            "OPTIONS": {
+                "builtins": builtins,
+                "context_processors": [
+                    "django.template.context_processors.request",
+                    "django.template.context_processors.debug",
+                ],
+            },
+        }
+    ]
+
+
 def _merge_installed_apps(django_settings: Dict[str, Any]) -> List[str]:
     """
     Gets the installed apps from the passed-in settings and adds `coltrane` to it.
     """
 
     installed_apps = list(django_settings.get("INSTALLED_APPS", []))
-    installed_apps.append("coltrane")
+    installed_apps.extend(DEFAULT_INSTALLED_APPS)
 
     return installed_apps
 
@@ -73,6 +129,11 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
     Merges the passed-in settings into the default `coltrane` settings. Passed-in settings will override the defaults.
     """
 
+    internal_ips = []
+
+    if internal_ips_from_env := getenv("INTERNAL_IPS"):
+        internal_ips = internal_ips_from_env.split(",")
+
     default_settings = {
         "BASE_DIR": base_dir,
         "ROOT_URLCONF": __name__,
@@ -81,7 +142,8 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         "INSTALLED_APPS": _merge_installed_apps(django_settings),
         "CACHES": DEFAULT_CACHES_SETTINGS,
         "MIDDLWARE": DEFAULT_MIDDLEWARE_SETTINGS,
-        "TEMPLATES": DEFAULT_TEMPLATES_SETTINGS,
+        "TEMPLATES": _get_default_template_settings(base_dir),
+        "INTERNAL_IPS": internal_ips,
         "COLTRANE": DEFAULT_COLTRANE_SETTINGS,
     }
 

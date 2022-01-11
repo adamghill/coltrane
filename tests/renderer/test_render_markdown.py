@@ -18,14 +18,13 @@ test data
 """
     )
 
-    template = "test-template.html"
-    context = {
-        "content": "<p>test data</p>\n",
-        "data": {},
-        "template": "test-template.html",
-    }
-    expected = (template, context)
+    expected_template = "test-template.html"
+    expected_content = "<p>test data</p>\n"
+    expected_data = {}
 
-    actual = render_markdown("test-2")
+    (actual_template, actual_context) = render_markdown("test-2")
 
-    assert actual == expected
+    assert actual_template == expected_template
+    assert actual_context.get("content") == expected_content
+    assert actual_context.get("data") == expected_data
+    assert actual_context.get("template") == expected_template

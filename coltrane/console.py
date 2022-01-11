@@ -26,6 +26,7 @@ if __name__ == "__main__":
 """
 
 DEFAULT_ENV = """DEBUG=True
+INTERNAL_IPS=127.0.0.1
 SECRET_KEY="""
 
 
