@@ -16,9 +16,9 @@ Still a little experimental. ;)
 
 Because `coltrane` can be used in a few different ways, the documentation is split into different pieces depending on the desired outcome.
 
-- [Static site](static/index) (i.e. markdown is rendered into HTML and output to a folder on disk)
-- [Dynamic standalone site](dynamic/index) (i.e. Django dynamically renders the markdown from a simplified Django project)
-- [Integrated into existing Django project](integrated/index) (i.e. Django dynamically renders the markdown)
+- Markdown is rendered into HTML and output to a folder on disk with a [static site](static/index)
+- Django dynamically renders markdown from a [simplified standalone Django project](dynamic/index)
+- Django dynamically renders markdown [from within an existing Django project](integrated/index)
 
 ## What's with the name?
 
@@ -94,4 +94,5 @@ common/markdown
 common/templates
 common/data
 common/settings
+common/env
 ```

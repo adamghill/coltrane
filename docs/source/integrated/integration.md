@@ -1,4 +1,4 @@
-# Integration
+# Django Integration
 
 ## Linking
 
