@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.core import management
 from django.core.management.base import BaseCommand
 
 from coltrane.config.paths import get_output_directory, get_output_json
@@ -24,12 +26,6 @@ class Command(BaseCommand):
         output_directory = get_output_directory()
         output_directory.mkdir(exist_ok=True)
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"Start to generate HTML and store in the '{output_directory}' directory..."
-            )
-        )
-
         content_paths = get_content()
         manifest = Manifest(manifest_file=get_output_json(), out=self.stdout)
 
@@ -43,41 +39,57 @@ class Command(BaseCommand):
                 skip_message = ""
 
                 if item.mtime == existing_item.mtime:
-                    skip_message = f"Skip generating {item.name} because not modified"
+                    skip_message = (
+                        f"- Skip {item.name} because the modified date is not changed"
+                    )
                 elif item.md5 == existing_item.md5:
                     skip_message = (
-                        f"Skip generating {item.name} because content not changed"
+                        f"- Skip {item.name} because the content is not changed"
                     )
 
                     # Update item in manifest to get newest mtime
                     manifest.add(markdown_file)
 
                 if skip_message:
-                    self.stdout.write(self.style.WARNING(skip_message))
+                    self.stdout.write(skip_message)
                     continue
 
             rendered_html = item.render_html()
 
-            (output_directory / item.slug).mkdir(exist_ok=True)
-            generated_file = output_directory / item.slug / "index.html"
+            item_path = output_directory
 
-            action = "Create"
+            for path in item.slug.split("/"):
+                if path:
+                    item_path = item_path / path
+                    item_path.mkdir(exist_ok=True)
+
+            generated_file = item_path / "index.html"
+
+            action = "- Create"
 
             if generated_file.exists():
-                action = "Update"
+                action = "- Update"
 
             generated_file.write_text(rendered_html)
             manifest.add(markdown_file)
 
             generated_file_name = f"{item.slug}/index.html"
-            self.stdout.write(self.style.SUCCESS(f"{action} {generated_file_name}"))
+            self.stdout.write(f"{action} {generated_file_name}")
 
         # TOOD: Handle files in output.json that weren't found in content (--clean option?)
 
-        self.stdout.write()
-
         if manifest.is_dirty:
-            self.stdout.write("Update output.json manifest...")
+            self.stdout.write("- Update output.json manifest...")
             manifest.write_data()
 
-        self.stdout.write(self.style.SUCCESS("Finished generating HTML!"))
+        self.stdout.write()
+
+        self.stdout.write(self.style.SUCCESS(f"Output HTML to: {output_directory}"))
+
+        management.call_command(
+            "collectstatic", interactive=False, clear=True, verbosity=0
+        )
+
+        self.stdout.write(
+            self.style.SUCCESS(f"Copied static files to: {settings.STATIC_ROOT}")
+        )

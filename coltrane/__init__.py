@@ -40,6 +40,7 @@ DEFAULT_MIDDLEWARE_SETTINGS = [
 
 DEFAULT_INSTALLED_APPS = [
     "django.contrib.humanize",
+    "django.contrib.staticfiles",
     "coltrane",
 ]
 
@@ -94,6 +95,7 @@ def _get_default_template_settings(base_dir: Path):
 
     builtins = [
         "django.contrib.humanize.templatetags.humanize",
+        "django.templatetags.static",
     ]
     builtins.extend(template_tags)
 
@@ -144,6 +146,11 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         "MIDDLWARE": DEFAULT_MIDDLEWARE_SETTINGS,
         "TEMPLATES": _get_default_template_settings(base_dir),
         "INTERNAL_IPS": internal_ips,
+        "STATIC_ROOT": base_dir / "output" / "static",
+        "STATIC_URL": "static/",
+        "STATICFILES_DIRS": [
+            base_dir / "static",
+        ],
         "COLTRANE": DEFAULT_COLTRANE_SETTINGS,
     }
 
