@@ -126,15 +126,19 @@ def _merge_installed_apps(django_settings: Dict[str, Any]) -> List[str]:
     return installed_apps
 
 
+def _get_from_env(env_name: str) -> List[str]:
+    env_values = []
+
+    if value_from_env := getenv(env_name):
+        env_values = value_from_env.split(",")
+
+    return env_values
+
+
 def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str, Any]:
     """
     Merges the passed-in settings into the default `coltrane` settings. Passed-in settings will override the defaults.
     """
-
-    internal_ips = []
-
-    if internal_ips_from_env := getenv("INTERNAL_IPS"):
-        internal_ips = internal_ips_from_env.split(",")
 
     default_settings = {
         "BASE_DIR": base_dir,
@@ -145,7 +149,8 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         "CACHES": DEFAULT_CACHES_SETTINGS,
         "MIDDLWARE": DEFAULT_MIDDLEWARE_SETTINGS,
         "TEMPLATES": _get_default_template_settings(base_dir),
-        "INTERNAL_IPS": internal_ips,
+        "INTERNAL_IPS": _get_from_env("INTERNAL_IPS"),
+        "ALLOWED_HOSTS": _get_from_env("ALLOWED_HOSTS"),
         "STATIC_ROOT": base_dir / "output" / "static",
         "STATIC_URL": "static/",
         "STATICFILES_DIRS": [
