@@ -3,6 +3,7 @@ from os import getenv
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from django import setup as django_setup
 from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
 from django.template.library import InvalidTemplateLibrary, import_library
@@ -189,5 +190,7 @@ def initialize(
 
     django_settings = _merge_settings(base_dir, django_settings)
     _configure_settings(django_settings)
+
+    django_setup()
 
     return WSGIHandler()
