@@ -30,6 +30,10 @@ INTERNAL_IPS=127.0.0.1
 ALLOWED_HOSTS=
 SECRET_KEY="""
 
+DEFAULT_WATCHMAN_CONFIG = """{
+  "ignore_dirs": ["node_modules"]
+}"""
+
 
 def _run_manangement_command(command_name, *args):
     current_directory = getcwd()
@@ -78,6 +82,9 @@ def create():
 
         click.secho("Creating .env...", fg="yellow")
         Path(".env").write_text(DEFAULT_ENV + get_random_secret_key())
+
+        click.secho("Creating .watchmanconfig...", fg="yellow")
+        Path(".watchmanconfig").write_text(DEFAULT_WATCHMAN_CONFIG)
 
         click.secho("Creating content directory...", fg="yellow")
         Path("content").mkdir(exist_ok=True)
