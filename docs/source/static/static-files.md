@@ -25,7 +25,7 @@ Using the `static` template tag might feel unnecessary for simpler sites, but it
 **`templates/custom/custom-template.html`**
 
 ```html
-<link src='{% static 'css/styles.css' %}'>
+<link src="{% static 'css/styles.css' %}" />
 ```
 
 **Generated HTML**

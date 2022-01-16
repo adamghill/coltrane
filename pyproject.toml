@@ -109,8 +109,8 @@ my = { cmd = "mypy .", help = "Run mypy" }
 b = { cmd = "black . --check --quiet", help = "Run black" }
 i = { cmd = "isort . --check --quiet", help = "Run isort" }
 tm = ["b", "i", "tc", "my"]
-sa = { cmd = "sphinx-autobuild docs/source docs/build", help = "Sphinx autobuild" }
-sb = { cmd = "sphinx-build docs/source docs/build", help = "Build documentation" }
+sa = { cmd = "sphinx-autobuild -W docs/source docs/build", help = "Sphinx autobuild" }
+sb = { cmd = "sphinx-build -W docs/source docs/build", help = "Build documentation" }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
