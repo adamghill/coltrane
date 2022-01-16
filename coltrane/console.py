@@ -110,8 +110,14 @@ def play(port):
 
 
 @click.command(help="Generates HTML output (record | rec | build).")
-def record():
-    _run_manangement_command("build")
+@click.option("--force/--no-force", default=False, help="Force HTML generation")
+def record(force):
+    args = []
+
+    if force:
+        args = ["--force"]
+
+    _run_manangement_command("build", *args)
 
 
 cli.add_command(create)

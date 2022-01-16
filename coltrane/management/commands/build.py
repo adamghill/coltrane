@@ -118,11 +118,6 @@ class Command(BaseCommand):
         # assets with hashed failenames
         settings.DEBUG = False
 
-        is_force = False
-
-        if options["force"]:
-            is_force = True
-
         self.stdout.write(self.style.WARNING("Start generating the static site..."))
 
         self.stdout.write()
@@ -137,7 +132,13 @@ class Command(BaseCommand):
             out=self.stdout,
         )
 
-        if manifest.static_files_manifest_changed:
+        is_force = False
+
+        if options["force"]:
+            is_force = True
+            self.stdout.write("- Force update because command line argument")
+
+        if not is_force and manifest.static_files_manifest_changed:
             # At least one static file has changed, so re-render all files because
             # we don't have granularity to know which static files are used in
             # particular markdown or template files
