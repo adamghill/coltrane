@@ -20,7 +20,7 @@ If using `pip` you can do something like: `pip install coltrane-web[deploy]`.
 
 ### Required settings
 
-[`DEBUG`](common/env#debug) should be `False` (more details in [Django docs](https://docs.djangoproject.com/en/stable/ref/settings/#debug)). [`ALLOWED_HOSTS`](common/env#allowed-hosts) must be set to the acceptable host or domain names (more details in [Django docs](https://docs.djangoproject.com/en/stable/ref/settings/#allowed-hosts)).
+[`DEBUG`](common/env.md#debug) should be `False` (more details in [Django docs](https://docs.djangoproject.com/en/stable/ref/settings/#debug)). [`ALLOWED_HOSTS`](common/env.md#allowed_hosts) must be set to the acceptable host or domain names (more details in [Django docs](https://docs.djangoproject.com/en/stable/ref/settings/#allowed-hosts)).
 
 ```shell
 DEBUG=False
