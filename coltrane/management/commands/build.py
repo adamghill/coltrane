@@ -11,7 +11,6 @@ from coltrane.config.paths import (
     get_output_directory,
     get_output_json,
     get_output_static_directory,
-    get_staticfiles_json,
 )
 from coltrane.manifest import Manifest, ManifestItem
 from coltrane.retriever import get_content
@@ -114,8 +113,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         start_time = timeit.timeit()
 
-        # Force DEBUG to always be `False` so that ManifestStaticFilesStorage
-        # will use the static assets with hashed failenames
+        # Force DEBUG to always be `False` so that
+        # whitenoise.storage.CompressedManifestStaticFilesStorage will use the static
+        # assets with hashed failenames
         settings.DEBUG = False
 
         is_force = False
@@ -124,7 +124,9 @@ class Command(BaseCommand):
             is_force = True
 
         self.stdout.write(self.style.WARNING("Start generating the static site..."))
+
         self.stdout.write()
+        self.call_collectstatic()
 
         output_directory = get_output_directory()
         output_directory.mkdir(exist_ok=True)
@@ -132,16 +134,20 @@ class Command(BaseCommand):
         content_paths = get_content()
         manifest = Manifest(
             manifest_file=get_output_json(),
-            staticfiles_manifest=get_staticfiles_json(),
             out=self.stdout,
         )
+
+        if manifest.static_files_manifest_changed:
+            # At least one static file has changed, so re-render all files because
+            # we don't have granularity to know which static files are used in
+            # particular markdown or template files
+            is_force = True
+            self.stdout.write("- Force update because static file(s) updated")
 
         for markdown_file in content_paths:
             self.output_markdown_file(
                 manifest, output_directory, markdown_file, is_force
             )
-
-        self.call_collectstatic()
 
         if manifest.is_dirty:
             self.stdout.write("- Update manifest")

@@ -8,6 +8,7 @@ from django.core.management.base import OutputWrapper
 from django.template.loader import render_to_string
 from django.utils.html import mark_safe  # type: ignore
 
+from coltrane.config.paths import get_staticfiles_json
 from coltrane.renderer import render_markdown
 
 
@@ -95,6 +96,9 @@ class ManifestItem:
 
         name = ""
 
+        if path.name == "staticfiles.json":
+            return path.name
+
         # Assumes that there isn't a sub-folder called "content"
         for path_part in reversed(path.parts):
             if path_part == "content":
@@ -129,6 +133,9 @@ class ManifestItems:
 
         return self._data[name]
 
+    def add(self, manifest_item: ManifestItem) -> None:
+        self._data[manifest_item.name] = manifest_item
+
     def load(self, manifest_file: Path) -> None:
         """
         Retrieve the current manifest file (typically output.json) and store the data.
@@ -150,27 +157,45 @@ class ManifestItems:
 @dataclass
 class Manifest:
     """
-    Represents a manifest file (output.json) which stores data for each markdown file that was output in the last build.
+    Represents a manifest file (output.json) which stores data for each markdown file
+    that was output in the last build.
     """
 
     _manifest_file: Path
     _out: Optional[OutputWrapper]
     _items: ManifestItems
+    _static_files_manifest_changed: bool = False
     _is_dirty: bool = False
 
-    def __init__(self, manifest_file: Path, out: OutputWrapper = None):
+    def __init__(
+        self,
+        manifest_file: Path,
+        out: OutputWrapper = None,
+    ):
         self._manifest_file = manifest_file
         self._out = out
         self._items = ManifestItems()
 
         if self._manifest_file.exists():
-            if self._out:
-                self._out.write("Load output.json manifest...")
-
             self._items.load(manifest_file=manifest_file)
-        else:
+
             if self._out:
-                self._out.write("Create output.json manifest...")
+                self._out.write("- Load manifest")
+
+        staticfiles_manifest = get_staticfiles_json()
+
+        if staticfiles_manifest.exists():
+            if staticfiles_manifest_item := self.get(staticfiles_manifest):
+                staticfiles_manifest_md5 = md5_hash(
+                    staticfiles_manifest.read_bytes()
+                ).hexdigest()
+
+                if staticfiles_manifest_item.md5 != staticfiles_manifest_md5:
+                    self.add(staticfiles_manifest)
+                    self._static_files_manifest_changed = True
+            else:
+                self.add(staticfiles_manifest)
+                self._static_files_manifest_changed = True
 
     @property
     def is_dirty(self):
@@ -180,12 +205,21 @@ class Manifest:
 
         return self._is_dirty
 
-    def add(self, markdown_file: Path) -> ManifestItem:
+    @property
+    def static_files_manifest_changed(self):
         """
-        Adds a markdown file to the manifest. Also used to update an existing file in the manifest.
+        Whether the staticfiles manifest has been changed.
         """
 
-        item = ManifestItem.create(markdown_file)
+        return self._static_files_manifest_changed
+
+    def add(self, path: Path) -> ManifestItem:
+        """
+        Adds a path (normally a markdown file, but could also be `staticfiles.json`) to
+        the manifest. Also used to update an existing file in the manifest.
+        """
+
+        item = ManifestItem.create(path)
         self._items._data[item.name] = item
         self._is_dirty = True
 
