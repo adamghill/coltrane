@@ -112,3 +112,6 @@ TODO.md
 node_modules/
 tags
 staticfiles/
+
+example_standalone/output.json
+example_standalone/output/

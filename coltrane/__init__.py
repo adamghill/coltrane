@@ -7,7 +7,6 @@ from django import setup as django_setup
 from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
 from django.template.library import InvalidTemplateLibrary, import_library
-from django.urls import include, path
 
 from dotenv import load_dotenv
 
@@ -23,10 +22,6 @@ __all__ = [
 ]
 
 
-urlpatterns = [
-    path("", include("coltrane.urls")),
-]
-
 DEFAULT_CACHES_SETTINGS = {
     "default": {
         "BACKEND": "django.core.cache.backends.dummy.DummyCache",
@@ -38,6 +33,7 @@ DEFAULT_MIDDLEWARE_SETTINGS = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
 
 DEFAULT_INSTALLED_APPS = [
     "django.contrib.humanize",
@@ -136,19 +132,39 @@ def _get_from_env(env_name: str) -> List[str]:
     return env_values
 
 
+def _is_whitenoise_installed():
+    try:
+        import whitenoise
+
+        return True
+    except ModuleNotFoundError:
+        pass
+
+    return False
+
+
 def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str, Any]:
     """
     Merges the passed-in settings into the default `coltrane` settings. Passed-in settings will override the defaults.
     """
 
+    is_whitenoise_installed = _is_whitenoise_installed()
+
+    middleware = DEFAULT_MIDDLEWARE_SETTINGS
+    installed_apps = DEFAULT_INSTALLED_APPS
+
+    if is_whitenoise_installed:
+        middleware.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
+        installed_apps.insert(len(installed_apps) - 1, "whitenoise.runserver_nostatic")
+
     default_settings = {
         "BASE_DIR": base_dir,
-        "ROOT_URLCONF": __name__,
+        "ROOT_URLCONF": "coltrane.urls",
         "DEBUG": getenv("DEBUG", "True") == "True",
         "SECRET_KEY": getenv("SECRET_KEY"),
         "INSTALLED_APPS": _merge_installed_apps(django_settings),
         "CACHES": DEFAULT_CACHES_SETTINGS,
-        "MIDDLWARE": DEFAULT_MIDDLEWARE_SETTINGS,
+        "MIDDLWARE": middleware,
         "TEMPLATES": _get_default_template_settings(base_dir),
         "INTERNAL_IPS": _get_from_env("INTERNAL_IPS"),
         "ALLOWED_HOSTS": _get_from_env("ALLOWED_HOSTS"),
@@ -157,8 +173,27 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         "STATICFILES_DIRS": [
             base_dir / "static",
         ],
+        "LOGGING": {
+            "version": 1,
+            "disable_existing_loggers": False,
+            "handlers": {
+                "console": {
+                    "class": "logging.StreamHandler",
+                },
+            },
+            "root": {
+                "handlers": ["console"],
+                "level": "ERROR",
+            },
+        },
         "COLTRANE": DEFAULT_COLTRANE_SETTINGS,
     }
+
+    if is_whitenoise_installed:
+        default_settings["WHITENOISE_MANIFEST_STRICT"] = False
+        default_settings[
+            "STATICFILES_STORAGE"
+        ] = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
     django_settings = dict_merge(
         default_settings, django_settings, destination_overrides_source=True

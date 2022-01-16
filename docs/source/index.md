@@ -64,6 +64,7 @@ self
 static/index
 static/installation
 static/cli
+static/static-files
 ```
 
 ```{toctree}

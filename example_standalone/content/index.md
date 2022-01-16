@@ -41,3 +41,5 @@ Custom tag (should be "this is a string"): {{ test_string|cut_test:'test ' }}
 Request: {{ request }}
 
 Debug: {{ debug }}
+
+![music]({% static 'images/music-note.svg' %})

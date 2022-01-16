@@ -30,7 +30,7 @@ The port to use rather than the default `8000`.
 
 `poetry run coltrane record`
 
-Builds the static site and stores the HTML in the `output` directory.
+Builds the static site and stores the HTML in the `output` directory. Stores static files in the `output/static/` directory.
 
 ### Incremental builds
 

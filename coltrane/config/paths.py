@@ -56,3 +56,19 @@ def get_output_json() -> Path:
     """
 
     return get_base_directory() / "output.json"
+
+
+def get_staticfiles_json() -> Path:
+    """
+    Get the path of Django's `staticfiles.json` manifest file.
+    """
+
+    return settings.STATIC_ROOT / "staticfiles.json"
+
+
+def get_output_static_directory() -> Path:
+    """
+    Get the path of Django's static path.
+    """
+
+    return settings.STATIC_ROOT
