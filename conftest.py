@@ -21,4 +21,5 @@ def pytest_configure():
                 "BACKEND": "django.core.cache.backends.dummy.DummyCache",
             }
         },
+        STATIC_ROOT=base_dir / "output" / "static",
     )

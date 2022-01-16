@@ -102,12 +102,13 @@ ignore_missing_imports = true
 [tool.poe.tasks]
 r = { cmd = "example_standalone/app.py runserver 0:8045", help = "Start dev server" }
 g = { cmd = "gunicorn -b localhost:8045 example_standalone.app:wsgi", help = "Start gunicorn" }
-t = { cmd = "pytest --cov=coltrane", help = "Run tests" }
+t = { cmd = "pytest", help = "Run tests" }
+tc = { cmd = "pytest --cov=coltrane", help = "Run tests wiht coverage" }
 cr = { cmd = "coverage report", help = "Show coverage report" }
 my = { cmd = "mypy .", help = "Run mypy" }
 b = { cmd = "black . --check --quiet", help = "Run black" }
 i = { cmd = "isort . --check --quiet", help = "Run isort" }
-tm = ["b", "i", "t", "my"]
+tm = ["b", "i", "tc", "my"]
 sa = { cmd = "sphinx-autobuild docs/source docs/build", help = "Sphinx autobuild" }
 sb = { cmd = "sphinx-build docs/source docs/build", help = "Build documentation" }
 

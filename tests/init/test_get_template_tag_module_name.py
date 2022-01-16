@@ -17,11 +17,17 @@ def test_get_template_tag_module_name():
     assert actual == expected
 
 
+def test_get_template_tag_module_name():
+    with pytest.raises(InvalidTemplateLibrary):
+        _get_template_tag_module_name(
+            Path("../example_standalone"),
+            Path("example_standalone/templatetags/custom_tags"),
+        )
+
+
 def test_get_template_tag_module_name_invalid():
     with pytest.raises(InvalidTemplateLibrary):
         _get_template_tag_module_name(
             Path("../example_standalone"),
             Path("example_standalone/templatetags/custom_tags2.py"),
         )
-
-    # assert actual == expected

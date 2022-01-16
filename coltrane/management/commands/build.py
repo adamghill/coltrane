@@ -93,9 +93,8 @@ class Command(BaseCommand):
         item_path = output_directory
 
         for path in item.slug.split("/"):
-            if path:
-                item_path = item_path / path
-                item_path.mkdir(exist_ok=True)
+            item_path = item_path / path
+            item_path.mkdir(exist_ok=True)
 
         generated_file = item_path / "index.html"
 
@@ -107,7 +106,7 @@ class Command(BaseCommand):
         generated_file.write_text(rendered_html)
         manifest.add(markdown_file)
 
-        generated_file_name = f"/output/{item.slug}/index.html"
+        generated_file_name = f"output/{item.slug}/index.html"
         self.stdout.write(f"{action} {generated_file_name}")
 
     def handle(self, *args, **options):

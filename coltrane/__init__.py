@@ -1,4 +1,5 @@
 import logging
+from copy import deepcopy
 from os import getenv
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -43,6 +44,10 @@ DEFAULT_INSTALLED_APPS = [
 
 
 def _get_base_dir(base_dir: Optional[Path]) -> Path:
+    """
+    Gets the base directory.
+    """
+
     if base_dir is None:
         base_dir = Path(".")
     elif isinstance(base_dir, str):
@@ -65,6 +70,8 @@ def _get_template_tag_module_name(base_dir: Path, file: Path) -> str:
 
     if module_name.endswith(".py"):
         module_name = module_name[:-3]
+    else:
+        raise InvalidTemplateLibrary()
 
     import_library(module_name)
     return module_name
@@ -112,18 +119,24 @@ def _get_default_template_settings(base_dir: Path):
     ]
 
 
-def _merge_installed_apps(django_settings: Dict[str, Any]) -> List[str]:
+def _merge_installed_apps(
+    django_settings: Dict[str, Any], installed_apps: List[str]
+) -> List[str]:
     """
     Gets the installed apps from the passed-in settings and adds `coltrane` to it.
     """
 
-    installed_apps = list(django_settings.get("INSTALLED_APPS", []))
-    installed_apps.extend(DEFAULT_INSTALLED_APPS)
+    if "INSTALLED_APPS" in django_settings:
+        installed_apps.extend(list(django_settings["INSTALLED_APPS"]))
 
     return installed_apps
 
 
 def _get_from_env(env_name: str) -> List[str]:
+    """
+    Retrieves environment value that could potentially be an list of strings.
+    """
+
     env_values = []
 
     if value_from_env := getenv(env_name):
@@ -132,7 +145,11 @@ def _get_from_env(env_name: str) -> List[str]:
     return env_values
 
 
-def _is_whitenoise_installed():
+def _is_whitenoise_installed() -> bool:
+    """
+    Helper function to check if `whitenoise` is installed.
+    """
+
     try:
         import whitenoise
 
@@ -150,8 +167,8 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
 
     is_whitenoise_installed = _is_whitenoise_installed()
 
-    middleware = DEFAULT_MIDDLEWARE_SETTINGS
-    installed_apps = DEFAULT_INSTALLED_APPS
+    middleware = deepcopy(DEFAULT_MIDDLEWARE_SETTINGS)
+    installed_apps = deepcopy(DEFAULT_INSTALLED_APPS)
 
     if is_whitenoise_installed:
         middleware.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
@@ -162,9 +179,9 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         "ROOT_URLCONF": "coltrane.urls",
         "DEBUG": getenv("DEBUG", "True") == "True",
         "SECRET_KEY": getenv("SECRET_KEY"),
-        "INSTALLED_APPS": _merge_installed_apps(django_settings),
+        "INSTALLED_APPS": _merge_installed_apps(django_settings, installed_apps),
         "CACHES": DEFAULT_CACHES_SETTINGS,
-        "MIDDLWARE": middleware,
+        "MIDDLEWARE": middleware,
         "TEMPLATES": _get_default_template_settings(base_dir),
         "INTERNAL_IPS": _get_from_env("INTERNAL_IPS"),
         "ALLOWED_HOSTS": _get_from_env("ALLOWED_HOSTS"),
