@@ -66,7 +66,9 @@ The specified template context includes:
 - all variables from the markdown frontmatter
 - rendered markdown HTML in `content`
 - JSON data in `data`
-- `now` which provides the current `datetime`
+- `now` which provides the current `datetime` (would be the time of HTML rendering for static site)
+- `request` which provides the current request for an integrated or dynamic site
+- `debug` which contains the the `DEBUG` setting for an integrated or dynamic site (if `INTERNAL_IPS` has the current request's IP which is usually `127.0.0.1` for local development)
 
 **`content/index.md`**
 
@@ -109,11 +111,11 @@ Current datetime: {{ now }}
 
 Template tags are the way for Django templates to use Python code. Django has a [large list of built-in template tags](https://docs.djangoproject.com/en/stable/ref/templates/builtins/) for everything from looping over objects, date formatting, boolean logic with `if`/`else` blocks, or getting the length of an object. By default, all template tags in Django are available in markdown content files.
 
-## Humanize template tags
+### Humanize template tags
 
 `django.contrib.humanize` [includes a useful template tags](https://docs.djangoproject.com/en/stable/ref/contrib/humanize/) to format numbers and dates in human-friendly ways. Normally it needs to be enabled and loaded in templates manually, but `coltrane` enables it by default so it is available to use in markdown content files automatically.
 
-## Custom template tags
+### Custom template tags
 
 `coltrane` will automatically include any custom template tags it finds in the `templatetags` directory to be used in markdown content files.
 

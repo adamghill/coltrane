@@ -64,7 +64,6 @@ self
 static/index
 static/installation
 static/cli
-static/static-files
 ```
 
 ```{toctree}
@@ -95,6 +94,7 @@ integrated/integration
 common/markdown
 common/templates
 common/data
+common/static-files
 common/settings
 common/env
 ```
