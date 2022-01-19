@@ -98,3 +98,11 @@ common/static-files
 common/settings
 common/env
 ```
+
+```{toctree}
+:maxdepth: 2
+:hidden:
+
+GitHub <https://github.com/adamghill/coltrane>
+Sponsor <https://github.com/sponsors/adamghill>
+```

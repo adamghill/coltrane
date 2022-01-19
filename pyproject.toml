@@ -14,6 +14,7 @@ keywords = ["django", "python", "static", "markdown"]
 packages = [{ include = "coltrane" }]
 repository = "https://github.com/adamghill/coltrane/"
 homepage = "https://github.com/adamghill/coltrane/"
+documentation = "https://coltrane.readthedocs.io/"
 
 [tool.poetry.urls]
 "Funding" = "https://github.com/sponsors/adamghill"
