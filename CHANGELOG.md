@@ -1,7 +1,25 @@
+# 0.10.0
+
+- Fix generating root `index.md`
+
+# 0.9.0
+
+- Add support for static files
+- Add `watchman` support
+- Add `whitenoise` for static handling
+- Add `--force` option to `record` command
+
+# 0.8.0
+
+- Read `INTERNAL_IPS` from .env file
+- Add `now` to template variables
+- Include found template tags in built-ins
+- Include `humanize` template tags in built-ins
+
 # 0.7.0
 
 - Support nested directories for content and data
-- Update default makrdown extras
+- Update default markdown extras
 
 # 0.6.0
 
