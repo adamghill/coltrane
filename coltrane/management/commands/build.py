@@ -107,9 +107,8 @@ class Command(BaseCommand):
         # assets with hashed failenames
         settings.DEBUG = False
 
-        self.stdout.write(self.style.WARNING("Start generating the static site..."))
+        self.stdout.write(self.style.WARNING("Start generating the static site...\n"))
 
-        self.stdout.write()
         self._call_collectstatic()
 
         output_directory = get_output_directory()

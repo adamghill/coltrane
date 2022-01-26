@@ -62,54 +62,50 @@ def cli():
     pass
 
 
-@click.command(help="Create a new coltrane site (create | init).")
-def create():
+@click.command(help="Create a new coltrane site.")
+@click.option("--force/--no-force", default=False, help="Force creating a new site")
+def create(force):
     app_file = Path("app.py")
 
-    if app_file.exists():
-        click.secho(
-            "Skipping project creation becase the app.py file alrady exists.", fg="red"
-        )
+    if app_file.exists() and not force:
+        click.secho("Skip project creation because app.py already exists.", fg="red")
     else:
-        click.secho("Creating files...", fg="green")
+        click.secho("Start creating files...\n", fg="yellow")
         Path("__init__.py").touch()
 
-        click.secho("Creating app.py...", fg="yellow")
+        click.secho("- Create app.py")
         app_file.write_text(DEFAULT_APP)
 
-        click.secho("Set app.py as executable...", fg="yellow")
+        click.secho("- Set app.py as executable")
         app_file.chmod(app_file.stat().st_mode | S_IEXEC)
 
-        click.secho("Creating .env...", fg="yellow")
+        click.secho("- Create .env...")
         Path(".env").write_text(DEFAULT_ENV + get_random_secret_key())
 
-        click.secho("Creating .watchmanconfig...", fg="yellow")
+        click.secho("- Create .watchmanconfig...")
         Path(".watchmanconfig").write_text(DEFAULT_WATCHMAN_CONFIG)
 
-        click.secho("Creating content directory...", fg="yellow")
+        click.secho("- Create content directory...")
         Path("content").mkdir(exist_ok=True)
         (Path("content") / "index.md").write_text("# index.md")
 
-        click.secho("Creating data directory...", fg="yellow")
+        click.secho("- Create data directory")
         Path("data").mkdir(exist_ok=True)
 
-        click.secho("Finished!", fg="green")
-
     click.secho()
-
     click.secho("For local development: ", nl=False, fg="green")
     click.secho("poetry run coltrane play")
-    click.secho("Generate HTML output: ", nl=False, fg="green")
+    click.secho("Build static HTML: ", nl=False, fg="green")
     click.secho("poetry run coltrane record")
 
 
-@click.command(help="Start a local development server (play | serve).")
+@click.command(help="Start a local development server.")
 @click.option("--port", default=8000, help="Port to serve localhost from")
 def play(port):
     _run_manangement_command("runserver", f"0:{port}")
 
 
-@click.command(help="Generates HTML output (record | rec | build).")
+@click.command(help="Generates HTML output.")
 @click.option("--force/--no-force", default=False, help="Force HTML generation")
 def record(force):
     args = []
