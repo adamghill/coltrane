@@ -7,15 +7,30 @@ from django.utils.html import mark_safe  # type: ignore
 from django.utils.timezone import now
 
 from markdown2 import markdown_path
+from markdown_it import MarkdownIt
+from mdit_py_plugins.front_matter import front_matter_plugin
 
 from .config.paths import get_content_directory
 from .config.settings import get_markdown_extras
 from .retriever import get_data
 
 
+md = MarkdownIt().use(front_matter_plugin)
+
+
 logger = logging.getLogger(__name__)
 
 DEFAULT_TEMPLATE = "coltrane/content.html"
+
+
+def _get_markdown_it_content_as_html(slug: str) -> Dict[str, Optional[Dict]]:
+    file_path = get_content_directory() / f"{slug}.md"
+
+    with open(file_path) as f:
+        env = {}
+        content = md.render(f.read(), env)
+
+    return (content, {})
 
 
 def _get_markdown_content_as_html(slug: str) -> Dict[str, Optional[Dict]]:

@@ -40,6 +40,8 @@ sphinx-autobuild = { version = "^2021.3.14", optional = true }
 # deploy extras
 gunicorn = { version = "^20.1.0", optional = true }
 whitenoise = { version = "^5.3.0", optional = true }
+markdown-it-py = "^2.0.1"
+mdit-py-plugins = "^0.3.0"
 
 [tool.poetry.extras]
 deploy = ["gunicorn", "whitenoise"]
@@ -56,6 +58,7 @@ pywatchman = "^1.4.1"
 django-stubs = "^1.9.0"
 coverage = {extras = ["toml"], version = "^6.2"}
 pytest-cov = "^3.0.0"
+pytest-benchmark = "^3.4.1"
 
 [tool.isort]
 default_section = "THIRDPARTY"
