@@ -23,7 +23,7 @@
 ## ⚡ Quick start for a new static site
 
 1. `mkdir new-site && cd new-site` to create a new folder
-1. `poetry init --no-interaction --dependency coltrane-web:latest && poetry install` to create a new virtual environment and install `coltrane`
+1. `poetry init --no-interaction --dependency 'coltrane-web:<1' && poetry install` to create a new virtual environment and install the `coltrane` package
 1. `poetry run coltrane create` to create the folder structure for a new site
 1. Update `content/index.md`
 1. `poetry run coltrane play` for a local development server
