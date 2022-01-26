@@ -5,7 +5,7 @@ dynamic = ["version", "description"]
 
 [tool.poetry]
 name = "coltrane-web"
-version = "0.9.0"
+version = "0.10.0"
 description = "A simple content site framework that harnesses the power of Django without the hassle."
 authors = ["adamghill <adam@adamghill.com>"]
 license = "MIT"
