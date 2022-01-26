@@ -37,17 +37,17 @@ def test_create(tmp_path):
 
             assert (
                 result.stdout
-                == """Creating files...
-Creating app.py...
-Set app.py as executable...
-Creating .env...
-Creating .watchmanconfig...
-Creating content directory...
-Creating data directory...
-Finished!
+                == """Start creating files...
+
+- Create app.py
+- Set app.py as executable
+- Create .env
+- Create .watchmanconfig
+- Create content directory
+- Create data directory
 
 For local development: poetry run coltrane play
-Generate HTML output: poetry run coltrane record
+Build static HTML: poetry run coltrane record
 """
             )
 
@@ -68,10 +68,10 @@ def test_create_existing_project(tmp_path):
 
             assert (
                 result.stdout
-                == """Skipping project creation becase the app.py file alrady exists.
+                == """Skip project creation because app.py already exists.
 
 For local development: poetry run coltrane play
-Generate HTML output: poetry run coltrane record
+Build static HTML: poetry run coltrane record
 """
             )
 
@@ -86,4 +86,4 @@ def test_init_alias(tmp_path):
             result = runner.invoke(cli, ["init"])
             assert result.exit_code == 0
 
-            assert "Creating files..." in result.stdout
+            assert "Start creating files..." in result.stdout

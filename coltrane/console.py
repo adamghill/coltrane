@@ -79,13 +79,13 @@ def create(force):
         click.secho("- Set app.py as executable")
         app_file.chmod(app_file.stat().st_mode | S_IEXEC)
 
-        click.secho("- Create .env...")
+        click.secho("- Create .env")
         Path(".env").write_text(DEFAULT_ENV + get_random_secret_key())
 
-        click.secho("- Create .watchmanconfig...")
+        click.secho("- Create .watchmanconfig")
         Path(".watchmanconfig").write_text(DEFAULT_WATCHMAN_CONFIG)
 
-        click.secho("- Create content directory...")
+        click.secho("- Create content directory")
         Path("content").mkdir(exist_ok=True)
         (Path("content") / "index.md").write_text("# index.md")
 
