@@ -26,7 +26,7 @@ class Command(BaseCommand):
             help="Force building all files",
         )
 
-    def call_collectstatic(self):
+    def _call_collectstatic(self):
         stdout = StringIO()
         stderr = StringIO()
 
@@ -64,7 +64,6 @@ class Command(BaseCommand):
     def output_markdown_file(
         self,
         manifest: Manifest,
-        output_directory: Path,
         markdown_file: Path,
         is_force: bool = False,
     ):
@@ -90,24 +89,15 @@ class Command(BaseCommand):
 
         rendered_html = item.render_html()
 
-        item_path = output_directory
-
-        for path in item.slug.split("/"):
-            item_path = item_path / path
-            item_path.mkdir(exist_ok=True)
-
-        generated_file = item_path / "index.html"
-
         action = "- Create"
 
-        if generated_file.exists():
+        if item.generated_file.exists():
             action = "- Update"
 
-        generated_file.write_text(rendered_html)
+        item.generated_file.write_text(rendered_html)
         manifest.add(markdown_file)
 
-        generated_file_name = f"output/{item.slug}/index.html"
-        self.stdout.write(f"{action} {generated_file_name}")
+        self.stdout.write(f"{action} {item.generated_file_name}")
 
     def handle(self, *args, **options):
         start_time = timeit.timeit()
@@ -120,7 +110,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.WARNING("Start generating the static site..."))
 
         self.stdout.write()
-        self.call_collectstatic()
+        self._call_collectstatic()
 
         output_directory = get_output_directory()
         output_directory.mkdir(exist_ok=True)
@@ -135,7 +125,7 @@ class Command(BaseCommand):
 
         if options["force"]:
             is_force = True
-            self.stdout.write("- Force update because command line argument")
+            self.stdout.write("- Force update because of command line argument")
 
         if not is_force and manifest.static_files_manifest_changed:
             # At least one static file has changed, so re-render all files because
@@ -145,9 +135,7 @@ class Command(BaseCommand):
             self.stdout.write("- Force update because static file(s) updated")
 
         for markdown_file in content_paths:
-            self.output_markdown_file(
-                manifest, output_directory, markdown_file, is_force
-            )
+            self.output_markdown_file(manifest, markdown_file, is_force)
 
         if manifest.is_dirty:
             self.stdout.write("- Update manifest")

@@ -24,8 +24,8 @@ def _call_command(*args, **kwargs) -> str:
     return stdout.getvalue()
 
 
-@patch("coltrane.management.commands.build.Command.call_collectstatic")
-def test_handle(call_collectstatic, tmp_path):
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle(_call_collectstatic, tmp_path):
     settings.BASE_DIR = tmp_path
 
     # Create content file
@@ -34,7 +34,7 @@ def test_handle(call_collectstatic, tmp_path):
 
     stdout = _call_command()
 
-    call_collectstatic.assert_called_once()
+    _call_collectstatic.assert_called_once()
 
     assert (tmp_path / "output").exists()
     assert (tmp_path / "output" / "test-1" / "index.html").exists()
@@ -45,8 +45,29 @@ def test_handle(call_collectstatic, tmp_path):
     assert "Static site output completed in" in stdout
 
 
-@patch("coltrane.management.commands.build.Command.call_collectstatic")
-def test_handle_updates_output_manifest(call_collectstatic, tmp_path):
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_output_index(_call_collectstatic, tmp_path):
+    settings.BASE_DIR = tmp_path
+
+    # Create content file
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content" / "index.md").write_text("# index")
+
+    stdout = _call_command()
+
+    _call_collectstatic.assert_called_once()
+
+    assert (tmp_path / "output").exists()
+    assert (tmp_path / "output" / "index.html").exists()
+
+    assert stdout.startswith("Start generating the static ")
+    assert "Load manifest" not in stdout
+    assert "Update manifest" in stdout
+    assert "Static site output completed in" in stdout
+
+
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_updates_output_manifest(_call_collectstatic, tmp_path):
     settings.BASE_DIR = tmp_path
 
     # Create output.json
@@ -72,8 +93,8 @@ def test_handle_updates_output_manifest(call_collectstatic, tmp_path):
     assert "Load manifest" in stdout
 
 
-@patch("coltrane.management.commands.build.Command.call_collectstatic")
-def test_handle_skip_update_mtime(call_collectstatic, tmp_path):
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_skip_update_mtime(_call_collectstatic, tmp_path):
     settings.BASE_DIR = tmp_path
 
     # Create output.json
@@ -96,8 +117,8 @@ def test_handle_skip_update_mtime(call_collectstatic, tmp_path):
     assert "Skip output/test-1.md because the modified date is not changed" in stdout
 
 
-@patch("coltrane.management.commands.build.Command.call_collectstatic")
-def test_handle_skip_update_md5(call_collectstatic, tmp_path):
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_skip_update_md5(_call_collectstatic, tmp_path):
     settings.BASE_DIR = tmp_path
 
     # Create output.json
@@ -120,8 +141,8 @@ def test_handle_skip_update_md5(call_collectstatic, tmp_path):
     assert "Skip output/test-1.md because the content is not changed" in stdout
 
 
-@patch("coltrane.management.commands.build.Command.call_collectstatic")
-def test_handle_no_skip_create_html(call_collectstatic, tmp_path):
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_no_skip_create_html(_call_collectstatic, tmp_path):
     settings.BASE_DIR = tmp_path
 
     # Create output.json
@@ -143,8 +164,8 @@ def test_handle_no_skip_create_html(call_collectstatic, tmp_path):
     assert "Create output/test-1/index.html" in stdout
 
 
-@patch("coltrane.management.commands.build.Command.call_collectstatic")
-def test_handle_no_skip_update_html(call_collectstatic, tmp_path):
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_no_skip_update_html(_call_collectstatic, tmp_path):
     settings.BASE_DIR = tmp_path
 
     # Create output.json
@@ -172,8 +193,8 @@ def test_handle_no_skip_update_html(call_collectstatic, tmp_path):
     assert "Update output/test-1/index.html" in stdout
 
 
-@patch("coltrane.management.commands.build.Command.call_collectstatic")
-def test_handle_force(call_collectstatic, tmp_path):
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_force(_call_collectstatic, tmp_path):
     settings.BASE_DIR = tmp_path
 
     # Create output.json
@@ -198,12 +219,12 @@ def test_handle_force(call_collectstatic, tmp_path):
     stdout = _call_command("--force")
 
     assert "Load manifest" in stdout
-    assert "Force update because command line argument" in stdout
+    assert "Force update because of command line argument" in stdout
     assert "Update output/test-1/index.html" in stdout
 
 
-@patch("coltrane.management.commands.build.Command.call_collectstatic")
-def test_handle_staticfiles_force(call_collectstatic, tmp_path):
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_staticfiles_force(_call_collectstatic, tmp_path):
     settings.BASE_DIR = tmp_path
     settings.STATIC_ROOT = tmp_path / "output" / "static"
 

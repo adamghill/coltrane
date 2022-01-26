@@ -8,7 +8,7 @@ from django.core.management.base import OutputWrapper
 from django.template.loader import render_to_string
 from django.utils.html import mark_safe  # type: ignore
 
-from coltrane.config.paths import get_staticfiles_json
+from coltrane.config.paths import get_output_directory, get_staticfiles_json
 from coltrane.renderer import render_markdown
 
 
@@ -64,6 +64,39 @@ class ManifestItem:
         """
 
         return self._md5
+
+    @property
+    def generated_file(self) -> Path:
+        """
+        The generated file path for the markdown file.
+        """
+
+        output_directory = get_output_directory()
+        generated_file = output_directory / "index.html"
+
+        if self.name != "index.md":
+            item_path = output_directory
+
+            for path in self.slug.split("/"):
+                item_path = item_path / path
+                item_path.mkdir(exist_ok=True)
+
+            generated_file = item_path / "index.html"
+
+        return generated_file
+
+    @property
+    def generated_file_name(self) -> str:
+        """
+        The generated file name for the markdown file.
+        """
+
+        generated_file_name = "output/index.html"
+
+        if self.name != "index.md":
+            generated_file_name = f"output/{self.slug}/index.html"
+
+        return generated_file_name
 
     def render_html(self):
         """
