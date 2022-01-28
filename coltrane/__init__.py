@@ -165,19 +165,32 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
     Merges the passed-in settings into the default `coltrane` settings. Passed-in settings will override the defaults.
     """
 
-    is_whitenoise_installed = _is_whitenoise_installed()
+    debug = getenv("DEBUG", "True") == "True"
+
+    staticfiles_dirs = [
+        base_dir / "static",
+    ]
 
     middleware = deepcopy(DEFAULT_MIDDLEWARE_SETTINGS)
     installed_apps = deepcopy(DEFAULT_INSTALLED_APPS)
+
+    is_whitenoise_installed = _is_whitenoise_installed()
 
     if is_whitenoise_installed:
         middleware.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
         installed_apps.insert(len(installed_apps) - 1, "whitenoise.runserver_nostatic")
 
+    if debug:
+        # Add settings required for django-browser-reload when `DEBUG` is `True`
+        middleware.append("django_browser_reload.middleware.BrowserReloadMiddleware")
+        installed_apps.append("django_browser_reload")
+        staticfiles_dirs.append(base_dir / "content")
+        staticfiles_dirs.append(base_dir / "data")
+
     default_settings = {
         "BASE_DIR": base_dir,
         "ROOT_URLCONF": "coltrane.urls",
-        "DEBUG": getenv("DEBUG", "True") == "True",
+        "DEBUG": debug,
         "SECRET_KEY": getenv("SECRET_KEY"),
         "INSTALLED_APPS": _merge_installed_apps(django_settings, installed_apps),
         "CACHES": DEFAULT_CACHES_SETTINGS,
@@ -187,9 +200,7 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         "ALLOWED_HOSTS": _get_from_env("ALLOWED_HOSTS"),
         "STATIC_ROOT": base_dir / "output" / "static",
         "STATIC_URL": "static/",
-        "STATICFILES_DIRS": [
-            base_dir / "static",
-        ],
+        "STATICFILES_DIRS": staticfiles_dirs,
         "LOGGING": {
             "version": 1,
             "disable_existing_loggers": False,

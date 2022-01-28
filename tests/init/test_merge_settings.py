@@ -17,6 +17,11 @@ def test_merge_settings_with_whitenoise(_is_whitenoise_installed):
 @patch("coltrane._is_whitenoise_installed", return_value=False)
 def test_merge_settings_no_whitenoise(_is_whitenoise_installed):
     expected = deepcopy(DEFAULT_SETTINGS)
+    expected["INSTALLED_APPS"].append("django_browser_reload")
+    expected["MIDDLEWARE"].append(
+        "django_browser_reload.middleware.BrowserReloadMiddleware"
+    )
+
     actual = _merge_settings(Path("."), {})
 
     assert actual == expected

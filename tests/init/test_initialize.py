@@ -50,6 +50,11 @@ def _get_settings_with_whitenoise():
     settings["MIDDLEWARE"] = deepcopy(DEFAULT_MIDDLEWARE_SETTINGS)
     settings["MIDDLEWARE"].insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
+    settings["INSTALLED_APPS"].append("django_browser_reload")
+    settings["MIDDLEWARE"].append(
+        "django_browser_reload.middleware.BrowserReloadMiddleware"
+    )
+
     return settings
 
 
