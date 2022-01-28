@@ -65,10 +65,16 @@ The specified template context includes:
 
 - all variables from the markdown frontmatter
 - rendered markdown HTML in `content`
-- JSON data in `data`
+- JSON data from the `data` directory
 - `now` which provides the current `datetime` (would be the time of HTML rendering for static site)
 - `request` which provides the current request for an integrated or dynamic site
 - `debug` which contains the the `DEBUG` setting for an integrated or dynamic site (if `INTERNAL_IPS` has the current request's IP which is usually `127.0.0.1` for local development)
+
+**`data/index.json`**
+
+```json
+{ "test": "Great" }
+```
 
 **`content/index.md`**
 
@@ -80,15 +86,9 @@ template: some_app/custom-template.html
 
 {{ this_is_a_variable }}
 
-Data from JSON files: {{ data.test }}
+Data from JSON files: {{ data.index.test }}
 
 Current datetime: {{ now }}
-```
-
-**`data.json`**
-
-```json
-{ "test": "Great" }
 ```
 
 **`some_app/templates/some_app/custom-template.html`**

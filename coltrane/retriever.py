@@ -1,5 +1,6 @@
 import json
 import logging
+import warnings
 from pathlib import Path
 from typing import Dict, List
 
@@ -30,6 +31,10 @@ def get_data() -> Dict:
 
     try:
         data = json.loads(get_data_json().read_bytes())
+
+        warnings.warn(
+            "Reading data.json will be deprecated in future versions; use the data directory instead."
+        )
     except FileNotFoundError:
         logger.debug("Missing data.json file")
 
