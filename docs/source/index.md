@@ -7,7 +7,7 @@
 - Can either generate static HTML, be used as a standalone Django site, or integrated into an existing Django site
 - Can use data from JSON files in templates and content
 - All the power of Django templates, template tags, and filters
-- Renders markdown files automatically (for a dynamic site)
+- Renders markdown files automatically (for a standalone site)
 - Can include other Django apps
 
 Still a little experimental. ;)
@@ -17,7 +17,7 @@ Still a little experimental. ;)
 Because `coltrane` can be used in a few different ways, the documentation is split into different pieces depending on the desired outcome.
 
 - Markdown is rendered into HTML and output to a folder on disk with a [static site](static/index)
-- Django dynamically renders markdown from a [simplified standalone Django project](dynamic/index)
+- Django dynamically renders markdown from a [simplified standalone Django project](standalone/index)
 - Django dynamically renders markdown [from within an existing Django project](integrated/index)
 
 ## What's with the name?
@@ -67,13 +67,13 @@ static/cli
 ```
 
 ```{toctree}
-:caption: Dynamic Site
+:caption: Standalone Site
 :maxdepth: 2
 :hidden:
 
-dynamic/index.md
-dynamic/installation
-dynamic/serve
+standalone/index.md
+standalone/installation
+standalone/serve
 ```
 
 ```{toctree}

@@ -67,8 +67,8 @@ The specified template context includes:
 - rendered markdown HTML in `content`
 - JSON data from the `data` directory
 - `now` which provides the current `datetime` (would be the time of HTML rendering for static site)
-- `request` which provides the current request for an integrated or dynamic site
-- `debug` which contains the the `DEBUG` setting for an integrated or dynamic site (if `INTERNAL_IPS` has the current request's IP which is usually `127.0.0.1` for local development)
+- `request` which provides the current request for an integrated or standalone site
+- `debug` which contains the the `DEBUG` setting for an integrated or standalone site (if `INTERNAL_IPS` has the current request's IP which is usually `127.0.0.1` for local development)
 
 **`data/index.json`**
 

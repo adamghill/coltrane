@@ -23,7 +23,7 @@ COLTRANE = {
 ```
 
 ````{note}
-When `coltrane` is integrated into an existing Django site the `coltrane` settings are used like a normal Django site. However, when `coltrane` is used as a static or dynamic site (i.e. if there is an `app.py` file in the project folder), the settings are passed into the `initialize()` method in `app.py` as `kwargs`.
+When `coltrane` is integrated into an existing Django site the `coltrane` settings are used like a normal Django site. However, when `coltrane` is used as a static or standalone site (i.e. if there is an `app.py` file in the project folder), settings can be passed into the `initialize()` method in `app.py` as `kwargs`.
 
 ```python
 # existing app.py file
