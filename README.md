@@ -16,7 +16,7 @@
 - Can either generate a static HTML, be used as a standalone Django site, or integrated into an existing Django site
 - Write content in markdown and render it in HTML
 - Use data from JSON files in templates and content
-- Live re-rendering of markdown and data when files are saved with the magic of https://github.com/adamchainz/django-browser-reload
+- [Live re-rendering of markdown and data](https://twitter.com/adamghill/status/1487522925393715205) when files are saved with the magic of https://github.com/adamchainz/django-browser-reload
 - All the power of Django templates, template tags, and filters inside markdown files
 - Can include other Django apps for additional functionality
 - Opinionated Django project setup where everything works "out of the box"
