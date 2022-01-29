@@ -2,15 +2,15 @@
 
 `coltrane` is a content site framework that harnesses the power of Django without the hassle. It can be used to generate a static site for easy serving of HTML files or as an opinionated Django package to render markdown.
 
-## Features
+## ⭐ Features
 
-- Can either generate static HTML, be used as a standalone Django site, or integrated into an existing Django site
-- Can use data from JSON files in templates and content
-- All the power of Django templates, template tags, and filters
-- Renders markdown files automatically (for a standalone site)
-- Can include other Django apps
-
-Still a little experimental. ;)
+- Can either generate a static HTML, be used as a standalone Django site, or integrated into an existing Django site
+- Write content in markdown and render it in HTML
+- Use data from JSON files in templates and content
+- Live re-rendering of markdown and data when files are saved with the magic of https://github.com/adamchainz/django-browser-reload
+- All the power of Django templates, template tags, and filters inside markdown files
+- Can include other Django apps for additional functionality
+- Opinionated Django project setup where everything works "out of the box"
 
 ## Installation
 
@@ -19,6 +19,10 @@ Because `coltrane` can be used in a few different ways, the documentation is spl
 - Markdown is rendered into HTML and output to a folder on disk with a [static site](static/index)
 - Django dynamically renders markdown from a [simplified standalone Django project](standalone/index)
 - Django dynamically renders markdown [from within an existing Django project](integrated/index)
+
+## Optional
+
+- Enable `watchman` for less resource-intensive autoreload on MacOS: `brew install watchman`
 
 ## What's with the name?
 
