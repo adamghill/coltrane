@@ -16,7 +16,8 @@
 - Can either generate a static HTML, be used as a standalone Django site, or integrated into an existing Django site
 - Write content in markdown and render it in HTML
 - Use data from JSON files in templates and content
-- All the power of Django templates, template tags, and filters
+- Live re-rendering of markdown and data when files are saved with the magic of https://github.com/adamchainz/django-browser-reload
+- All the power of Django templates, template tags, and filters inside markdown files
 - Can include other Django apps for additional functionality
 - Opinionated Django project setup where everything works "out of the box"
 
@@ -32,24 +33,31 @@
 
 ## Optional
 
-- Enable `watchman` for less resource-intensive autoreload on Mac: `brew install watchman`
+- Enable `watchman` for less resource-intensive autoreload on MacOS: `brew install watchman`
 
 ## How to add new content
 
-Add markdown files or sub-directories with msrkdown files to the `content` directory and they will automatically have routes created that can be requested.
+Add markdown files or sub-directories with markdown files to the `content` directory and they will automatically have routes created that can be requested.
 
-With this folder structure:
+**Example markdown files**
 
 ```
-/content/index.md
-/content/about.md
-/content/articles/this-is-the-first-article.md
+content/index.md
+content/about.md
+content/articles/this-is-the-first-article.md
 ```
 
-There will be these URLs available:
+**`poetry run coltrane play` will enable these URLs**
 
 - `http://localhost:8000/` which serves HTML generated from the `/content/index.md` file
-- `http://localhost:8000/about` which serves HTML generated from the `/content/about.md` file
-- `http://localhost:8000/articles/this-is-the-first-article` which serves HTML generated from the `/content/articles/this-is-the-first-article.md` file
+- `http://localhost:8000/about/` which serves HTML generated from the `/content/about.md` file
+- `http://localhost:8000/articles/this-is-the-first-article/` which serves HTML generated from the `/content/articles/this-is-the-first-article.md` file
+- `http://localhost:8000/not-there/` will 404
+
+**`poetry run coltrane record` will create these HTML files**
+
+- `output/index.html`
+- `output/about/index.html`
+- `output/articles/this-is-the-first-article/index.html`
 
 Read all of the documentation at https://coltrane.readthedocs.io.
