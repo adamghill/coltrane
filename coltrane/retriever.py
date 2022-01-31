@@ -2,7 +2,7 @@ import json
 import logging
 import warnings
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, Iterable
 
 from .config.cache import DataCache
 from .config.paths import get_content_directory, get_data_directory, get_data_json
@@ -65,12 +65,11 @@ def get_data() -> Dict:
     return data
 
 
-def get_content() -> List[Path]:
+def get_content() -> Iterable[Path]:
     """
-    Get a list of `Path`s for all markdown content.
+    Get `Path`s for all markdown content.
     """
 
-    paths = []
     directory = get_content_directory()
 
     if not directory.exists():
@@ -78,6 +77,4 @@ def get_content() -> List[Path]:
 
     for path in directory.rglob("*.md"):
         if path.is_file:
-            paths.append(path)
-
-    return paths
+            yield path
