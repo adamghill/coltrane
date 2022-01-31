@@ -114,6 +114,7 @@ i = { cmd = "isort . --check --quiet", help = "Run isort" }
 tm = ["b", "i", "tc", "my"]
 sa = { cmd = "sphinx-autobuild -W docs/source docs/build", help = "Sphinx autobuild" }
 sb = { cmd = "sphinx-build -W docs/source docs/build", help = "Build documentation" }
+publish = { shell = "poetry publish --build -r test && poetry publish" }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
