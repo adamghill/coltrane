@@ -1,4 +1,4 @@
-import timeit
+import time
 from io import StringIO
 from pathlib import Path
 
@@ -100,7 +100,7 @@ class Command(BaseCommand):
         self.stdout.write(f"{action} {item.generated_file_name}")
 
     def handle(self, *args, **options):
-        start_time = timeit.timeit()
+        start_time = time.time()
 
         # Force DEBUG to always be `False` so that
         # whitenoise.storage.CompressedManifestStaticFilesStorage will use the static
@@ -142,7 +142,7 @@ class Command(BaseCommand):
 
         self.stdout.write()
 
-        elapsed_time = abs((timeit.timeit() - start_time) * 1000)
+        elapsed_time = abs((time.time() - start_time))
         self.stdout.write(
-            self.style.SUCCESS(f"Static site output completed in {elapsed_time:.4f}ms")
+            self.style.SUCCESS(f"Static site output completed in {elapsed_time:.4f}s")
         )
