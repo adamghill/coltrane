@@ -10,8 +10,9 @@ copyright = "2021, Adam Hill"
 author = "Adam Hill"
 
 pyproject = toml.load("../../pyproject.toml")
-release = pyproject["tool"]["poetry"]["version"]
 version = pyproject["tool"]["poetry"]["version"]
+release = version
+
 
 # -- General configuration
 
