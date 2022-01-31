@@ -65,9 +65,9 @@ def get_data() -> Dict:
     return data
 
 
-def get_content() -> Iterable[Path]:
+def get_content_paths() -> Iterable[Path]:
     """
-    Get `Path`s for all markdown content.
+    Yield `Path`s for all markdown content in the content directory.
     """
 
     directory = get_content_directory()
@@ -75,6 +75,8 @@ def get_content() -> Iterable[Path]:
     if not directory.exists():
         raise FileNotFoundError(f"Directory does not exist: {directory}")
 
-    for path in directory.rglob("*.md"):
+    paths = directory.rglob("*.md")
+
+    for path in paths:
         if path.is_file:
             yield path

@@ -1,109 +1,145 @@
 import json
 from hashlib import md5
-from io import StringIO
 from unittest.mock import patch
 
 from django.conf import settings
-from django.core.management import call_command
+
+import pytest
+
+from coltrane.management.commands.build import Command
+from coltrane.manifest import Manifest
 
 
-def _call_command(*args, **kwargs) -> str:
-    stdout = StringIO()
-    stderr = StringIO()
+@pytest.fixture
+def build_command():
+    cmd = Command()
+    cmd.is_force = False
 
-    call_command(
-        "build",
-        *args,
-        stdout=stdout,
-        stderr=stderr,
-        **kwargs,
+    return cmd
+
+
+def _reset_settings(tmp_path):
+    settings.BASE_DIR = tmp_path
+    settings.STATIC_ROOT = tmp_path / "output" / "static"
+
+
+def create_markdown_file(tmp_path):
+    (tmp_path / "content").mkdir()
+    markdown_file = tmp_path / "content" / "test-1.md"
+    markdown_file.write_text("# test 1")
+
+    return markdown_file
+
+
+@pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_force_false(_call_collectstatic, tmp_path, build_command):
+    _reset_settings(tmp_path)
+
+    # Create content directory
+    (tmp_path / "content").mkdir()
+
+    build_command.handle(force=False)
+
+    assert build_command.is_force is False
+
+
+@pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_force_true(_call_collectstatic, tmp_path, build_command):
+    _reset_settings(tmp_path)
+
+    # Create content directory
+    (tmp_path / "content").mkdir()
+
+    build_command.handle(force=True)
+
+    assert build_command.is_force is True
+
+
+@pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._load_manifest", spec=Manifest)
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_static_files_changed_is_force(
+    _call_collectstatic, _load_manifest, tmp_path, build_command
+):
+    _reset_settings(tmp_path)
+
+    # Create content directory
+    (tmp_path / "content").mkdir()
+
+    _load_manifest.return_value.static_files_manifest_changed = True
+
+    build_command.handle(force=False)
+
+    assert build_command.is_force is True
+
+
+@pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_create(_call_collectstatic, tmp_path, build_command):
+    _reset_settings(tmp_path)
+
+    create_markdown_file(tmp_path)
+
+    build_command.handle(force=False)
+
+    assert build_command.output_result_counts.create_count == 1
+    assert build_command.output_result_counts.update_count == 0
+    assert build_command.output_result_counts.skip_count == 0
+
+
+@pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_update(_call_collectstatic, tmp_path, build_command):
+    _reset_settings(tmp_path)
+
+    create_markdown_file(tmp_path)
+
+    # Fake a previous run with the invalid metadata
+    (tmp_path / "output.json").write_text(
+        json.dumps({"test-1.md": {"mtime": -1, "md5": "not-a-hash"}})
     )
 
-    assert not stderr.getvalue()
+    build_command.handle(force=False)
 
-    return stdout.getvalue()
+    assert build_command.output_result_counts.create_count == 0
+    assert build_command.output_result_counts.update_count == 1
+    assert build_command.output_result_counts.skip_count == 0
 
 
+@pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle(_call_collectstatic, tmp_path):
-    settings.BASE_DIR = tmp_path
+def test_handle_skip_because_mtime(_call_collectstatic, tmp_path, build_command):
+    _reset_settings(tmp_path)
 
-    # Create content file
-    (tmp_path / "content").mkdir()
-    (tmp_path / "content" / "test-1.md").write_text("# test 1")
-
-    stdout = _call_command()
-
-    _call_collectstatic.assert_called_once()
-
-    assert (tmp_path / "output").exists()
-    assert (tmp_path / "output" / "test-1" / "index.html").exists()
-
-    assert stdout.startswith("Start generating the static ")
-    assert "Load manifest" not in stdout
-    assert "Update manifest" in stdout
-    assert "Static site output completed in" in stdout
-
-
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_output_index(_call_collectstatic, tmp_path):
-    settings.BASE_DIR = tmp_path
-
-    # Create content file
-    (tmp_path / "content").mkdir()
-    (tmp_path / "content" / "index.md").write_text("# index")
-
-    stdout = _call_command()
-
-    _call_collectstatic.assert_called_once()
-
-    assert (tmp_path / "output").exists()
-    assert (tmp_path / "output" / "index.html").exists()
-
-    assert stdout.startswith("Start generating the static ")
-    assert "Load manifest" not in stdout
-    assert "Update manifest" in stdout
-    assert "Static site output completed in" in stdout
-
-
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_updates_output_manifest(_call_collectstatic, tmp_path):
-    settings.BASE_DIR = tmp_path
+    markdown_file = create_markdown_file(tmp_path)
 
     # Create output.json
     (tmp_path / "output.json").write_text("{}")
 
-    # Create content directory
-    (tmp_path / "content").mkdir()
-    markdown_file = tmp_path / "content" / "test-1.md"
-    markdown_file.write_text("# test 1")
+    # Fake a previous run with the correct md5
+    md5_hash = md5(markdown_file.read_bytes()).hexdigest()
+    (tmp_path / "output.json").write_text(
+        json.dumps({"test-1.md": {"mtime": -1, "md5": md5_hash}})
+    )
 
-    stdout = _call_command()
+    build_command.handle(force=False)
 
-    assert (tmp_path / "output").exists()
-    assert (tmp_path / "output" / "test-1" / "index.html").exists()
-
-    mtime = markdown_file.stat().st_mtime
-    hash = md5(markdown_file.read_bytes()).hexdigest()
-    expected = '{"test-1.md": {"mtime": ' + str(mtime) + ', "md5": "' + hash + '"}}'
-    actual = (tmp_path / "output.json").read_text()
-
-    assert actual == expected
-
-    assert "Load manifest" in stdout
+    assert build_command.output_result_counts.create_count == 0
+    assert build_command.output_result_counts.update_count == 0
+    assert build_command.output_result_counts.skip_count == 1
 
 
+@pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_skip_update_mtime(_call_collectstatic, tmp_path):
-    settings.BASE_DIR = tmp_path
+def test_handle_skip_because_md5(_call_collectstatic, tmp_path, build_command):
+    _reset_settings(tmp_path)
+
+    markdown_file = create_markdown_file(tmp_path)
 
     # Create output.json
     (tmp_path / "output.json").write_text("{}")
-
-    # Create content directory
-    (tmp_path / "content").mkdir()
-    markdown_file = tmp_path / "content" / "test-1.md"
-    markdown_file.write_text("# test 1")
 
     # Fake a previous run with the correct mtime
     mtime = markdown_file.stat().st_mtime
@@ -111,156 +147,8 @@ def test_handle_skip_update_mtime(_call_collectstatic, tmp_path):
         json.dumps({"test-1.md": {"mtime": mtime, "md5": "not-a-hash"}})
     )
 
-    stdout = _call_command()
+    build_command.handle(force=False)
 
-    assert "Load manifest" in stdout
-    assert "Skip output/test-1.md because the modified date is not changed" in stdout
-
-
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_skip_update_md5(_call_collectstatic, tmp_path):
-    settings.BASE_DIR = tmp_path
-
-    # Create output.json
-    (tmp_path / "output.json").write_text("{}")
-
-    # Create content directory
-    (tmp_path / "content").mkdir()
-    markdown_file = tmp_path / "content" / "test-1.md"
-    markdown_file.write_text("# test 1")
-
-    # Fake a previous run with the correct md5
-    hash = md5(markdown_file.read_bytes()).hexdigest()
-    (tmp_path / "output.json").write_text(
-        json.dumps({"test-1.md": {"mtime": -1, "md5": hash}})
-    )
-
-    stdout = _call_command()
-
-    assert "Load manifest" in stdout
-    assert "Skip output/test-1.md because the content is not changed" in stdout
-
-
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_no_skip_create_html(_call_collectstatic, tmp_path):
-    settings.BASE_DIR = tmp_path
-
-    # Create output.json
-    (tmp_path / "output.json").write_text("{}")
-
-    # Create content directory
-    (tmp_path / "content").mkdir()
-    markdown_file = tmp_path / "content" / "test-1.md"
-    markdown_file.write_text("# test 1")
-
-    # Fake a previous run with the correct md5
-    (tmp_path / "output.json").write_text(
-        json.dumps({"test-1.md": {"mtime": -1, "md5": "not-a-hash"}})
-    )
-
-    stdout = _call_command()
-
-    assert "Load manifest" in stdout
-    assert "Create output/test-1/index.html" in stdout
-
-
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_no_skip_update_html(_call_collectstatic, tmp_path):
-    settings.BASE_DIR = tmp_path
-
-    # Create output.json
-    (tmp_path / "output.json").write_text("{}")
-
-    # Create content directory
-    (tmp_path / "content").mkdir()
-    markdown_file = tmp_path / "content" / "test-1.md"
-    markdown_file.write_text("# test 1")
-
-    # Create output directory
-    (tmp_path / "output").mkdir()
-    (tmp_path / "output" / "test-1").mkdir()
-    html_file = tmp_path / "output" / "test-1" / "index.html"
-    html_file.write_text("<h1>test 1</h1>")
-
-    # Fake a previous run with the correct md5
-    (tmp_path / "output.json").write_text(
-        json.dumps({"test-1.md": {"mtime": -1, "md5": "not-a-hash"}})
-    )
-
-    stdout = _call_command()
-
-    assert "Load manifest" in stdout
-    assert "Update output/test-1/index.html" in stdout
-
-
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_force(_call_collectstatic, tmp_path):
-    settings.BASE_DIR = tmp_path
-
-    # Create output.json
-    (tmp_path / "output.json").write_text("{}")
-
-    # Create content directory
-    (tmp_path / "content").mkdir()
-    markdown_file = tmp_path / "content" / "test-1.md"
-    markdown_file.write_text("# test 1")
-
-    # Create output directory
-    (tmp_path / "output").mkdir()
-    (tmp_path / "output" / "test-1").mkdir()
-    html_file = tmp_path / "output" / "test-1" / "index.html"
-    html_file.write_text("<h1>test 1</h1>")
-
-    # Fake a previous run with the correct md5
-    (tmp_path / "output.json").write_text(
-        json.dumps({"test-1.md": {"mtime": -1, "md5": "not-a-hash"}})
-    )
-
-    stdout = _call_command("--force")
-
-    assert "Load manifest" in stdout
-    assert "Force update because of command line argument" in stdout
-    assert "Update output/test-1/index.html" in stdout
-
-
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_staticfiles_force(_call_collectstatic, tmp_path):
-    settings.BASE_DIR = tmp_path
-    settings.STATIC_ROOT = tmp_path / "output" / "static"
-
-    # Create output.json
-    # (tmp_path / "output.json").write_text("{}")
-
-    # Create content directory
-    (tmp_path / "content").mkdir()
-    markdown_file = tmp_path / "content" / "test-1.md"
-    markdown_file.write_text("# test 1")
-
-    # Create output directory
-    (tmp_path / "output").mkdir()
-    (tmp_path / "output" / "test-1").mkdir()
-    html_file = tmp_path / "output" / "test-1" / "index.html"
-    html_file.write_text("<h1>test 1</h1>")
-
-    # Create staticfiles.json
-    (tmp_path / "output" / "static").mkdir()
-    # (tmp_path / "output" / "test-1").mkdir()
-    # html_file = tmp_path / "output" / "test-1" / "index.html"
-    staticfiles_manifest = tmp_path / "output" / "static" / "staticfiles.json"
-    staticfiles_manifest.write_text("{}")
-
-    # Fake a previous run with the correct md5
-    (tmp_path / "output.json").write_text(
-        json.dumps(
-            {
-                "test-1.md": {"mtime": -1, "md5": "not-a-hash"},
-                "staticfiles.json": {"mtime": -1, "md5": "not-a-hash"},
-            }
-        )
-    )
-
-    stdout = _call_command()
-
-    assert "Load manifest" in stdout
-    assert "Force update because static file(s) updated" in stdout
-    assert "Update output/test-1/index.html" in stdout
+    assert build_command.output_result_counts.create_count == 0
+    assert build_command.output_result_counts.update_count == 0
+    assert build_command.output_result_counts.skip_count == 1

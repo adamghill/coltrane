@@ -4,7 +4,6 @@ from hashlib import md5 as md5_hash
 from pathlib import Path
 from typing import Dict, Optional
 
-from django.core.management.base import OutputWrapper
 from django.template.loader import render_to_string
 from django.utils.html import mark_safe  # type: ignore
 
@@ -195,25 +194,16 @@ class Manifest:
     """
 
     _manifest_file: Path
-    _out: Optional[OutputWrapper]
     _items: ManifestItems
     _static_files_manifest_changed: bool = False
     _is_dirty: bool = False
 
-    def __init__(
-        self,
-        manifest_file: Path,
-        out: OutputWrapper = None,
-    ):
+    def __init__(self, manifest_file: Path):
         self._manifest_file = manifest_file
-        self._out = out
         self._items = ManifestItems()
 
         if self._manifest_file.exists():
             self._items.load(manifest_file=manifest_file)
-
-            if self._out:
-                self._out.write("- Load manifest")
 
         staticfiles_manifest = get_staticfiles_json()
 

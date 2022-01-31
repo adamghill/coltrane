@@ -42,6 +42,7 @@ toml = { version = "*", optional = true }
 # deploy extras
 gunicorn = { version = "^20.1.0", optional = true }
 whitenoise = { version = "^5.3.0", optional = true }
+halo = "^0.0.31"
 
 [tool.poetry.extras]
 deploy = ["gunicorn", "whitenoise"]
@@ -71,12 +72,12 @@ skip_glob = "*/migrations/*.py"
 profile = "black"
 
 [tool.pytest.ini_options]
-addopts = "--quiet --failed-first --reuse-db --nomigrations -p no:warnings -m 'not integration'"
+addopts = "--quiet --failed-first --reuse-db --nomigrations -p no:warnings"
 testpaths = [
     "tests"
 ]
 markers = [
-    "integration: marks tests as integration",
+    "slow: marks tests as slow",
 ]
 
 [tool.flake8]
@@ -105,7 +106,7 @@ ignore_missing_imports = true
 [tool.poe.tasks]
 r = { cmd = "example_standalone/app.py runserver 0:8045", help = "Start dev server" }
 g = { cmd = "gunicorn -b localhost:8045 example_standalone.app:wsgi", help = "Start gunicorn" }
-t = { cmd = "pytest", help = "Run tests" }
+t = { cmd = "pytest -m 'not slow'", help = "Run tests" }
 tc = { cmd = "pytest --cov=coltrane", help = "Run tests with coverage" }
 cr = { cmd = "coverage report", help = "Show coverage report" }
 my = { cmd = "mypy .", help = "Run mypy" }

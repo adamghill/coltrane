@@ -1,10 +1,18 @@
+import concurrent.futures
+import logging
 import time
+from functools import wraps
 from io import StringIO
+from multiprocessing import cpu_count
 from pathlib import Path
+from types import SimpleNamespace
 
 from django.conf import settings
 from django.core import management
 from django.core.management.base import BaseCommand
+
+from halo import Halo
+from log_symbols.symbols import LogSymbols
 
 from coltrane.config.paths import (
     get_base_directory,
@@ -13,11 +21,29 @@ from coltrane.config.paths import (
     get_output_static_directory,
 )
 from coltrane.manifest import Manifest, ManifestItem
-from coltrane.retriever import get_content
+from coltrane.retriever import get_content_paths
+
+
+logger = logging.getLogger(__name__)
+
+
+_DEFAULT_POOL = concurrent.futures.ThreadPoolExecutor()
+
+
+def threadpool(f, executor=None):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        return (executor or _DEFAULT_POOL).submit(f, *args, **kwargs)
+
+    return wrap
 
 
 class Command(BaseCommand):
     help = "Build all static HTML files and put them into a directory named output."
+
+    is_force = False
+    manifest = None
+    output_result_counts = SimpleNamespace(create_count=0, update_count=0, skip_count=0)
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -26,7 +52,11 @@ class Command(BaseCommand):
             help="Force building all files",
         )
 
-    def _call_collectstatic(self):
+    def _load_manifest(self) -> Manifest:
+        return Manifest(manifest_file=get_output_json())
+
+    @threadpool
+    def _call_collectstatic(self) -> str:
         stdout = StringIO()
         stderr = StringIO()
 
@@ -61,88 +91,128 @@ class Command(BaseCommand):
         collectstatic_stdout = collectstatic_stdout.replace("copied ", "")
         collectstatic_stdout = "Copy " + collectstatic_stdout
 
-        self.stdout.write(f"- {collectstatic_stdout}")
-
         # TOOD: Handle files in output.json that weren't
         # found in content? (--clean option?)
 
-    def output_markdown_file(
-        self,
-        manifest: Manifest,
-        is_force: bool,
-        markdown_file: Path,
-    ):
+        return collectstatic_stdout
+
+    def _output_markdown_file(self, markdown_file: Path) -> None:
+        is_skipped = False
+
         item = ManifestItem.create(markdown_file)
-        existing_item = manifest.get(markdown_file)
+        existing_item = self.manifest.get(markdown_file)
 
-        if existing_item and not is_force:
-            skip_message = ""
-
+        if existing_item and not self.is_force:
             if item.mtime == existing_item.mtime:
-                skip_message = f"- Skip output/{item.name} because the modified date is not changed"
+                is_skipped = True
+                self.output_result_counts.skip_count += 1
             elif item.md5 == existing_item.md5:
-                skip_message = (
-                    f"- Skip output/{item.name} because the content is not changed"
-                )
-
                 # Update item in manifest to get newest mtime
-                manifest.add(markdown_file)
+                self.manifest.add(markdown_file)
 
-            if skip_message:
-                self.stdout.write(skip_message)
-                return
+                is_skipped = True
+                self.output_result_counts.skip_count += 1
 
-        rendered_html = item.render_html()
+        if not is_skipped:
+            if existing_item:
+                self.output_result_counts.update_count += 1
+            else:
+                self.output_result_counts.create_count += 1
 
-        action = "- Create"
+            rendered_html = item.render_html()
 
-        if item.generated_file.exists():
-            action = "- Update"
+            item.generated_file.write_text(rendered_html)
+            self.manifest.add(markdown_file)
 
-        item.generated_file.write_text(rendered_html)
-        manifest.add(markdown_file)
-
-        self.stdout.write(f"{action} {item.generated_file_name}")
+    def _success(self, text: str) -> None:
+        self.stdout.write(LogSymbols.SUCCESS.value, ending=" ")
+        self.stdout.write(text)
 
     def handle(self, *args, **options):
+        self.is_force = False
+        self.manifest = None
+        self.output_result_counts.create_count = 0
+        self.output_result_counts.update_count = 0
+        self.output_result_counts.skip_count = 0
+
         start_time = time.time()
 
         self.stdout.write(self.style.WARNING("Start generating the static site...\n"))
 
-        self._call_collectstatic()
+        spinner = Halo(spinner="dots")
+
+        collectstatic_future = self._call_collectstatic()
 
         output_directory = get_output_directory()
+        spinner.start(f"Use '{output_directory}' as output directory")
         output_directory.mkdir(exist_ok=True)
+        spinner.succeed()
 
-        content_paths = get_content()
-        manifest = Manifest(
-            manifest_file=get_output_json(),
-            out=self.stdout,
-        )
-
-        is_force = False
+        spinner.start("Load manifest")
+        self.manifest = self._load_manifest()
+        spinner.succeed()
 
         if options["force"]:
-            is_force = True
-            self.stdout.write("- Force update because of command line argument")
+            self.is_force = True
+            self._success("Force update because of command line argument")
 
-        if not is_force and manifest.static_files_manifest_changed:
+        spinner.start("Collect static files")
+        collectstatic_stdout = collectstatic_future.result()
+        spinner.succeed(collectstatic_stdout)
+
+        if not self.is_force and self.manifest.static_files_manifest_changed:
             # At least one static file has changed, so re-render all files because
             # we don't have granularity to know which static files are used in
             # particular markdown or template files
-            is_force = True
-            self.stdout.write("- Force update because static file(s) updated")
+            self.is_force = True
+            self._success("Force update because static file(s) updated")
 
-        for markdown_file in content_paths:
-            self.output_markdown_file(manifest, is_force, markdown_file)
+        spinner.start("Output HTML files")
 
-        if manifest.is_dirty:
-            self.stdout.write("- Update manifest")
-            manifest.write_data()
+        single_thread_output = False
+
+        try:
+            if not single_thread_output:
+                # TODO: Be able to pass in a number of threads to use
+                threads_count = 2
+
+                try:
+                    threads_count = int(cpu_count() / 2) - 1
+                except Exception:
+                    pass
+
+                with concurrent.futures.ThreadPoolExecutor(
+                    max_workers=threads_count
+                ) as executor:
+                    logger.debug(f"Multithread with {threads_count} threads")
+                    spinner.text = f"Output HTML files (use {threads_count} threads)"
+
+                    for path in get_content_paths():
+                        executor.submit(self._output_markdown_file, path)
+
+                    # TODO: what happens if one thread throws an exception?
+        except Exception as e:
+            logger.debug(f"Fallback to single-thread because: {e}")
+            single_thread_output = True
+
+        if single_thread_output:
+            spinner.text = "Output HTML files (single-threaded)"
+
+            for content_path in get_content_paths():
+                self._output_markdown_file(self.manifest, self.is_force, content_path)
+
+        result_msg = f"Output HTML files (create: {self.output_result_counts.create_count}; update: {self.output_result_counts.update_count}; skip: {self.output_result_counts.skip_count})"
+
+        spinner.succeed(result_msg)
+
+        if self.manifest.is_dirty:
+            spinner.start("Update manifest")
+            self.manifest.write_data()
+            spinner.succeed()
 
         self.stdout.write()
 
-        elapsed_time = abs((time.time() - start_time))
+        elapsed_time = time.time() - start_time
         self.stdout.write(
             self.style.SUCCESS(f"Static site output completed in {elapsed_time:.4f}s")
         )

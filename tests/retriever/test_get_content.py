@@ -2,7 +2,7 @@ from django.conf import settings
 
 import pytest
 
-from coltrane.retriever import get_content
+from coltrane.retriever import get_content_paths
 
 
 def test_get_content(tmp_path):
@@ -11,7 +11,7 @@ def test_get_content(tmp_path):
     (tmp_path / "content").mkdir()
     (tmp_path / "content" / "test-1.md").write_text("# test 1")
 
-    contents = list(get_content())
+    contents = list(get_content_paths())
 
     assert contents
     assert len(contents) == 1
@@ -25,7 +25,7 @@ def test_get_content_not_markdown(tmp_path):
     (tmp_path / "content" / "test-1.md").write_text("# test 1")
     (tmp_path / "content" / "test-2.test").write_text("# test 2")
 
-    contents = list(get_content())
+    contents = list(get_content_paths())
 
     assert contents
     assert len(contents) == 1
@@ -41,7 +41,7 @@ def test_get_content_with_folder(tmp_path):
     (tmp_path / "content" / "test-folder").mkdir()
     (tmp_path / "content" / "test-folder" / "test-2.md").write_text("# test 2")
 
-    contents = list(get_content())
+    contents = list(get_content_paths())
 
     assert contents
     assert len(contents) == 2
@@ -56,7 +56,7 @@ def test_get_content_no_content(tmp_path):
 
     (tmp_path / "content").mkdir()
 
-    contents = list(get_content())
+    contents = list(get_content_paths())
 
     assert len(contents) == 0
 
@@ -65,4 +65,4 @@ def test_get_content_missing_content_directory(tmp_path):
     settings.BASE_DIR = tmp_path
 
     with pytest.raises(FileNotFoundError):
-        list(get_content())
+        list(get_content_paths())
