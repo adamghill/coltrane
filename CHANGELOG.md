@@ -1,3 +1,14 @@
+# 0.12.0
+
+- Fix elapsed time for `record` command
+- More performant collection of markdown content files
+- Don't include markdown or data when collecting static files while running `record`
+
+# 0.11.0
+
+- Add `--force` option to `create` command
+- Automatically refresh the browser when markdown content or data is saved
+
 # 0.10.0
 
 - Fix generating root `index.md`
