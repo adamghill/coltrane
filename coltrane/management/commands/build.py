@@ -69,8 +69,8 @@ class Command(BaseCommand):
     def output_markdown_file(
         self,
         manifest: Manifest,
+        is_force: bool,
         markdown_file: Path,
-        is_force: bool = False,
     ):
         item = ManifestItem.create(markdown_file)
         existing_item = manifest.get(markdown_file)
