@@ -232,6 +232,10 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
             "STATICFILES_STORAGE"
         ] = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+    # Make sure BASE_DIR is a `Path` if it got passed in
+    if "BASE_DIR" in django_settings and isinstance(django_settings["BASE_DIR"], str):
+        django_settings["BASE_DIR"] = Path(django_settings["BASE_DIR"])
+
     django_settings = dict_merge(
         default_settings, django_settings, destination_overrides_source=True
     )

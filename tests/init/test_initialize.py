@@ -71,7 +71,7 @@ def test_initialize_no_base_dir(_configure_settings):
 @patch("coltrane._configure_settings")
 # @patch("coltrane._is_whitenoise_installed", return_value=False)
 def test_initialize_with_base_dir(_configure_settings):
-    initialize(base_dir=Path("test"))
+    initialize(BASE_DIR=Path("test"))
 
     expected = _get_settings_with_whitenoise()
     expected["BASE_DIR"] = Path("test")
@@ -82,7 +82,7 @@ def test_initialize_with_base_dir(_configure_settings):
 
 @patch("coltrane._configure_settings")
 def test_initialize_with_base_dir_as_string(_configure_settings):
-    initialize(base_dir="test")
+    initialize(BASE_DIR="test")
 
     expected = _get_settings_with_whitenoise()
     expected["BASE_DIR"] = Path("test")
@@ -100,7 +100,7 @@ def test_initialize_with_template_tags(
     # not actually used, but need the file here
     (tmp_path / "templatetags" / "sample_tag.py").touch()
 
-    initialize(base_dir=tmp_path)
+    initialize(BASE_DIR=tmp_path)
 
     expected = _get_settings_with_whitenoise()
     expected["BASE_DIR"] = ANY
@@ -119,7 +119,7 @@ def test_initialize_with_invalid_template_tag(
     # not actually used, but need the file here
     (tmp_path / "templatetags" / "sample_tag.py").touch()
 
-    initialize(base_dir=tmp_path)
+    initialize(BASE_DIR=tmp_path)
 
     expected = _get_settings_with_whitenoise()
     expected["BASE_DIR"] = ANY
@@ -138,7 +138,7 @@ def test_initialize_with_template_tags_in_directory_with_py_extension(
     # not actually used, but need the file here
     (tmp_path / "templatetags" / "sample.py" / "sample_tag.py").touch()
 
-    initialize(base_dir=tmp_path)
+    initialize(BASE_DIR=tmp_path)
 
     expected = _get_settings_with_whitenoise()
     expected["BASE_DIR"] = ANY
