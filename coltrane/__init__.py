@@ -1,4 +1,5 @@
 import logging
+import sys
 from copy import deepcopy
 from os import getenv
 from pathlib import Path
@@ -74,6 +75,7 @@ def _get_template_tag_module_name(base_dir: Path, file: Path) -> str:
         raise InvalidTemplateLibrary()
 
     import_library(module_name)
+
     return module_name
 
 
@@ -162,10 +164,15 @@ def _is_whitenoise_installed() -> bool:
 
 def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Merges the passed-in settings into the default `coltrane` settings. Passed-in settings will override the defaults.
+    Merges the passed-in settings into the default `coltrane` settings.
+    Passed-in settings will override the defaults.
     """
 
-    debug = getenv("DEBUG", "True") == "True"
+    # Assume that `argv[1] == "build"` means that the `build`
+    # management command is currently being run
+    is_build_management_command = len(sys.argv) >= 2 and sys.argv[1] == "build"
+
+    debug = django_settings.get("DEBUG", getenv("DEBUG", "True") == "True")
 
     staticfiles_dirs = [
         base_dir / "static",
@@ -180,10 +187,12 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         middleware.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
         installed_apps.insert(len(installed_apps) - 1, "whitenoise.runserver_nostatic")
 
-    if debug:
-        # Add settings required for django-browser-reload when `DEBUG` is `True`
+    if debug and not is_build_management_command:
+        # Add settings required for django-browser-reload when appropriate
         middleware.append("django_browser_reload.middleware.BrowserReloadMiddleware")
         installed_apps.append("django_browser_reload")
+
+        # Add content and data to "staticfiles" so django-browser-reload will monitor
         staticfiles_dirs.append(base_dir / "content")
         staticfiles_dirs.append(base_dir / "data")
 
@@ -240,14 +249,13 @@ def _configure_settings(django_settings: Dict[str, Any]) -> None:
 
 
 def initialize(
-    base_dir: Optional[Path] = None,
     **django_settings: Dict[str, Any],
 ) -> WSGIHandler:
     """
     Initializes the Django static site.
     """
 
-    base_dir = _get_base_dir(base_dir)
+    base_dir = _get_base_dir(django_settings.get("BASE_DIR"))
 
     load_dotenv(base_dir / ".env")
 

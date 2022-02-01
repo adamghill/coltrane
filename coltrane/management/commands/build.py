@@ -30,6 +30,11 @@ class Command(BaseCommand):
         stdout = StringIO()
         stderr = StringIO()
 
+        # Force DEBUG to always be `False` so that
+        # whitenoise.storage.CompressedManifestStaticFilesStorage will use the static
+        # assets with hashed failenames
+        settings.DEBUG = False
+
         # TODO: Option to remove static files before re-generating
         management.call_command(
             "collectstatic",
@@ -102,11 +107,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         start_time = time.time()
 
-        # Force DEBUG to always be `False` so that
-        # whitenoise.storage.CompressedManifestStaticFilesStorage will use the static
-        # assets with hashed failenames
-        settings.DEBUG = False
-
         self.stdout.write(self.style.WARNING("Start generating the static site...\n"))
 
         self._call_collectstatic()
@@ -134,7 +134,7 @@ class Command(BaseCommand):
             self.stdout.write("- Force update because static file(s) updated")
 
         for markdown_file in content_paths:
-            self.output_markdown_file(manifest, markdown_file, is_force)
+            self.output_markdown_file(manifest, is_force, markdown_file)
 
         if manifest.is_dirty:
             self.stdout.write("- Update manifest")
