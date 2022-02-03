@@ -1,3 +1,8 @@
+# 0.13.0
+
+- Multithread `record` command
+- Better output for `record` command
+
 # 0.12.0
 
 - Fix elapsed time for `record` command
