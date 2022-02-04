@@ -1,7 +1,6 @@
-import concurrent.futures
 import logging
 import time
-from functools import wraps
+from concurrent.futures import ThreadPoolExecutor
 from io import StringIO
 from multiprocessing import cpu_count
 from pathlib import Path
@@ -15,27 +14,16 @@ from halo import Halo
 from log_symbols.symbols import LogSymbols
 
 from coltrane.config.paths import (
-    get_base_directory,
     get_output_directory,
     get_output_json,
     get_output_static_directory,
 )
 from coltrane.manifest import Manifest, ManifestItem
 from coltrane.retriever import get_content_paths
+from coltrane.utils import threadpool
 
 
 logger = logging.getLogger(__name__)
-
-
-_DEFAULT_POOL = concurrent.futures.ThreadPoolExecutor()
-
-
-def threadpool(f, executor=None):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        return (executor or _DEFAULT_POOL).submit(f, *args, **kwargs)
-
-    return wrap
 
 
 class Command(BaseCommand):
@@ -50,6 +38,12 @@ class Command(BaseCommand):
             "--force",
             action="store_true",
             help="Force building all files",
+        )
+
+        parser.add_argument(
+            "--threads",
+            action="store",
+            help="Number of threads to use when generating static files",
         )
 
     def _load_manifest(self) -> Manifest:
@@ -76,20 +70,14 @@ class Command(BaseCommand):
 
         stderr.seek(0)
 
-        # Get relative output static directory
-        output_static_directory = str(get_output_static_directory()).replace(
-            str(get_base_directory()), ""
-        )
-        output_static_directory = f"{output_static_directory}/"[1:]
-
         # Get output from standard out and clean it up
         stdout.seek(0)
         collectstatic_stdout = stdout.read()
         collectstatic_stdout = collectstatic_stdout.replace(
-            "'" + str(get_output_static_directory()) + "'", output_static_directory
+            f" copied to '{str(get_output_static_directory())}'", ""
         )[1:-2]
-        collectstatic_stdout = collectstatic_stdout.replace("copied ", "")
-        collectstatic_stdout = "Copy " + collectstatic_stdout
+
+        collectstatic_stdout = f"Copy {collectstatic_stdout}"
 
         # TOOD: Handle files in output.json that weren't
         # found in content? (--clean option?)
@@ -97,6 +85,8 @@ class Command(BaseCommand):
         return collectstatic_stdout
 
     def _output_markdown_file(self, markdown_file: Path) -> None:
+        assert self.manifest, "Manifest must be loaded first"
+
         is_skipped = False
 
         item = ManifestItem.create(markdown_file)
@@ -124,9 +114,9 @@ class Command(BaseCommand):
             item.generated_file.write_text(rendered_html)
             self.manifest.add(markdown_file)
 
-    def _success(self, text: str) -> None:
+    def _success(self, text: str, ending="\n") -> None:
         self.stdout.write(LogSymbols.SUCCESS.value, ending=" ")
-        self.stdout.write(text)
+        self.stdout.write(text, ending=ending)
 
     def handle(self, *args, **options):
         self.is_force = False
@@ -144,17 +134,18 @@ class Command(BaseCommand):
         collectstatic_future = self._call_collectstatic()
 
         output_directory = get_output_directory()
-        spinner.start(f"Use '{output_directory}' as output directory")
+        self._success("Use ", ending="")
+        self.stdout.write(self.style.WARNING(str(output_directory)))
         output_directory.mkdir(exist_ok=True)
-        spinner.succeed()
 
         spinner.start("Load manifest")
         self.manifest = self._load_manifest()
         spinner.succeed()
 
-        if options["force"]:
+        if "force" in options and options["force"] is True:
             self.is_force = True
-            self._success("Force update because of command line argument")
+            self._success("Force update because ", ending="")
+            self.stdout.write(self.style.WARNING("--force"))
 
         spinner.start("Collect static files")
         collectstatic_stdout = collectstatic_future.result()
@@ -167,41 +158,33 @@ class Command(BaseCommand):
             self.is_force = True
             self._success("Force update because static file(s) updated")
 
-        spinner.start("Output HTML files")
+        threads_count = 2
 
-        single_thread_output = False
+        if "threads" in options and options["threads"]:
+            try:
+                threads_count = int(options["threads"])
+            except ValueError:
+                pass
+        else:
+            try:
+                threads_count = (cpu_count() // 2) - 1
+            except Exception as ex:
+                logger.exception(ex)
 
-        try:
-            if not single_thread_output:
-                # TODO: Be able to pass in a number of threads to use
-                threads_count = 2
+        spinner.start("Create HTML files")
 
-                try:
-                    threads_count = int(cpu_count() / 2) - 1
-                except Exception:
-                    pass
+        with ThreadPoolExecutor(max_workers=threads_count) as executor:
+            logger.debug(f"Multithread with {threads_count} threads")
+            pluralized_threads = "s" if threads_count > 1 else ""
+            spinner.text = (
+                f"Create HTML files (use {threads_count} thread{pluralized_threads})"
+            )
 
-                with concurrent.futures.ThreadPoolExecutor(
-                    max_workers=threads_count
-                ) as executor:
-                    logger.debug(f"Multithread with {threads_count} threads")
-                    spinner.text = f"Output HTML files (use {threads_count} threads)"
+            for path in get_content_paths():
+                # TODO: what happens if one thread throws an exception?
+                executor.submit(self._output_markdown_file, path)
 
-                    for path in get_content_paths():
-                        executor.submit(self._output_markdown_file, path)
-
-                    # TODO: what happens if one thread throws an exception?
-        except Exception as e:
-            logger.debug(f"Fallback to single-thread because: {e}")
-            single_thread_output = True
-
-        if single_thread_output:
-            spinner.text = "Output HTML files (single-threaded)"
-
-            for content_path in get_content_paths():
-                self._output_markdown_file(self.manifest, self.is_force, content_path)
-
-        result_msg = f"Output HTML files (create: {self.output_result_counts.create_count}; update: {self.output_result_counts.update_count}; skip: {self.output_result_counts.skip_count})"
+        result_msg = f"Create {self.output_result_counts.create_count} HTML files, {self.output_result_counts.skip_count} unmodified, {self.output_result_counts.update_count} updated"
 
         spinner.succeed(result_msg)
 

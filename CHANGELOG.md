@@ -1,7 +1,11 @@
+# 0.13.1
+
+- Add `--threads` option to `record` command
+
 # 0.13.0
 
 - Multithread `record` command
-- Better output for `record` command
+- Better console output for `record` command
 
 # 0.12.0
 

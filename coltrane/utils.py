@@ -1,4 +1,6 @@
 import logging
+from concurrent.futures import ThreadPoolExecutor
+from functools import wraps
 from typing import Dict, List
 
 
@@ -40,3 +42,25 @@ def dict_merge(
             source[key] = destination[key]
 
     return source
+
+
+def threadpool(f, executor=None):
+    """
+    A decorator to convert a regular function so that it gets run in another thread.
+
+    ```python
+    # does not block, returns Future object
+    future = some_long_running_process()
+
+    # this blocks, waiting for the result
+    result = future.result()
+    ```
+
+    More details: https://stackoverflow.com/a/14331755
+    """
+
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        return (executor or ThreadPoolExecutor()).submit(f, *args, **kwargs)
+
+    return wrap

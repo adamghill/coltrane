@@ -107,11 +107,18 @@ def play(port):
 
 @click.command(help="Generates HTML output.")
 @click.option("--force/--no-force", default=False, help="Force HTML generation")
-def record(force):
+@click.option(
+    "--threads", type=int, help="Number of threads to use when generating static files"
+)
+def record(force, threads):
     args = []
 
     if force:
-        args = ["--force"]
+        args.append("--force")
+
+    if threads:
+        args.append("--threads")
+        args.append(str(threads))
 
     _run_manangement_command("build", *args)
 

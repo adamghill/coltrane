@@ -107,7 +107,7 @@ def test_build_command_force(_call_collectstatic, tmp_path):
 
     stdout = _call_build_command("--force")
 
-    assert "Force update because of command line argument" in stdout
+    assert "Force update because " in stdout
 
 
 @pytest.mark.slow
