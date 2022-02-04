@@ -4,23 +4,24 @@
 
 ## ⭐ Features
 
-- Can either generate a static HTML, be used as a standalone Django site, or integrated into an existing Django site
-- Write content in markdown and render it in HTML
-- Use data from JSON files in templates and content
-- [Live re-rendering of markdown and data](https://twitter.com/adamghill/status/1487522925393715205) when files are saved with the magic of https://github.com/adamchainz/django-browser-reload
+- Can either generate a static HTML site, be deployed as a standalone Django site, or integrated into an existing Django site
+- Reads markdown content and renders it in HTML
+- Can use data from JSON files in templates and markdown content
+- [Live re-rendering of markdown and data](https://twitter.com/adamghill/status/1487522925393715205) when markdown or JSON data files are saved with the magic of https://github.com/adamchainz/django-browser-reload
 - All the power of Django templates, template tags, and filters inside markdown files
 - Can include other Django apps for additional functionality
-- Opinionated Django project setup where everything works "out of the box"
+- Custom Template tags are supported and are enabled automatically for use in markdown content
+- Opinionated standalone Django project setup where deployment (including static files) just works "out of the box"
 
 ## Installation
 
-Because `coltrane` can be used in a few different ways, the documentation is split into different pieces depending on the desired outcome.
+Because `coltrane` can be used in a few different ways, the documentation is split into different sections depending on the desired outcome.
 
 - Markdown is rendered into HTML and output to a folder on disk with a [static site](static/index)
 - Django dynamically renders markdown from a [simplified standalone Django project](standalone/index)
 - Django dynamically renders markdown [from within an existing Django project](integrated/index)
 
-## Optional
+### Optional installation
 
 - Enable `watchman` for less resource-intensive autoreload on MacOS: `brew install watchman`
 
