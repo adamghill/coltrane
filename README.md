@@ -13,13 +13,14 @@
 
 ## ⭐ Features
 
-- Can either generate a static HTML, be used as a standalone Django site, or integrated into an existing Django site
-- Write content in markdown and render it in HTML
-- Use data from JSON files in templates and content
-- [Live re-rendering of markdown and data](https://twitter.com/adamghill/status/1487522925393715205) when files are saved with the magic of https://github.com/adamchainz/django-browser-reload
+- Can either generate a static HTML site, be deployed as a standalone Django site, or integrated into an existing Django site
+- Reads markdown content and renders it in HTML
+- Can use data from JSON files in templates and markdown content
+- [Live re-rendering of markdown and data](https://twitter.com/adamghill/status/1487522925393715205) when markdown or JSON data files are saved with the magic of https://github.com/adamchainz/django-browser-reload
 - All the power of Django templates, template tags, and filters inside markdown files
 - Can include other Django apps for additional functionality
-- Opinionated Django project setup where everything works "out of the box"
+- Custom Template tags are supported and are enabled automatically for use in markdown content
+- Opinionated standalone Django project setup where deployment (including static files) just works "out of the box"
 
 ## ⚡ Quick start for a new static site
 
@@ -31,11 +32,11 @@
 1. Go to http://localhost:8000 to see the updated markdown rendered into HTML
 1. `poetry run coltrane record` to output the rendered HTML files
 
-## Optional
+### Optional installation
 
 - Enable `watchman` for less resource-intensive autoreload on MacOS: `brew install watchman`
 
-## How to add new content
+## ➕ How to add new content
 
 Add markdown files or sub-directories with markdown files to the `content` directory and they will automatically have routes created that can be requested.
 
@@ -47,14 +48,14 @@ content/about.md
 content/articles/this-is-the-first-article.md
 ```
 
-**`poetry run coltrane play` will enable these URLs**
+**`poetry run coltrane play` will serve these URLs**
 
 - `http://localhost:8000/` which serves HTML generated from the `/content/index.md` file
 - `http://localhost:8000/about/` which serves HTML generated from the `/content/about.md` file
 - `http://localhost:8000/articles/this-is-the-first-article/` which serves HTML generated from the `/content/articles/this-is-the-first-article.md` file
 - `http://localhost:8000/not-there/` will 404
 
-**`poetry run coltrane record` will create these HTML files**
+**`poetry run coltrane record` will create these HTML files for a static site**
 
 - `output/index.html`
 - `output/about/index.html`
