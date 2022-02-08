@@ -7,7 +7,11 @@ from typing import Dict, Optional
 from django.template.loader import render_to_string
 from django.utils.html import mark_safe  # type: ignore
 
-from coltrane.config.paths import get_output_directory, get_staticfiles_json
+from coltrane.config.paths import (
+    get_output_directory,
+    get_output_directory_name,
+    get_staticfiles_json,
+)
 from coltrane.renderer import render_markdown
 
 
@@ -90,10 +94,10 @@ class ManifestItem:
         The generated file name for the markdown file.
         """
 
-        generated_file_name = "output/index.html"
+        generated_file_name = "index.html"
 
         if self.name != "index.md":
-            generated_file_name = f"output/{self.slug}/index.html"
+            generated_file_name = f"{self.slug}/index.html"
 
         return generated_file_name
 

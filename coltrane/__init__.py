@@ -12,6 +12,7 @@ from django.template.library import InvalidTemplateLibrary, import_library
 
 from dotenv import load_dotenv
 
+from coltrane.config.paths import get_output_directory
 from coltrane.config.settings import DEFAULT_COLTRANE_SETTINGS
 
 from .utils import dict_merge
@@ -235,6 +236,22 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
     # Make sure BASE_DIR is a `Path` if it got passed in
     if "BASE_DIR" in django_settings and isinstance(django_settings["BASE_DIR"], str):
         django_settings["BASE_DIR"] = Path(django_settings["BASE_DIR"])
+
+    # Override STATIC_ROOT if the output directory name is manually set
+    try:
+        django_settings["STATIC_ROOT"] = (
+            base_dir / django_settings["COLTRANE"]["OUTPUT"]["PATH"] / "static"
+        )
+    except KeyError:
+        pass
+
+    # Override STATIC_ROOT if the output directory is manually set
+    try:
+        django_settings["STATIC_ROOT"] = (
+            Path(django_settings["COLTRANE"]["OUTPUT"]["DIRECTORY"]) / "static"
+        )
+    except KeyError:
+        pass
 
     django_settings = dict_merge(
         default_settings, django_settings, destination_overrides_source=True

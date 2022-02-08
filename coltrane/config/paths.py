@@ -42,12 +42,32 @@ def get_content_directory() -> Path:
     return get_base_directory() / "content"
 
 
+def get_output_directory_name() -> str:
+    """
+    Gets the output directory name from settings if it is  set. Defaults to "output".
+    """
+
+    output_directory_name = "output"
+
+    try:
+        output_directory_name = settings.COLTRANE["OUTPUT"]["PATH"]
+    except (AttributeError, KeyError):
+        pass
+
+    return output_directory_name
+
+
 def get_output_directory() -> Path:
     """
     Get the path that HTML files will be output to.
     """
 
-    return get_base_directory() / "output"
+    try:
+        return settings.COLTRANE["OUTPUT"]["DIRECTORY"]
+    except (AttributeError, KeyError):
+        pass
+
+    return get_base_directory() / get_output_directory_name()
 
 
 def get_output_json() -> Path:

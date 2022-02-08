@@ -5,6 +5,7 @@ from io import StringIO
 from multiprocessing import cpu_count
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Dict
 
 from django.conf import settings
 from django.core import management
@@ -14,6 +15,7 @@ from halo import Halo
 from log_symbols.symbols import LogSymbols
 
 from coltrane.config.paths import (
+    get_base_directory,
     get_output_directory,
     get_output_json,
     get_output_static_directory,
@@ -44,6 +46,12 @@ class Command(BaseCommand):
             "--threads",
             action="store",
             help="Number of threads to use when generating static files",
+        )
+
+        parser.add_argument(
+            "--output",
+            action="store",
+            help="Output directory",
         )
 
     def _load_manifest(self) -> Manifest:
@@ -118,6 +126,34 @@ class Command(BaseCommand):
         self.stdout.write(LogSymbols.SUCCESS.value, ending=" ")
         self.stdout.write(text, ending=ending)
 
+    def _set_output_directory(self, options: Dict) -> None:
+        if "output" in options and options["output"]:
+            if not hasattr(settings, "COLTRANE"):
+                setattr(settings, "COLTRANE", {})
+
+            if "OUTPUT" not in settings.COLTRANE:
+                settings.COLTRANE["OUTPUT"] = {}
+
+            settings.COLTRANE["OUTPUT"]["PATH"] = options["output"]
+
+            # Override STATIC_ROOT if the output directory name is manually set
+            try:
+                settings.STATIC_ROOT = (
+                    get_base_directory()
+                    / settings.COLTRANE["OUTPUT"]["PATH"]
+                    / "static"
+                )
+            except KeyError:
+                pass
+
+            # Override STATIC_ROOT if the output directory is manually set
+            try:
+                settings.STATIC_ROOT = (
+                    Path(settings.COLTRANE["OUTPUT"]["DIRECTORY"]) / "static"
+                )
+            except KeyError:
+                pass
+
     def handle(self, *args, **options):
         self.is_force = False
         self.manifest = None
@@ -130,6 +166,8 @@ class Command(BaseCommand):
         self.stdout.write(self.style.WARNING("Start generating the static site...\n"))
 
         spinner = Halo(spinner="dots")
+
+        self._set_output_directory(options)
 
         collectstatic_future = self._call_collectstatic()
 

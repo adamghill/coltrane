@@ -115,11 +115,16 @@ def play(port):
 @click.option(
     "--threads", type=int, help="Number of threads to use when generating static files"
 )
-def record(force, threads):
+@click.option("--output", help="Output directory")
+def record(force, threads, output):
     args = []
 
     if force:
         args.append("--force")
+
+    if output:
+        args.append("--output")
+        args.append(output)
 
     if threads:
         args.append("--threads")
