@@ -1,3 +1,7 @@
+# 0.14.0
+
+- Add `--output` option to `record` command
+
 # 0.13.1
 
 - Add `--threads` option to `record` command

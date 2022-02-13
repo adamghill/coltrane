@@ -45,6 +45,12 @@ By default, `coltrane` will only build markdown files that have changed since th
 
 `poetry run coltrane record --force`
 
+### Output directory
+
+By default `coltrane` will write all files to a directory named `output`. But, that can be overriden with `--output`.
+
+`poetry run coltrane record --output public`
+
 ### Multithreaded
 
 By default `coltrane` tries to use the optimal number of threads. But, the number of threads to use can be overriden with `--threads`.
