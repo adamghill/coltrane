@@ -1,6 +1,7 @@
 # 0.14.0
 
 - Add `--output` option to `record` command
+- Nicer help output for CLI
 
 # 0.13.1
 
