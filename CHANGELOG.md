@@ -1,6 +1,6 @@
 # 0.14.0
 
-- Add `--output` option to `record` command
+- Add `--output` option to `record` command [#19](https://github.com/adamghill/coltrane/issues/19) by [stlk](https://github.com/stlk)
 - Nicer help output for CLI
 
 # 0.13.1
