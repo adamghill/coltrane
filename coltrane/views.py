@@ -81,7 +81,12 @@ def content(request: HttpRequest, slug: str = "index"):
             (template, context) = render_markdown(slug, request=request)
             _set_in_cache_if_enabled(slug, template, context)
     except FileNotFoundError:
-        raise Http404(f"{slug} cannot be found")
+        try:
+            slug_with_index = f"{slug}/index"
+            (template, context) = render_markdown(slug_with_index, request=request)
+            _set_in_cache_if_enabled(slug_with_index, template, context)
+        except FileNotFoundError:
+            raise Http404(f"{slug} cannot be found")
 
     response = render(
         request,
