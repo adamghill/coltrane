@@ -69,6 +69,7 @@ self
 static/index
 static/installation
 static/cli
+static/hosting
 ```
 
 ```{toctree}
