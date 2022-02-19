@@ -12,7 +12,6 @@ from django.template.library import InvalidTemplateLibrary, import_library
 
 from dotenv import load_dotenv
 
-from coltrane.config.paths import get_output_directory
 from coltrane.config.settings import DEFAULT_COLTRANE_SETTINGS
 
 from .utils import dict_merge
@@ -103,6 +102,7 @@ def _get_default_template_settings(base_dir: Path):
     builtins = [
         "django.contrib.humanize.templatetags.humanize",
         "django.templatetags.static",
+        "coltrane.templatetags.coltrane_tags",
     ]
     builtins.extend(template_tags)
 
@@ -116,6 +116,7 @@ def _get_default_template_settings(base_dir: Path):
                 "context_processors": [
                     "django.template.context_processors.request",
                     "django.template.context_processors.debug",
+                    "django.template.context_processors.static",
                 ],
             },
         }
@@ -186,7 +187,7 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
 
     if is_whitenoise_installed:
         middleware.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
-        installed_apps.insert(len(installed_apps) - 1, "whitenoise.runserver_nostatic")
+        installed_apps.insert(0, "whitenoise.runserver_nostatic")
 
     if debug and not is_build_management_command:
         # Add settings required for django-browser-reload when appropriate
