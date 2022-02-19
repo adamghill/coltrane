@@ -1,3 +1,10 @@
+# 0.15.0
+
+- [`directory_contents`](templates#coltrane-template-tags) template tag
+- add [`django-fastdev`](https://github.com/boxed/django-fastdev) for more immediate feedback when an invalid template variable is used
+- show error message if a markdown file cannot be output to HTML
+- fix bug where `index.md` files in a sub-directory were not output correctly
+
 # 0.14.0
 
 - Add `--output` option to `record` command [#19](https://github.com/adamghill/coltrane/issues/19) by [stlk](https://github.com/stlk)

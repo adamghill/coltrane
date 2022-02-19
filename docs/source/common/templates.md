@@ -69,6 +69,7 @@ The specified template context includes:
 - `now` which provides the current `datetime` (would be the time of HTML rendering for static site)
 - `request` which provides the current request for an integrated or standalone site
 - `debug` which contains the the `DEBUG` setting for an integrated or standalone site (if `INTERNAL_IPS` has the current request's IP which is usually `127.0.0.1` for local development)
+- `slug` which contains the current file's "slug" (would be `articles/some-new-article` if there was a markdown file at `content/articles/some-new-article.md`)
 
 **`data/index.json`**
 
@@ -110,6 +111,68 @@ Current datetime: {{ now }}
 ## Template tags
 
 Template tags are the way for Django templates to use Python code. Django has a [large list of built-in template tags](https://docs.djangoproject.com/en/stable/ref/templates/builtins/) for everything from looping over objects, date formatting, boolean logic with `if`/`else` blocks, or getting the length of an object. By default, all template tags in Django are available in markdown content files.
+
+### Coltrane template tags
+
+#### `directory_contents`
+
+A list of the content at a particular directory.
+
+**List markdown files based on the request path**
+
+If the request url is https://localhost:8000/ and there are these files:
+
+- content/test1.md
+- content/test2.md
+
+```markdown
+# Contents
+
+{% directory_contents as directory_contents %}
+
+{% for content in directory_contents %}
+
+- {{ content.slug }}
+
+{% endfor %}
+```
+
+```html
+<h1 id="contents">Contents</h1>
+
+<ul>
+  <li>test1</li>
+  <li>test2</li>
+</ul>
+```
+
+**List markdown files based on a particular directory**
+
+If the request url is https://localhost:8000/ and there are these files:
+
+- content/articles/article1.md
+- content/articles/article2.md
+
+```markdown
+# Articles
+
+{% directory_contents "articles" as directory_contents %}
+
+{% for content in directory_contents %}
+
+- {{ content.slug }}
+
+{% endfor %}
+```
+
+```html
+<h1 id="articles">Articles</h1>
+
+<ul>
+  <li>article1</li>
+  <li>article2</li>
+</ul>
+```
 
 ### Humanize template tags
 
