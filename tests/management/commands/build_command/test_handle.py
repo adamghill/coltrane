@@ -152,3 +152,46 @@ def test_handle_skip_because_md5(_call_collectstatic, tmp_path, build_command):
     assert build_command.output_result_counts.create_count == 0
     assert build_command.output_result_counts.update_count == 0
     assert build_command.output_result_counts.skip_count == 1
+
+
+@pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_threads(_call_collectstatic, tmp_path, build_command):
+    _reset_settings(tmp_path)
+
+    # Create content directory
+    (tmp_path / "content").mkdir()
+
+    build_command.handle(threads=3)
+
+    assert build_command.threads_count == 3
+
+
+@pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_invalid_threads_count(_call_collectstatic, tmp_path, build_command):
+    _reset_settings(tmp_path)
+
+    # Create content directory
+    (tmp_path / "content").mkdir()
+
+    build_command.handle(threads="asdf")
+
+    assert build_command.threads_count == 2  # default number of threads
+
+
+@pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+@patch("coltrane.management.commands.build.cpu_count")
+def test_handle_cpu_count_exception(
+    cpu_count, _call_collectstatic, tmp_path, build_command
+):
+    cpu_count.side_effect = Exception()
+    _reset_settings(tmp_path)
+
+    # Create content directory
+    (tmp_path / "content").mkdir()
+
+    build_command.handle()
+
+    assert build_command.threads_count == 2  # default number of threads

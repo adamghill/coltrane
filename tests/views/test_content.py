@@ -54,6 +54,34 @@ def test_index_without_slash(client, tmp_path: Path):
     assert '<h1 id="index">index</h1>' in actual
 
 
+def test_directory_index_with_slash(client, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content/dir").mkdir()
+    (tmp_path / "content/dir/index.md").write_text("# dir")
+
+    response = client.get("/dir/")
+    assert response.status_code == 200
+
+    actual = response.content.decode()
+    assert '<h1 id="dir">dir</h1>' in actual
+
+
+def test_directory_index_without_slash(client, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content/dir").mkdir()
+    (tmp_path / "content/dir/index.md").write_text("# dir")
+
+    response = client.get("/dir")
+    assert response.status_code == 200
+
+    actual = response.content.decode()
+    assert '<h1 id="dir">dir</h1>' in actual
+
+
 def test_url_slug(client, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 

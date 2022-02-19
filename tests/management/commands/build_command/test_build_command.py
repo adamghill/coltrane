@@ -73,6 +73,28 @@ def test_build_command_index_md(_call_collectstatic, tmp_path):
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_build_command_directory_index_md(_call_collectstatic, tmp_path):
+    _reset_settings(tmp_path)
+
+    # Create content file
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content/dir").mkdir()
+    (tmp_path / "content/dir/index.md").write_text("# dir")
+
+    assert not (tmp_path / "output.json").exists()
+
+    _call_build_command()
+
+    _call_collectstatic.assert_called_once()
+
+    assert (tmp_path / "output").exists()
+    assert (tmp_path / "output/dir").exists()
+    assert (tmp_path / "output/dir/index.html").exists()
+    assert (tmp_path / "output.json").exists()
+
+
+@pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
 def test_build_command_updates_output_manifest(_call_collectstatic, tmp_path):
     _reset_settings(tmp_path)
 

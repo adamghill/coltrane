@@ -2,7 +2,7 @@ from pathlib import Path
 
 from django.conf import settings
 
-from coltrane.renderer import render_markdown
+from coltrane.renderer import StaticRequest, render_markdown
 
 
 def test_render_markdown(tmp_path: Path):
@@ -22,7 +22,9 @@ test data
     expected_content = "<p>test data</p>\n"
     expected_data = {}
 
-    (actual_template, actual_context) = render_markdown("test-2")
+    static_request = StaticRequest(path="/")
+
+    (actual_template, actual_context) = render_markdown("test-2", static_request)
 
     assert actual_template == expected_template
     assert actual_context.get("content") == expected_content

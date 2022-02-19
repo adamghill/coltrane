@@ -32,6 +32,7 @@ DEFAULT_SETTINGS = {
     "STATICFILES_DIRS": ANY,
     "LOGGING": ANY,
     "COLTRANE": deepcopy(DEFAULT_COLTRANE_SETTINGS),
+    "SETTINGS_MODULE": "coltrane",
 }
 
 
@@ -45,7 +46,7 @@ def _get_settings_with_whitenoise():
     )
 
     settings["INSTALLED_APPS"] = deepcopy(DEFAULT_INSTALLED_APPS)
-    settings["INSTALLED_APPS"].insert(2, "whitenoise.runserver_nostatic")
+    settings["INSTALLED_APPS"].insert(0, "whitenoise.runserver_nostatic")
 
     settings["MIDDLEWARE"] = deepcopy(DEFAULT_MIDDLEWARE_SETTINGS)
     settings["MIDDLEWARE"].insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
