@@ -40,6 +40,7 @@ DEFAULT_MIDDLEWARE_SETTINGS = [
 DEFAULT_INSTALLED_APPS = [
     "django.contrib.humanize",
     "django.contrib.staticfiles",
+    "django_fastdev",
     "coltrane",
 ]
 
@@ -226,6 +227,9 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
             },
         },
         "COLTRANE": DEFAULT_COLTRANE_SETTINGS,
+        # Hard-coding `SETTINGS_MODULE` even though it kind of doesn't make sense, but
+        # is needed for rendering a nice 500 page on local when debugging
+        "SETTINGS_MODULE": "coltrane",
     }
 
     if is_whitenoise_installed:

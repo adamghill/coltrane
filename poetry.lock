@@ -188,6 +188,17 @@ python-versions = ">=3.7"
 Django = ">=2.2"
 
 [[package]]
+name = "django-fastdev"
+version = "1.3.0"
+description = "Django-fastdev is an app that makes it faster and more fun to develop Django apps"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = ">=2.0"
+
+[[package]]
 name = "django-stubs"
 version = "1.9.0"
 description = "Mypy stubs for Django"
@@ -1049,7 +1060,7 @@ docs = ["Sphinx", "linkify-it-py", "myst-parser", "furo", "sphinx-copybutton", "
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "0922453937418ecb0f6de8faa27e10664097f4c4141875d086fa6770b272a056"
+content-hash = "feabd72f552f818016c55f3d31c08191efddfc13f88536b11aa3896408f00417"
 
 [metadata.files]
 alabaster = [
@@ -1150,6 +1161,9 @@ django = [
 django-browser-reload = [
     {file = "django-browser-reload-1.3.0.tar.gz", hash = "sha256:3f9ce1578d23b9ab6af4bf3c9a4416cfea4c9af9e8aca81e0973157a76588285"},
     {file = "django_browser_reload-1.3.0-py3-none-any.whl", hash = "sha256:790e4d9c0a9738437d41ac812741c3f52cc8cd65edad426cabb2f85bde6b94cc"},
+]
+django-fastdev = [
+    {file = "django-fastdev-1.3.0.tar.gz", hash = "sha256:465a35dd6a1609580d4875ffedf52beab49d2c0a9ba5ed91fa17be6c6032b983"},
 ]
 django-stubs = [
     {file = "django-stubs-1.9.0.tar.gz", hash = "sha256:664843091636a917faf5256d028476559dc360fdef9050b6df87ab61b21607bf"},
