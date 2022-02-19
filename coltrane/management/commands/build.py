@@ -32,6 +32,7 @@ class Command(BaseCommand):
     help = "Build all static HTML files and put them into a directory named output."
 
     is_force = False
+    threads_count = 2
     manifest = None
     output_result_counts = SimpleNamespace(create_count=0, update_count=0, skip_count=0)
 
@@ -119,7 +120,7 @@ class Command(BaseCommand):
 
             rendered_html = item.render_html()
 
-            item.generated_file.write_text(rendered_html)
+            item.generated_file_path.write_text(rendered_html)
             self.manifest.add(markdown_file)
 
     def _success(self, text: str, ending="\n") -> None:
@@ -196,35 +197,39 @@ class Command(BaseCommand):
             self.is_force = True
             self._success("Force update because static file(s) updated")
 
-        threads_count = 2
-
         if "threads" in options and options["threads"]:
             try:
-                threads_count = int(options["threads"])
+                self.threads_count = int(options["threads"])
             except ValueError:
                 pass
         else:
             try:
-                threads_count = (cpu_count() // 2) - 1
+                self.threads_count = (cpu_count() // 2) - 1
             except Exception as ex:
                 logger.exception(ex)
 
         spinner.start("Create HTML files")
+        errors = []
 
-        with ThreadPoolExecutor(max_workers=threads_count) as executor:
-            logger.debug(f"Multithread with {threads_count} threads")
-            pluralized_threads = "s" if threads_count > 1 else ""
-            spinner.text = (
-                f"Create HTML files (use {threads_count} thread{pluralized_threads})"
-            )
+        with ThreadPoolExecutor(max_workers=self.threads_count) as executor:
+            logger.debug(f"Multithread with {self.threads_count} threads")
+            pluralized_threads = "s" if self.threads_count > 1 else ""
+            spinner.text = f"Create HTML files (use {self.threads_count} thread{pluralized_threads})"
 
             for path in get_content_paths():
-                # TODO: what happens if one thread throws an exception?
-                executor.submit(self._output_markdown_file, path)
+                future = executor.submit(self._output_markdown_file, path)
+                error = future.exception()
+
+                if error:
+                    error_message = f"Rendering {path} failed. `{error.__class__.__name__}: {error}`"
+                    errors.append(error_message)
 
         result_msg = f"Create {self.output_result_counts.create_count} HTML files, {self.output_result_counts.skip_count} unmodified, {self.output_result_counts.update_count} updated"
 
         spinner.succeed(result_msg)
+
+        for error in errors:
+            spinner.fail(error_message)
 
         if self.manifest.is_dirty:
             spinner.start("Update manifest")

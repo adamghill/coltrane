@@ -1,5 +1,6 @@
 import logging
-from typing import Dict, Optional, Tuple
+from dataclasses import dataclass
+from typing import Dict, Optional, Tuple, Union
 
 from django.http import HttpRequest
 from django.template import engines
@@ -18,6 +19,17 @@ logger = logging.getLogger(__name__)
 DEFAULT_TEMPLATE = "coltrane/content.html"
 
 
+@dataclass
+class StaticRequest:
+    """
+    Used to mock an HttpRequest when generating the HTML for static sites.
+
+    Required for `coltrane.templatetags.coltrane.current_direct
+    """
+
+    path: str
+
+
 def _get_markdown_content_as_html(slug: str) -> Dict[str, Optional[Dict]]:
     """
     Converts markdown file based on the slug into HTML.
@@ -33,7 +45,9 @@ def _get_markdown_content_as_html(slug: str) -> Dict[str, Optional[Dict]]:
 
     # TODO: hasattr(content, "toc_html")
 
-    return (str(content), content.metadata)
+    metadata = content.metadata
+
+    return (str(content), metadata)
 
 
 def _render_html_with_django(
@@ -50,7 +64,23 @@ def _render_html_with_django(
     return str(template.render(context=context, request=request))
 
 
-def render_markdown(slug: str, request: HttpRequest = None) -> Tuple[str, Dict]:
+def get_html_and_markdown(slug: str) -> Tuple[str, Dict]:
+    (html, metadata) = _get_markdown_content_as_html(slug)
+
+    if not metadata:
+        metadata = {}
+
+    if "template" not in metadata:
+        metadata["template"] = DEFAULT_TEMPLATE
+
+    # TODO: If "title" is not in metadata, grab the first h1 nad use that as the title
+
+    return (html, metadata)
+
+
+def render_markdown(
+    slug: str, request: Union[HttpRequest, StaticRequest]
+) -> Tuple[str, Dict]:
     """
     Renders the markdown from the `slug` by:
     1. Rendering the markdown file into HTML
@@ -61,15 +91,10 @@ def render_markdown(slug: str, request: HttpRequest = None) -> Tuple[str, Dict]:
         Tuple of template file name (i.e. `coltrane/content.html`) and context dictionary.
     """
 
-    (html, metadata) = _get_markdown_content_as_html(slug)
-
-    if not metadata:
-        metadata = {}
-
-    if "template" not in metadata:
-        metadata["template"] = DEFAULT_TEMPLATE
+    (html, metadata) = get_html_and_markdown(slug)
 
     context = {"now": now}
+    context["slug"] = slug
 
     # Start with any metadata from the markdown frontmatter
     context.update(metadata)

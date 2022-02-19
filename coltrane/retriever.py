@@ -65,12 +65,15 @@ def get_data() -> Dict:
     return data
 
 
-def get_content_paths() -> Iterable[Path]:
+def get_content_paths(slug: str = None) -> Iterable[Path]:
     """
     Yield `Path`s for all markdown content in the content directory.
     """
 
     directory = get_content_directory()
+
+    if slug:
+        directory = directory / slug
 
     if not directory.exists():
         raise FileNotFoundError(f"Directory does not exist: {directory}")

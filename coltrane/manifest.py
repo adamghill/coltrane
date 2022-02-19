@@ -5,14 +5,9 @@ from pathlib import Path
 from typing import Dict, Optional
 
 from django.template.loader import render_to_string
-from django.utils.html import mark_safe  # type: ignore
 
-from coltrane.config.paths import (
-    get_output_directory,
-    get_output_directory_name,
-    get_staticfiles_json,
-)
-from coltrane.renderer import render_markdown
+from coltrane.config.paths import get_output_directory, get_staticfiles_json
+from coltrane.renderer import StaticRequest, render_markdown
 
 
 @dataclass
@@ -32,7 +27,7 @@ class ManifestItem:
         self._md5 = md5
 
     @property
-    def slug(self):
+    def slug(self) -> str:
         """
         The name minus the extension. Not exactly a slug because it could contain a
         forward slash for directories.
@@ -41,7 +36,7 @@ class ManifestItem:
         return self.name.replace(".md", "")
 
     @property
-    def name(self):
+    def name(self) -> str:
         """
         The name of the markdown file. Does not contain the whole path, it would contain
         everything after the `content` directory. Does contain the extension.
@@ -51,6 +46,25 @@ class ManifestItem:
         """
 
         return self._name
+
+    @property
+    def directory(self) -> str:
+        """
+        The directories before the file name.
+
+        For example: the `path` of `/tmp/new-site/content/2022/new-file.md`
+            would be `2022/`.
+        """
+
+        _directory = ""
+
+        try:
+            last_slash_idx = self.name.rindex("/")
+            _directory = self.name[0:last_slash_idx]
+        except ValueError:
+            pass
+
+        return f"/{_directory}"
 
     @property
     def mtime(self):
@@ -69,44 +83,35 @@ class ManifestItem:
         return self._md5
 
     @property
-    def generated_file(self) -> Path:
+    def generated_file_path(self) -> Path:
         """
         The generated file path for the markdown file.
         """
 
-        output_directory = get_output_directory()
-        generated_file = output_directory / "index.html"
+        item_path = get_output_directory()
 
-        if self.name != "index.md":
-            item_path = output_directory
-
-            for path in self.slug.split("/"):
+        for path in self.slug.split("/"):
+            if path != "index":
                 item_path = item_path / path
                 item_path.mkdir(exist_ok=True)
 
-            generated_file = item_path / "index.html"
+        # index.md files be at the root as index.html
+        if str(item_path).endswith("/index"):
+            item_path = Path(str(item_path)[:-6])
 
-        return generated_file
+        generated_file_path = item_path / "index.html"
 
-    @property
-    def generated_file_name(self) -> str:
-        """
-        The generated file name for the markdown file.
-        """
-
-        generated_file_name = "index.html"
-
-        if self.name != "index.md":
-            generated_file_name = f"{self.slug}/index.html"
-
-        return generated_file_name
+        return generated_file_path
 
     def render_html(self):
         """
         Renders the markdown file into HTML.
         """
 
-        (template, context) = render_markdown(self.slug)
+        # Mock an HttpRequest when generating the HTML for static sites
+        request = StaticRequest(path=self.directory)
+
+        (template, context) = render_markdown(self.slug, request)
         rendered_html = render_to_string(template, context)
 
         return rendered_html
