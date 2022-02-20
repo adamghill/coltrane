@@ -7,6 +7,7 @@ from django.template import engines
 from django.utils.html import mark_safe  # type: ignore
 from django.utils.timezone import now
 
+import dateparser
 from markdown2 import markdown_path
 
 from .config.paths import get_content_directory
@@ -67,13 +68,21 @@ def _render_html_with_django(
 def get_html_and_markdown(slug: str) -> Tuple[str, Dict]:
     (html, metadata) = _get_markdown_content_as_html(slug)
 
-    if not metadata:
+    if metadata is None:
         metadata = {}
 
     if "template" not in metadata:
         metadata["template"] = DEFAULT_TEMPLATE
 
-    # TODO: If "title" is not in metadata, grab the first h1 nad use that as the title
+    metadata["slug"] = slug
+
+    if "date" in metadata:
+        metadata["date"] = dateparser.parse(metadata["date"])
+
+    if "draft" in metadata:
+        metadata["draft"] = metadata["draft"] == "true"
+
+    metadata["now"] = now
 
     return (html, metadata)
 
@@ -93,8 +102,7 @@ def render_markdown(
 
     (html, metadata) = get_html_and_markdown(slug)
 
-    context = {"now": now}
-    context["slug"] = slug
+    context = {}
 
     # Start with any metadata from the markdown frontmatter
     context.update(metadata)

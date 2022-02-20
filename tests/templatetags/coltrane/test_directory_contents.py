@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest.mock import ANY
 
 from django.conf import settings
 
@@ -12,7 +13,13 @@ def test_directory_contents(tmp_path: Path):
     (tmp_path / "content/test.md").write_text("test data")
 
     context = {"request": StaticRequest("/")}
-    expected = [{"slug": "test", "title": None}]
+    expected = [
+        {
+            "template": "coltrane/content.html",
+            "slug": "test",
+            "now": ANY,
+        }
+    ]
     actual = directory_contents(context)
 
     assert actual == expected
@@ -25,7 +32,13 @@ def test_directory_contents_subdirectory_content(tmp_path: Path):
     (tmp_path / "content/test/test.md").write_text("test data")
 
     context = {"request": StaticRequest("/test")}
-    expected = [{"slug": "test/test", "title": None}]
+    expected = [
+        {
+            "template": "coltrane/content.html",
+            "slug": "test/test",
+            "now": ANY,
+        }
+    ]
     actual = directory_contents(context)
 
     assert actual == expected
@@ -51,7 +64,13 @@ def test_directory_contents_explicit_directory(tmp_path: Path):
     (tmp_path / "content/test/test.md").write_text("index")
 
     context = {"request": StaticRequest("/")}
-    expected = [{"slug": "test/test", "title": None}]
+    expected = [
+        {
+            "template": "coltrane/content.html",
+            "slug": "test/test",
+            "now": ANY,
+        }
+    ]
     actual = directory_contents(context, directory="test")
 
     assert actual == expected
@@ -70,7 +89,14 @@ index
     )
 
     context = {"request": StaticRequest("/")}
-    expected = [{"slug": "test", "title": "this is a title"}]
+    expected = [
+        {
+            "template": "coltrane/content.html",
+            "slug": "test",
+            "title": "this is a title",
+            "now": ANY,
+        }
+    ]
     actual = directory_contents(context)
 
     assert actual == expected

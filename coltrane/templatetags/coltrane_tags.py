@@ -41,8 +41,7 @@ def directory_contents(context, directory: str = None) -> Dict[str, str]:
                 continue
 
             (_, metadata) = get_html_and_markdown(content_slug)
-            title = metadata.get("title")
 
-            contents.append({"slug": content_slug, "title": title})
+            contents.append(metadata)
 
     return contents
