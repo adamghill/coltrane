@@ -81,6 +81,11 @@ class IncludeMarkdownNode(Node):
 
         (html, metadata) = render_markdown_path(template.origin.name)
 
+        for c in context:
+            for key, value in c.items():
+                if key not in metadata:
+                    metadata[key] = value
+
         return render_html_with_django(html, metadata)
 
 
