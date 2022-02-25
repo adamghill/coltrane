@@ -31,16 +31,15 @@ class StaticRequest:
     path: str
 
 
-def _get_markdown_content_as_html(slug: str) -> Dict[str, Optional[Dict]]:
+def render_markdown_path(path) -> Dict[str, Optional[Dict]]:
     """
-    Converts markdown file based on the slug into HTML.
+    Renders the markdown file located at path.
     """
 
-    file_path = get_content_directory() / f"{slug}.md"
     markdown_extras = get_markdown_extras()
 
     content = markdown_path(
-        file_path,
+        path,
         extras=markdown_extras,
     )
 
@@ -51,7 +50,17 @@ def _get_markdown_content_as_html(slug: str) -> Dict[str, Optional[Dict]]:
     return (str(content), metadata)
 
 
-def _render_html_with_django(
+def _get_markdown_content_as_html(slug: str) -> Dict[str, Optional[Dict]]:
+    """
+    Converts markdown file based on the slug into HTML.
+    """
+
+    path = get_content_directory() / f"{slug}.md"
+
+    return render_markdown_path(path)
+
+
+def render_html_with_django(
     html: str, context: Dict, request: HttpRequest = None
 ) -> str:
     """
@@ -112,7 +121,7 @@ def render_markdown(
     context["data"] = data
 
     # Add rendered content to the context
-    content = _render_html_with_django(html, context, request)
+    content = render_html_with_django(html, context, request)
     context["content"] = mark_safe(content)
     template = context["template"]
 
