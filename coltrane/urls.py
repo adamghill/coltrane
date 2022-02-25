@@ -1,5 +1,8 @@
 from django.conf import settings
+from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path, re_path
+
+from coltrane.sitemaps import ContentSitemap
 
 from . import views
 
@@ -13,6 +16,14 @@ if settings.DEBUG:
         path("__reload__/", include("django_browser_reload.urls")),
     ]
 
+sitemaps = {"content": ContentSitemap}
+
 urlpatterns += [
+    path(
+        "sitemap.xml",
+        sitemap,
+        {"sitemaps": sitemaps},
+        name="django.contrib.sitemaps.views.sitemap",
+    ),
     re_path(r"^(?P<slug>(\w|-|\/)*)", views.content, name="content"),
 ]

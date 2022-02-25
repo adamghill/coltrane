@@ -39,6 +39,7 @@ DEFAULT_MIDDLEWARE_SETTINGS = [
 
 DEFAULT_INSTALLED_APPS = [
     "django.contrib.humanize",
+    "django.contrib.sitemaps",
     "django.contrib.staticfiles",
     "django_fastdev",
     "coltrane",
