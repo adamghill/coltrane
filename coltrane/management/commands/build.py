@@ -1,4 +1,5 @@
 import logging
+import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 from io import StringIO
@@ -9,7 +10,7 @@ from typing import Dict
 
 from django.conf import settings
 from django.core import management
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 
 from halo import Halo
 from log_symbols.symbols import LogSymbols
@@ -55,6 +56,12 @@ class Command(BaseCommand):
             help="Output directory",
         )
 
+        parser.add_argument(
+            "--ignore",
+            action="store_true",
+            help="Ignore errors",
+        )
+
     def _load_manifest(self) -> Manifest:
         return Manifest(manifest_file=get_output_json())
 
@@ -65,7 +72,7 @@ class Command(BaseCommand):
 
         # Force DEBUG to always be `False` so that
         # whitenoise.storage.CompressedManifestStaticFilesStorage will use the static
-        # assets with hashed failenames
+        # assets with hashed filenames
         settings.DEBUG = False
 
         # TODO: Option to remove static files before re-generating
@@ -88,7 +95,7 @@ class Command(BaseCommand):
 
         collectstatic_stdout = f"Copy {collectstatic_stdout}"
 
-        # TOOD: Handle files in output.json that weren't
+        # TODO: Handle files in output.json that weren't
         # found in content? (--clean option?)
 
         return collectstatic_stdout
@@ -173,7 +180,7 @@ class Command(BaseCommand):
         collectstatic_future = self._call_collectstatic()
 
         output_directory = get_output_directory()
-        self._success("Use ", ending="")
+        self._success("Use output directory of ", ending="")
         self.stdout.write(self.style.WARNING(str(output_directory)))
         output_directory.mkdir(exist_ok=True)
 
@@ -218,27 +225,55 @@ class Command(BaseCommand):
 
             for path in get_content_paths():
                 future = executor.submit(self._output_markdown_file, path)
-                error = future.exception()
+                ex = future.exception()
 
-                if error:
-                    error_message = f"Rendering {path} failed. `{error.__class__.__name__}: {error}`"
+                if ex:
+                    error_detail = f"{ex.__class__.__name__}: {ex}"
+
+                    if ex.__class__.__name__ == "FastDevVariableDoesNotExist":
+                        error_detail = (
+                            str(ex)
+                            .replace("\n    ", ", ")
+                            .replace(":\n, ", ": ")
+                            .replace(
+                                " does not exist in context.",
+                                "' does not exist in template context.",
+                            )
+                        )[:-1]
+                        error_detail = f"'{error_detail}"
+
+                    error_message = f"Rendering {path} failed. {error_detail}"
                     errors.append(error_message)
 
         result_msg = f"Create {self.output_result_counts.create_count} HTML files, {self.output_result_counts.skip_count} unmodified, {self.output_result_counts.update_count} updated"
 
         spinner.succeed(result_msg)
 
-        for error in errors:
-            spinner.fail(error_message)
-
         if self.manifest.is_dirty:
             spinner.start("Update manifest")
             self.manifest.write_data()
             spinner.succeed()
 
+        elapsed_time = time.time() - start_time
+
+        for error_message in errors:
+            spinner.fail(error_message)
+
         self.stdout.write()
 
-        elapsed_time = time.time() - start_time
-        self.stdout.write(
-            self.style.SUCCESS(f"Static site output completed in {elapsed_time:.4f}s")
-        )
+        if errors:
+            self.stderr.write(
+                self.style.ERROR(
+                    f"Static site output completed with errors in {elapsed_time:.4f}s\n"
+                )
+            )
+
+            if "ignore" not in options or not options["ignore"]:
+                # Call sys.exit explicitly instead of CommandError for nicer error output
+                sys.exit(1)
+        else:
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Static site output completed in {elapsed_time:.4f}s"
+                )
+            )

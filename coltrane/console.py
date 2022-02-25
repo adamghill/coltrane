@@ -40,7 +40,7 @@ DEFAULT_WATCHMAN_CONFIG = """{
 }"""
 
 
-def _run_manangement_command(command_name, *args):
+def _run_management_command(command_name, *args):
     current_directory = getcwd()
     file_path = Path(current_directory) / "app.py"
 
@@ -107,7 +107,7 @@ def create(force):
 @click.command(help="Start a local development server.")
 @click.option("--port", default=8000, help="Port to serve localhost from")
 def play(port):
-    _run_manangement_command("runserver", f"0:{port}")
+    _run_management_command("runserver", f"0:{port}")
 
 
 @click.command(help="Generates HTML output.")
@@ -116,7 +116,8 @@ def play(port):
     "--threads", type=int, help="Number of threads to use when generating static files"
 )
 @click.option("--output", help="Output directory")
-def record(force, threads, output):
+@click.option("--ignore/--no-ignore", default=False, help="Ignore errors")
+def record(force, threads, output, ignore):
     args = []
 
     if force:
@@ -130,7 +131,10 @@ def record(force, threads, output):
         args.append("--threads")
         args.append(str(threads))
 
-    _run_manangement_command("build", *args)
+    if ignore:
+        args.append("--ignore")
+
+    _run_management_command("build", *args)
 
 
 cli.add_command(create)
