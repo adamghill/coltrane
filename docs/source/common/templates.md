@@ -174,6 +174,35 @@ If the request url is https://localhost:8000/ and there are these files:
 </ul>
 ```
 
+#### `include_md`
+
+Similar to the [`include`](https://docs.djangoproject.com/en/stable/ref/templates/builtins/#include) template tag, but can be used to include a markdown file and have it render correctly into HTML. It can be used in markdown files or in HTML templates.
+
+```markdown
+# include_md
+
+{% include_md '_partial.md' %}
+```
+
+```html
+<h1>include_md</h1>
+
+{% include_md '_partial.md' %}
+```
+
+#### `parent`
+
+A `filter` that returns the parent directory for a particular path. Can be passed a `request` or a `string`.
+
+```html
+<!-- request of http://localhost/articles/some-article -->
+{{ request|parent }} == '/articles'
+```
+
+```html
+{{ 'http://localhost/articles/some-article'|parent|parent }} == ''
+```
+
 ### Humanize template tags
 
 `django.contrib.humanize` [includes a useful template tags](https://docs.djangoproject.com/en/stable/ref/contrib/humanize/) to format numbers and dates in human-friendly ways. Normally it needs to be enabled and loaded in templates manually, but `coltrane` enables it by default so it is available to use in markdown content files automatically.

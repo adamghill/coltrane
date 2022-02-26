@@ -1,15 +1,23 @@
+# 0.16.0
+
+- Output an error if rendering fails during `record` command
+- `include_md` template tag
+- `parent` filter
+- Serving of `/sitemap.xml` for standalone
+- Automatic creation of `sitemap.xml` during `record` command
+
 # 0.15.1
 
-- include all frontmatter metadata in `directory_contents` template tag output
-- parse `date` frontmatter into `datetime`
-- parse `draft` frontmatter into `boolean`
+- Include all frontmatter metadata in `directory_contents` template tag output
+- Parse `date` frontmatter into `datetime`
+- Parse `draft` frontmatter into `boolean`
 
 # 0.15.0
 
 - [`directory_contents`](templates#coltrane-template-tags) template tag
-- add [`django-fastdev`](https://github.com/boxed/django-fastdev) for more immediate feedback when an invalid template variable is used
-- show error message if a markdown file cannot be output to HTML
-- fix bug where `index.md` files in a sub-directory were not output correctly
+- Add [`django-fastdev`](https://github.com/boxed/django-fastdev) for more immediate feedback when an invalid template variable is used
+- Show error message if a markdown file cannot be output to HTML
+- Fix bug where `index.md` files in a sub-directory were not output correctly
 
 # 0.14.0
 

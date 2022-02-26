@@ -56,3 +56,9 @@ By default `coltrane` will write all files to a directory named `output`. But, t
 By default `coltrane` tries to use the optimal number of threads. But, the number of threads to use can be overriden with `--threads`.
 
 `poetry run coltrane record --threads 2`
+
+### Ignore errors
+
+By default `coltrane` will exit with a status code of 1 if there is an error while rendering the markdown into HTML. Those errors can be ignore with `--ignore`.
+
+`poetry run coltrane record --ignore`
