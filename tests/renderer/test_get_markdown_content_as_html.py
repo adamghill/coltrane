@@ -1,12 +1,10 @@
 from pathlib import Path
 
-from django.conf import settings
-
 from coltrane.config.settings import DEFAULT_MARKDOWN_EXTRAS
 from coltrane.renderer import _get_markdown_content_as_html
 
 
-def test_get_markdown_content_as_html_with_frontmatter(tmp_path: Path):
+def test_get_markdown_content_as_html_with_frontmatter(settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
     (tmp_path / "content").mkdir()
@@ -27,7 +25,7 @@ test data
     assert actual == expected
 
 
-def test_get_markdown_content_as_html_extras_settings(tmp_path: Path):
+def test_get_markdown_content_as_html_extras_settings(settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
     setattr(settings, "COLTRANE", {})
     settings.COLTRANE["MARKDOWN_EXTRAS"] = [

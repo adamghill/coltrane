@@ -10,7 +10,7 @@ from typing import Dict
 
 from django.conf import settings
 from django.core import management
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from halo import Halo
 from log_symbols.symbols import LogSymbols
@@ -168,6 +168,7 @@ class Command(BaseCommand):
         self.output_result_counts.create_count = 0
         self.output_result_counts.update_count = 0
         self.output_result_counts.skip_count = 0
+        self.errors = []
 
         start_time = time.time()
 
@@ -216,7 +217,6 @@ class Command(BaseCommand):
                 logger.exception(ex)
 
         spinner.start("Create HTML files")
-        errors = []
 
         with ThreadPoolExecutor(max_workers=self.threads_count) as executor:
             logger.debug(f"Multithread with {self.threads_count} threads")
@@ -243,7 +243,7 @@ class Command(BaseCommand):
                         error_detail = f"'{error_detail}"
 
                     error_message = f"Rendering {path} failed. {error_detail}"
-                    errors.append(error_message)
+                    self.errors.append(error_message)
 
         result_msg = f"Create {self.output_result_counts.create_count} HTML files, {self.output_result_counts.skip_count} unmodified, {self.output_result_counts.update_count} updated"
 
@@ -256,12 +256,12 @@ class Command(BaseCommand):
 
         elapsed_time = time.time() - start_time
 
-        for error_message in errors:
+        for error_message in self.errors:
             spinner.fail(error_message)
 
         self.stdout.write()
 
-        if errors:
+        if self.errors:
             self.stderr.write(
                 self.style.ERROR(
                     f"Static site output completed with errors in {elapsed_time:.4f}s\n"

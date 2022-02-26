@@ -1,10 +1,8 @@
 from pathlib import Path
 from unittest.mock import call, patch
 
-from django.conf import settings
 
-
-def test_404(client, tmp_path: Path):
+def test_404(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
     (tmp_path / "content").mkdir()
 
@@ -12,7 +10,7 @@ def test_404(client, tmp_path: Path):
     assert response.status_code == 404
 
 
-def test_404_directory_parent_traversal(client, tmp_path: Path):
+def test_404_directory_parent_traversal(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
     (tmp_path / "content").mkdir()
 
@@ -20,7 +18,7 @@ def test_404_directory_parent_traversal(client, tmp_path: Path):
     assert response.status_code == 404
 
 
-def test_404_directory_home_traversal(client, tmp_path: Path):
+def test_404_directory_home_traversal(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
     (tmp_path / "content").mkdir()
 
@@ -28,7 +26,7 @@ def test_404_directory_home_traversal(client, tmp_path: Path):
     assert response.status_code == 404
 
 
-def test_index_with_slash(client, tmp_path: Path):
+def test_index_with_slash(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
     (tmp_path / "content").mkdir()
@@ -41,7 +39,7 @@ def test_index_with_slash(client, tmp_path: Path):
     assert '<h1 id="index">index</h1>' in actual
 
 
-def test_index_without_slash(client, tmp_path: Path):
+def test_index_without_slash(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
     (tmp_path / "content").mkdir()
@@ -54,7 +52,7 @@ def test_index_without_slash(client, tmp_path: Path):
     assert '<h1 id="index">index</h1>' in actual
 
 
-def test_directory_index_with_slash(client, tmp_path: Path):
+def test_directory_index_with_slash(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
     (tmp_path / "content").mkdir()
@@ -68,7 +66,7 @@ def test_directory_index_with_slash(client, tmp_path: Path):
     assert '<h1 id="dir">dir</h1>' in actual
 
 
-def test_directory_index_without_slash(client, tmp_path: Path):
+def test_directory_index_without_slash(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
     (tmp_path / "content").mkdir()
@@ -82,7 +80,7 @@ def test_directory_index_without_slash(client, tmp_path: Path):
     assert '<h1 id="dir">dir</h1>' in actual
 
 
-def test_url_slug(client, tmp_path: Path):
+def test_url_slug(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
     (tmp_path / "content").mkdir()
@@ -95,7 +93,7 @@ def test_url_slug(client, tmp_path: Path):
     assert '\n<h1 id="test-this">test this</h1>\n\n' in actual
 
 
-def test_url_slug_with_data(client, tmp_path: Path):
+def test_url_slug_with_data(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
     (tmp_path / "content").mkdir()
@@ -109,7 +107,7 @@ def test_url_slug_with_data(client, tmp_path: Path):
     assert "\n<p>test data 1</p>\n\n" in actual
 
 
-def test_url_slug_cache_headers(client, tmp_path: Path):
+def test_url_slug_cache_headers(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
     settings.COLTRANE = {"VIEW_CACHE": {"SECONDS": 15}}
 
@@ -128,7 +126,7 @@ def test_url_slug_cache_headers(client, tmp_path: Path):
     assert response.headers.get("Expires") == original_expires
 
 
-def test_url_slug_cache(client, tmp_path: Path):
+def test_url_slug_cache(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
     settings.COLTRANE = {"VIEW_CACHE": {"SECONDS": 15}}
 

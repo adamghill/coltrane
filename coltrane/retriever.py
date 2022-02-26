@@ -41,7 +41,7 @@ def get_data() -> Dict:
     data_directory = get_data_directory()
 
     for path in data_directory.rglob("*.json"):
-        if path.is_file:
+        if path.is_file():
             directory_without_base_and_file_name = (
                 (str(path)).replace(str(data_directory), "").replace(path.name, "")
             )
@@ -81,5 +81,5 @@ def get_content_paths(slug: str = None) -> Iterable[Path]:
     paths = directory.rglob("*.md")
 
     for path in paths:
-        if path.is_file:
+        if path.is_file():
             yield path

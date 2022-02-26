@@ -9,14 +9,14 @@ from . import views
 
 app_name = "coltrane"
 
+sitemaps = {"content": ContentSitemap}
+
 urlpatterns = []
 
 if settings.DEBUG:
     urlpatterns += [
         path("__reload__/", include("django_browser_reload.urls")),
     ]
-
-sitemaps = {"content": ContentSitemap}
 
 urlpatterns += [
     path(

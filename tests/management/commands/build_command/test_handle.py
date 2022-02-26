@@ -2,8 +2,6 @@ import json
 from hashlib import md5
 from unittest.mock import patch
 
-from django.conf import settings
-
 import pytest
 
 from coltrane.management.commands.build import Command
@@ -18,7 +16,7 @@ def build_command():
     return cmd
 
 
-def _reset_settings(tmp_path):
+def _reset_settings(settings, tmp_path):
     settings.BASE_DIR = tmp_path
     settings.STATIC_ROOT = tmp_path / "output" / "static"
 
@@ -33,8 +31,8 @@ def create_markdown_file(tmp_path):
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_force_false(_call_collectstatic, tmp_path, build_command):
-    _reset_settings(tmp_path)
+def test_handle_force_false(_call_collectstatic, settings, tmp_path, build_command):
+    _reset_settings(settings, tmp_path)
 
     # Create content directory
     (tmp_path / "content").mkdir()
@@ -46,8 +44,8 @@ def test_handle_force_false(_call_collectstatic, tmp_path, build_command):
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_force_true(_call_collectstatic, tmp_path, build_command):
-    _reset_settings(tmp_path)
+def test_handle_force_true(_call_collectstatic, settings, tmp_path, build_command):
+    _reset_settings(settings, tmp_path)
 
     # Create content directory
     (tmp_path / "content").mkdir()
@@ -61,9 +59,9 @@ def test_handle_force_true(_call_collectstatic, tmp_path, build_command):
 @patch("coltrane.management.commands.build.Command._load_manifest", spec=Manifest)
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
 def test_handle_static_files_changed_is_force(
-    _call_collectstatic, _load_manifest, tmp_path, build_command
+    _call_collectstatic, _load_manifest, settings, tmp_path, build_command
 ):
-    _reset_settings(tmp_path)
+    _reset_settings(settings, tmp_path)
 
     # Create content directory
     (tmp_path / "content").mkdir()
@@ -77,8 +75,8 @@ def test_handle_static_files_changed_is_force(
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_create(_call_collectstatic, tmp_path, build_command):
-    _reset_settings(tmp_path)
+def test_handle_create(_call_collectstatic, settings, tmp_path, build_command):
+    _reset_settings(settings, tmp_path)
 
     create_markdown_file(tmp_path)
 
@@ -91,8 +89,8 @@ def test_handle_create(_call_collectstatic, tmp_path, build_command):
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_update(_call_collectstatic, tmp_path, build_command):
-    _reset_settings(tmp_path)
+def test_handle_update(_call_collectstatic, settings, tmp_path, build_command):
+    _reset_settings(settings, tmp_path)
 
     create_markdown_file(tmp_path)
 
@@ -110,8 +108,10 @@ def test_handle_update(_call_collectstatic, tmp_path, build_command):
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_skip_because_mtime(_call_collectstatic, tmp_path, build_command):
-    _reset_settings(tmp_path)
+def test_handle_skip_because_mtime(
+    _call_collectstatic, settings, tmp_path, build_command
+):
+    _reset_settings(settings, tmp_path)
 
     markdown_file = create_markdown_file(tmp_path)
 
@@ -133,8 +133,10 @@ def test_handle_skip_because_mtime(_call_collectstatic, tmp_path, build_command)
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_skip_because_md5(_call_collectstatic, tmp_path, build_command):
-    _reset_settings(tmp_path)
+def test_handle_skip_because_md5(
+    _call_collectstatic, settings, tmp_path, build_command
+):
+    _reset_settings(settings, tmp_path)
 
     markdown_file = create_markdown_file(tmp_path)
 
@@ -156,8 +158,8 @@ def test_handle_skip_because_md5(_call_collectstatic, tmp_path, build_command):
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_threads(_call_collectstatic, tmp_path, build_command):
-    _reset_settings(tmp_path)
+def test_handle_threads(_call_collectstatic, settings, tmp_path, build_command):
+    _reset_settings(settings, tmp_path)
 
     # Create content directory
     (tmp_path / "content").mkdir()
@@ -169,8 +171,10 @@ def test_handle_threads(_call_collectstatic, tmp_path, build_command):
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_invalid_threads_count(_call_collectstatic, tmp_path, build_command):
-    _reset_settings(tmp_path)
+def test_handle_invalid_threads_count(
+    _call_collectstatic, settings, tmp_path, build_command
+):
+    _reset_settings(settings, tmp_path)
 
     # Create content directory
     (tmp_path / "content").mkdir()
@@ -184,10 +188,10 @@ def test_handle_invalid_threads_count(_call_collectstatic, tmp_path, build_comma
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
 @patch("coltrane.management.commands.build.cpu_count")
 def test_handle_cpu_count_exception(
-    cpu_count, _call_collectstatic, tmp_path, build_command
+    cpu_count, _call_collectstatic, settings, tmp_path, build_command
 ):
     cpu_count.side_effect = Exception()
-    _reset_settings(tmp_path)
+    _reset_settings(settings, tmp_path)
 
     # Create content directory
     (tmp_path / "content").mkdir()
@@ -195,3 +199,66 @@ def test_handle_cpu_count_exception(
     build_command.handle()
 
     assert build_command.threads_count == 2  # default number of threads
+
+
+@pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_template_error_exit_with_1(
+    _call_collectstatic, settings, tmp_path, build_command
+):
+    _reset_settings(settings, tmp_path)
+
+    # Force debug to be true to surface template error
+    settings.DEBUG = True
+
+    # Create content file
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content" / "test-1.md").write_text("{{sadf}}")
+
+    with pytest.raises(SystemExit) as exit:
+        build_command.handle()
+
+    assert exit.type == SystemExit
+    assert exit.value.code == 1
+
+
+@pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_template_error_formatted(
+    _call_collectstatic, settings, tmp_path, build_command
+):
+    _reset_settings(settings, tmp_path)
+
+    # Force debug to be true to surface template error
+    settings.DEBUG = True
+
+    # Create content file
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content" / "test-1.md").write_text("{{sadf}}")
+
+    with pytest.raises(SystemExit):
+        build_command.handle()
+
+    assert len(build_command.errors) == 1
+    assert (
+        "'sadf' does not exist in template context. Available top level variables:"
+        in build_command.errors[0]
+    )
+
+
+@pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+def test_handle_ignore_template_error(
+    _call_collectstatic, settings, tmp_path, build_command
+):
+    _reset_settings(settings, tmp_path)
+
+    # Force debug to be true to surface template error
+    settings.DEBUG = True
+
+    # Create content file
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content" / "test-1.md").write_text("{{sadf}}")
+
+    # Ignore the template error so exit isn't called
+    build_command.handle(ignore=True)

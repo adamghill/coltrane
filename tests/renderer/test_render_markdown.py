@@ -1,11 +1,9 @@
 from pathlib import Path
 
-from django.conf import settings
-
 from coltrane.renderer import StaticRequest, render_markdown
 
 
-def test_render_markdown(tmp_path: Path):
+def test_render_markdown(settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
     (tmp_path / "content").mkdir()
@@ -22,7 +20,7 @@ test data
     expected_content = "<p>test data</p>\n"
     expected_data = {}
 
-    static_request = StaticRequest(path="/")
+    static_request = StaticRequest(path="/", META={})
 
     (actual_template, actual_context) = render_markdown("test-2", static_request)
 

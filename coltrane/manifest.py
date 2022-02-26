@@ -109,10 +109,11 @@ class ManifestItem:
         """
 
         # Mock an HttpRequest when generating the HTML for static sites
-        request = StaticRequest(path=self.directory)
+        request = StaticRequest(path=self.directory, META={})
 
         (template, context) = render_markdown(self.slug, request)
         rendered_html = render_to_string(template, context)
+        print("rendered_htmlrendered_htmlrendered_html", rendered_html)
 
         return rendered_html
 

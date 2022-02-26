@@ -29,6 +29,7 @@ class StaticRequest:
     """
 
     path: str
+    META: Dict
 
 
 def render_markdown_path(path) -> Dict[str, Optional[Dict]]:

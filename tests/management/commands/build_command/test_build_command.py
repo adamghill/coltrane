@@ -1,9 +1,9 @@
 import json
 from hashlib import md5
 from io import StringIO
+from pathlib import Path
 from unittest.mock import patch
 
-from django.conf import settings
 from django.core.management import call_command
 
 import pytest
@@ -26,15 +26,15 @@ def _call_build_command(*args, **kwargs) -> str:
     return stdout.getvalue()
 
 
-def _reset_settings(tmp_path):
+def _reset_settings(settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
     settings.STATIC_ROOT = tmp_path / "output" / "static"
 
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_build_command(_call_collectstatic, tmp_path):
-    _reset_settings(tmp_path)
+def test_build_command(_call_collectstatic, settings, tmp_path):
+    _reset_settings(settings, tmp_path)
 
     # Create content file
     (tmp_path / "content").mkdir()
@@ -53,8 +53,8 @@ def test_build_command(_call_collectstatic, tmp_path):
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_build_command_index_md(_call_collectstatic, tmp_path):
-    _reset_settings(tmp_path)
+def test_build_command_index_md(_call_collectstatic, settings, tmp_path):
+    _reset_settings(settings, tmp_path)
 
     # Create content file
     (tmp_path / "content").mkdir()
@@ -73,8 +73,8 @@ def test_build_command_index_md(_call_collectstatic, tmp_path):
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_build_command_directory_index_md(_call_collectstatic, tmp_path):
-    _reset_settings(tmp_path)
+def test_build_command_directory_index_md(_call_collectstatic, settings, tmp_path):
+    _reset_settings(settings, tmp_path)
 
     # Create content file
     (tmp_path / "content").mkdir()
@@ -95,8 +95,8 @@ def test_build_command_directory_index_md(_call_collectstatic, tmp_path):
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_build_command_updates_output_manifest(_call_collectstatic, tmp_path):
-    _reset_settings(tmp_path)
+def test_build_command_updates_output_manifest(_call_collectstatic, settings, tmp_path):
+    _reset_settings(settings, tmp_path)
 
     # Create output.json
     (tmp_path / "output.json").write_text("{}")
@@ -121,8 +121,8 @@ def test_build_command_updates_output_manifest(_call_collectstatic, tmp_path):
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_build_command_force(_call_collectstatic, tmp_path):
-    _reset_settings(tmp_path)
+def test_build_command_force(_call_collectstatic, settings, tmp_path):
+    _reset_settings(settings, tmp_path)
 
     # Create content directory
     (tmp_path / "content").mkdir()
@@ -134,8 +134,8 @@ def test_build_command_force(_call_collectstatic, tmp_path):
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_build_command_staticfiles_force(_call_collectstatic, tmp_path):
-    _reset_settings(tmp_path)
+def test_build_command_staticfiles_force(_call_collectstatic, settings, tmp_path):
+    _reset_settings(settings, tmp_path)
 
     # Create content directory
     (tmp_path / "content").mkdir()

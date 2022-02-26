@@ -44,7 +44,7 @@ def dict_merge(
     return source
 
 
-def threadpool(f, executor=None):
+def threadpool(func):
     """
     A decorator to convert a regular function so that it gets run in another thread.
 
@@ -59,8 +59,8 @@ def threadpool(f, executor=None):
     More details: https://stackoverflow.com/a/14331755
     """
 
-    @wraps(f)
+    @wraps(func)
     def wrap(*args, **kwargs):
-        return (executor or ThreadPoolExecutor()).submit(f, *args, **kwargs)
+        return ThreadPoolExecutor().submit(func, *args, **kwargs)
 
     return wrap

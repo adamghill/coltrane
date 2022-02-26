@@ -24,7 +24,7 @@ DEFAULT_SETTINGS = {
     "INSTALLED_APPS": deepcopy(DEFAULT_INSTALLED_APPS),
     "CACHES": deepcopy(DEFAULT_CACHES_SETTINGS),
     "MIDDLEWARE": deepcopy(DEFAULT_MIDDLEWARE_SETTINGS),
-    "TEMPLATES": _get_default_template_settings(base_dir),
+    "TEMPLATES": deepcopy(_get_default_template_settings(base_dir)),
     "INTERNAL_IPS": [],
     "ALLOWED_HOSTS": [],
     "STATIC_ROOT": ANY,

@@ -33,3 +33,35 @@ def test_rec_alias():
         assert result.exit_code == 0
 
         _run_management_command.assert_called_once_with("build")
+
+
+@patch("coltrane.console._run_management_command")
+def test_record_force(_run_management_command):
+    runner = CliRunner()
+    runner.invoke(cli, ["record", "--force"])
+
+    _run_management_command.assert_called_once_with("build", "--force")
+
+
+@patch("coltrane.console._run_management_command")
+def test_record_output(_run_management_command):
+    runner = CliRunner()
+    runner.invoke(cli, ["record", "--output", "public"])
+
+    _run_management_command.assert_called_once_with("build", "--output", "public")
+
+
+@patch("coltrane.console._run_management_command")
+def test_record_threads(_run_management_command):
+    runner = CliRunner()
+    runner.invoke(cli, ["record", "--threads", "3"])
+
+    _run_management_command.assert_called_once_with("build", "--threads", "3")
+
+
+@patch("coltrane.console._run_management_command")
+def test_record_ignore(_run_management_command):
+    runner = CliRunner()
+    runner.invoke(cli, ["record", "--ignore"])
+
+    _run_management_command.assert_called_once_with("build", "--ignore")

@@ -81,7 +81,7 @@ def _get_template_tag_module_name(base_dir: Path, file: Path) -> str:
     return module_name
 
 
-def _get_default_template_settings(base_dir: Path):
+def _get_default_template_settings(base_dir: Path) -> List:
     """
     Gets default template settings, including templates and built-in template tags.
     """

@@ -1,6 +1,7 @@
-from typing import Dict
+from typing import Dict, Union
 
 from django import template
+from django.core.handlers.wsgi import WSGIRequest
 from django.template.base import Node
 from django.template.exceptions import TemplateSyntaxError
 from django.template.loader_tags import construct_relative_path
@@ -17,17 +18,23 @@ from coltrane.retriever import get_content_directory, get_content_paths
 register = template.Library()
 
 
+class NoParentError(Exception):
+    pass
+
+
 @register.simple_tag(takes_context=True)
-def directory_contents(context, directory: str = None) -> Dict[str, str]:
+def directory_contents(
+    context, directory: str = None, exclude: str = None
+) -> Dict[str, str]:
     if not directory:
         request = context["request"]
         directory = request.path
-
-        if directory.startswith("/"):
-            directory = directory[1:]
     elif isinstance(directory, SafeString):
         # Force SafeString to be a normal string so it can be used with `Path` later
         directory = directory + ""
+
+    if directory.startswith("/"):
+        directory = directory[1:]
 
     content_paths = get_content_paths(directory)
     contents = []
@@ -42,16 +49,38 @@ def directory_contents(context, directory: str = None) -> Dict[str, str]:
                 content_slug = f"{directory}/{path_slug}"
                 content_directory = content_directory / directory
 
-            directory_without_name = str(path).replace(path.name, "")[:-1]
+            if exclude:
+                if exclude.startswith("/"):
+                    exclude = exclude[1:]
 
-            if str(content_directory) != directory_without_name:
-                continue
+                if exclude == content_slug:
+                    continue
 
             (_, metadata) = get_html_and_markdown(content_slug)
 
             contents.append(metadata)
 
     return contents
+
+
+@register.filter()
+def parent(path: Union[str, WSGIRequest] = "") -> str:
+    if hasattr(path, "path"):
+        # Handle if a `request` is passed in
+        path = path.path
+
+    path = path.strip()
+
+    if path.endswith("/"):
+        path = path[:-1]
+
+    if path == "":
+        raise NoParentError()
+
+    last_slash_index = path.rindex("/")
+    path = path[:last_slash_index]
+
+    return path
 
 
 class IncludeMarkdownNode(Node):
