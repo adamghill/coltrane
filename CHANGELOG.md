@@ -1,3 +1,7 @@
+# 0.16.1
+
+- Create `COLTRANE_SITE` setting in `.env` file during `create` command
+
 # 0.16.0
 
 - Output an error if rendering fails during `record` command
@@ -5,6 +9,10 @@
 - `parent` filter
 - Serving of `/sitemap.xml` for standalone
 - Automatic creation of `sitemap.xml` during `record` command
+
+_Breaking changes_
+
+- `COLTRANE_SITE` is required in .env file
 
 # 0.15.1
 

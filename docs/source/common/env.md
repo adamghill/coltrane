@@ -8,6 +8,7 @@ For local web development `coltrane` uses an `.env` file in the base directory f
 DEBUG=True
 INTERNAL_IPS=127.0.0.1
 ALLOWED_HOSTS=
+COLTRANE_SITE=
 SECRET_KEY=this-would-be-lots-of-random-characters
 ```
 
@@ -28,6 +29,18 @@ INTERNAL_IPS=127.0.0.1,localhost,192.168.0.1
 ### ALLOWED_HOSTS
 
 The acceptable host or domain names when the site is deployed to production. Must be set when `DEBUG` is set to `False`. Defaults to `""`. If more than one host name is required, separate them by commas.
+
+```shell
+ALLOWED_HOSTS=coltrane-web.com
+```
+
+### COLTRANE_SITE
+
+The hosting domain's scheme and domain.
+
+```shell
+COLTRANE_SITE=https://coltrane-web.com
+```
 
 ### SECRET_KEY
 
