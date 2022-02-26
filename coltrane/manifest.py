@@ -113,7 +113,6 @@ class ManifestItem:
 
         (template, context) = render_markdown(self.slug, request)
         rendered_html = render_to_string(template, context)
-        print("rendered_htmlrendered_htmlrendered_html", rendered_html)
 
         return rendered_html
 

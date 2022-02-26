@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest.mock import ANY
 
 from coltrane.config.settings import DEFAULT_MARKDOWN_EXTRAS
 from coltrane.renderer import _get_markdown_content_as_html
@@ -18,7 +19,7 @@ test data
     )
 
     rendered_html = "<p>test data</p>\n"
-    context = {"template": "test-template.html"}
+    context = {"template": "test-template.html", "now": ANY}
     expected = (rendered_html, context)
     actual = _get_markdown_content_as_html("test-1")
 
@@ -43,7 +44,7 @@ test data
     )
 
     rendered_html = "<p>test data</p>\n"
-    context = {"template": "test-template.html"}
+    context = {"template": "test-template.html", "now": ANY}
     expected = (rendered_html, context)
     actual = _get_markdown_content_as_html("test-1")
 

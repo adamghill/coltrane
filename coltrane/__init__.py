@@ -140,7 +140,7 @@ def _merge_installed_apps(
 
 def _get_from_env(env_name: str) -> List[str]:
     """
-    Retrieves environment value that could potentially be an list of strings.
+    Retrieves environment value that could potentially be a list of strings.
     """
 
     env_values = []
@@ -232,6 +232,11 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         # is needed for rendering a nice 500 page on local when debugging
         "SETTINGS_MODULE": "coltrane",
     }
+
+    coltrane_site = getenv("COLTRANE_SITE")
+
+    if coltrane_site:
+        default_settings["COLTRANE"]["SITE"] = coltrane_site
 
     if is_whitenoise_installed:
         default_settings["WHITENOISE_MANIFEST_STRICT"] = False

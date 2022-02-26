@@ -4,12 +4,15 @@ from pathlib import Path
 from django.conf import settings
 
 from coltrane import _get_default_template_settings
+from coltrane.config.settings import DEFAULT_COLTRANE_SETTINGS
 
 
 def pytest_configure():
     base_dir = Path(".")
 
     templates = deepcopy(_get_default_template_settings(base_dir))
+    coltrane_settings = deepcopy(DEFAULT_COLTRANE_SETTINGS)
+    coltrane_settings["SITE"] = "http://localhost"
 
     settings.configure(
         BASE_DIR=base_dir,
@@ -17,6 +20,7 @@ def pytest_configure():
         TEMPLATES=templates,
         ROOT_URLCONF="coltrane.urls",
         INSTALLED_APPS=[
+            "django.contrib.sitemaps",
             "django_fastdev.django_app.FastDevConfig",
             "coltrane",
         ],
@@ -27,4 +31,5 @@ def pytest_configure():
         },
         STATIC_ROOT=base_dir / "output" / "static",
         SETTINGS_MODULE="coltrane",
+        COLTRANE=coltrane_settings,
     )

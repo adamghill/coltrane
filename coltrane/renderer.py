@@ -1,7 +1,8 @@
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, Optional, Tuple, Union
 
+from django.conf import settings
 from django.http import HttpRequest
 from django.template import engines
 from django.utils.html import mark_safe  # type: ignore
@@ -29,7 +30,22 @@ class StaticRequest:
     """
 
     path: str
-    META: Dict
+    META: Dict = field(default_factory=dict)
+    GET: Dict = field(default_factory=dict)
+
+    @property
+    def site(self):
+        _site = settings.COLTRANE.get("SITE")
+        assert _site, "COLTRANE_SITE is required in .env"
+
+        return _site
+
+    @property
+    def scheme(self) -> str:
+        return self.site.split("://")[0]
+
+    def get_host(self) -> str:
+        return self.site.split("://")[1]
 
 
 def render_markdown_path(path) -> Dict[str, Optional[Dict]]:
@@ -47,6 +63,17 @@ def render_markdown_path(path) -> Dict[str, Optional[Dict]]:
     # TODO: hasattr(content, "toc_html")
 
     metadata = content.metadata
+
+    if metadata is None:
+        metadata = {}
+
+    if "date" in metadata:
+        metadata["date"] = dateparser.parse(metadata["date"])
+
+    if "draft" in metadata:
+        metadata["draft"] = metadata["draft"] == "true"
+
+    metadata["now"] = now()
 
     return (str(content), metadata)
 
@@ -85,14 +112,6 @@ def get_html_and_markdown(slug: str) -> Tuple[str, Dict]:
         metadata["template"] = DEFAULT_TEMPLATE
 
     metadata["slug"] = slug
-
-    if "date" in metadata:
-        metadata["date"] = dateparser.parse(metadata["date"])
-
-    if "draft" in metadata:
-        metadata["draft"] = metadata["draft"] == "true"
-
-    metadata["now"] = now
 
     return (html, metadata)
 

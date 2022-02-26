@@ -6,9 +6,10 @@ from io import StringIO
 from multiprocessing import cpu_count
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Dict
+from typing import Dict, List
 
 from django.conf import settings
+from django.contrib.sitemaps.views import sitemap
 from django.core import management
 from django.core.management.base import BaseCommand
 
@@ -22,7 +23,9 @@ from coltrane.config.paths import (
     get_output_static_directory,
 )
 from coltrane.manifest import Manifest, ManifestItem
+from coltrane.renderer import StaticRequest
 from coltrane.retriever import get_content_paths
+from coltrane.urls import sitemaps
 from coltrane.utils import threadpool
 
 
@@ -64,6 +67,15 @@ class Command(BaseCommand):
 
     def _load_manifest(self) -> Manifest:
         return Manifest(manifest_file=get_output_json())
+
+    def _generate_sitemap(self) -> None:
+        assert self.output_directory
+
+        sitemap_response = sitemap(
+            request=StaticRequest(path="/", META={}), sitemaps=sitemaps
+        )
+        sitemap_xml = sitemap_response.render().content.decode()
+        (self.output_directory / "sitemap.xml").write_text(sitemap_xml)
 
     @threadpool
     def _call_collectstatic(self) -> str:
@@ -163,12 +175,13 @@ class Command(BaseCommand):
                 pass
 
     def handle(self, *args, **options):
-        self.is_force = False
-        self.manifest = None
+        self.is_force: bool = False
+        self.manifest: Manifest = None
         self.output_result_counts.create_count = 0
         self.output_result_counts.update_count = 0
         self.output_result_counts.skip_count = 0
-        self.errors = []
+        self.output_directory: Path = None
+        self.errors: List[str] = []
 
         start_time = time.time()
 
@@ -180,10 +193,10 @@ class Command(BaseCommand):
 
         collectstatic_future = self._call_collectstatic()
 
-        output_directory = get_output_directory()
+        self.output_directory = get_output_directory()
         self._success("Use output directory of ", ending="")
-        self.stdout.write(self.style.WARNING(str(output_directory)))
-        output_directory.mkdir(exist_ok=True)
+        self.stdout.write(self.style.WARNING(str(self.output_directory)))
+        self.output_directory.mkdir(exist_ok=True)
 
         spinner.start("Load manifest")
         self.manifest = self._load_manifest()
@@ -250,6 +263,10 @@ class Command(BaseCommand):
         spinner.succeed(result_msg)
 
         if self.manifest.is_dirty:
+            spinner.start("Update sitemap.xml")
+            self._generate_sitemap()
+            spinner.succeed()
+
             spinner.start("Update manifest")
             self.manifest.write_data()
             spinner.succeed()
