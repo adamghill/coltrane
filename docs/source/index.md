@@ -34,10 +34,12 @@ Because `coltrane` can be used in a few different ways, the documentation is spl
 
 There are a ton of other static site generators out there. Here are a few Python static site generators in case it's useful.
 
-- [Pelican](https://getpelican.com/): Pelican is a static site generator that requires no database or server-side logic.
-- [Combine](https://combine.dropseed.dev/): Build a straightforward marketing or documentation website with the power of Jinja. No fancy JavaScript here — this is just like the good old days.
+- [Pelican](https://getpelican.com/): Pelican is a static site generator that requires no database or server-side logic
+- [Combine](https://combine.dropseed.dev/): Build a straightforward marketing or documentation website with the power of Jinja. No fancy JavaScript here — this is just like the good old days
 - [Nikola](https://getnikola.com/): In goes content, out comes a website, ready to deploy.
 - [Lektor](https://www.getlektor.com/): A flexible and powerful static content management system for building complex and beautiful websites out of flat files
+- [corvid](https://github.com/di/corvid): An opinionated simple static site generator
+- [jamstack](https://github.com/Abdur-RahmaanJ/jamstack): The easiest way to create jamstack sites, as simple or as complex as you like
 
 ## Inspiration and thanks
 
