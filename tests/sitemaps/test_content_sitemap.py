@@ -20,10 +20,9 @@ def test_location(settings, tmp_path: Path):
     (tmp_path / "content/test.md").write_text("test data")
 
     items = ContentSitemap().items()
-
     actual = ContentSitemap().location(items[0])
 
-    assert actual.endswith("content/test")
+    assert actual == "/test"
 
 
 def test_location_index(settings, tmp_path: Path):
@@ -32,7 +31,6 @@ def test_location_index(settings, tmp_path: Path):
     (tmp_path / "content/index.md").write_text("index")
 
     items = ContentSitemap().items()
-
     actual = ContentSitemap().location(items[0])
 
-    assert actual.endswith("content")
+    assert actual == ""
