@@ -42,6 +42,22 @@ The hosting domain's scheme and domain.
 COLTRANE_SITE=https://coltrane-web.com
 ```
 
+### COLTRANE_TITLE
+
+The title of the website. Used when generating `rss.xml`.
+
+```shell
+COLTRANE_TITLE=Coltrane
+```
+
+### COLTRANE_DESCRIPTION
+
+The description of the website. Used when generating `rss.xml`.
+
+```shell
+COLTRANE_DESCRIPTION=A simple content site framework that harnesses the power of Django without the hassle.
+```
+
 ### SECRET_KEY
 
 A random string of letters, numbers, and characters. (More information in the [Django documentation](https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-SECRET_KEY). Generated automatically when the `.env` file is created.

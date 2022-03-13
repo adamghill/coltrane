@@ -22,6 +22,7 @@ from coltrane.config.paths import (
     get_output_json,
     get_output_static_directory,
 )
+from coltrane.feeds import ContentFeed
 from coltrane.manifest import Manifest, ManifestItem
 from coltrane.renderer import StaticRequest
 from coltrane.retriever import get_content_paths
@@ -71,11 +72,18 @@ class Command(BaseCommand):
     def _generate_sitemap(self) -> None:
         assert self.output_directory
 
-        sitemap_response = sitemap(
-            request=StaticRequest(path="/", META={}), sitemaps=sitemaps
-        )
+        sitemap_response = sitemap(request=StaticRequest(path="/"), sitemaps=sitemaps)
         sitemap_xml = sitemap_response.render().content.decode()
         (self.output_directory / "sitemap.xml").write_text(sitemap_xml)
+
+    def _generate_rss(self) -> None:
+        assert self.output_directory
+
+        content_feed = ContentFeed()
+        feed = content_feed.get_feed(None, request=StaticRequest(path="/"))
+        rss_xml = feed.writeString("utf-8")
+
+        (self.output_directory / "rss.xml").write_text(rss_xml)
 
     @threadpool
     def _call_collectstatic(self) -> str:
@@ -267,7 +275,11 @@ class Command(BaseCommand):
             self._generate_sitemap()
             spinner.succeed()
 
-            spinner.start("Update manifest")
+            spinner.start("Update rss.xml")
+            self._generate_rss()
+            spinner.succeed()
+
+            spinner.start("Update output.json manifest")
             self.manifest.write_data()
             spinner.succeed()
 

@@ -262,3 +262,41 @@ def test_handle_ignore_template_error(
 
     # Ignore the template error so exit isn't called
     build_command.handle(ignore=True)
+
+
+@pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+@patch("coltrane.management.commands.build.Command._generate_sitemap")
+def test_handle_generate_sitemap(
+    _call_collectstatic,
+    _generate_sitemap,
+    settings,
+    tmp_path,
+    build_command,
+):
+    _reset_settings(settings, tmp_path)
+
+    create_markdown_file(tmp_path)
+
+    build_command.handle(force=False)
+
+    _generate_sitemap.assert_called_once()
+
+
+@pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._call_collectstatic")
+@patch("coltrane.management.commands.build.Command._generate_rss")
+def test_handle_generate_rss(
+    _call_collectstatic,
+    _generate_rss,
+    settings,
+    tmp_path,
+    build_command,
+):
+    _reset_settings(settings, tmp_path)
+
+    create_markdown_file(tmp_path)
+
+    build_command.handle(force=False)
+
+    _generate_rss.assert_called_once()

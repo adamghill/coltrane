@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path, re_path
 
+from coltrane.feeds import ContentFeed
 from coltrane.sitemaps import ContentSitemap
 
 from . import views
@@ -25,5 +26,6 @@ urlpatterns += [
         {"sitemaps": sitemaps},
         name="django.contrib.sitemaps.views.sitemap",
     ),
+    path("rss.xml", ContentFeed()),
     re_path(r"^(?P<slug>(\w|-|\/)*)", views.content, name="content"),
 ]

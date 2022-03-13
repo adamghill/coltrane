@@ -47,6 +47,9 @@ class StaticRequest:
     def get_host(self) -> str:
         return self.site.split("://")[1]
 
+    def is_secure(self) -> bool:
+        return self.path.startswith("https://")
+
 
 def render_markdown_path(path) -> Dict[str, Optional[Dict]]:
     """

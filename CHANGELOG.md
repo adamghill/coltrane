@@ -1,3 +1,8 @@
+# 0.17.0
+
+- Fix bug with relative URLs when generating `sitemap.xml`
+- Automatic generation of `rss.xml` file
+
 # 0.16.1
 
 - Create `COLTRANE_SITE` setting in `.env` file during `create` command

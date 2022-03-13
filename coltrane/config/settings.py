@@ -43,3 +43,27 @@ def get_markdown_extras() -> int:
     """
 
     return get_coltrane_settings().get("MARKDOWN_EXTRAS", DEFAULT_MARKDOWN_EXTRAS)
+
+
+def get_site() -> str:
+    """
+    Get the configured site.
+    """
+
+    return get_coltrane_settings().get("SITE")
+
+
+def get_title() -> str:
+    """
+    Get the configured title.
+    """
+
+    return get_coltrane_settings().get("TITLE")
+
+
+def get_description() -> str:
+    """
+    Get the configured description.
+    """
+
+    return get_coltrane_settings().get("DESCRIPTION")

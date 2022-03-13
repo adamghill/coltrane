@@ -1,6 +1,7 @@
 import json
 import logging
 import warnings
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable
 
@@ -83,3 +84,43 @@ def get_content_paths(slug: str = None) -> Iterable[Path]:
     for path in paths:
         if path.is_file():
             yield path
+
+
+@dataclass
+class ContentItem:
+    path: Path
+    metadata: Dict
+    relative_url: str
+    html: str
+
+
+def get_content_items(skip_draft: bool = True) -> Iterable[ContentItem]:
+    from .renderer import render_markdown_path
+
+    paths = get_content_paths()
+    _items = []
+
+    MARKDOWN_EXTENSION_LENGTH = 3
+    content_directory = get_content_directory()
+    content_directory_path_length = len(str(content_directory))
+
+    for path in paths:
+        (html, metadata) = render_markdown_path(path)
+
+        if skip_draft and "draft" in metadata and metadata["draft"] is True:
+            continue
+
+        path_str = str(path)
+        relative_url = path_str[
+            content_directory_path_length:-MARKDOWN_EXTENSION_LENGTH
+        ]
+
+        if relative_url.endswith("/index"):
+            relative_url = relative_url[:-6]
+
+        content_item = ContentItem(
+            path=path, metadata=metadata, html=html, relative_url=relative_url
+        )
+        _items.append(content_item)
+
+    return _items

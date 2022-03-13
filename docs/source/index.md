@@ -7,7 +7,7 @@
 - Can either generate a static HTML site, be deployed as a standalone Django site, or integrated into an existing Django site
 - Reads markdown content and renders it in HTML
 - Can use data from JSON files in templates and markdown content
-- Automatic generation of sitemap.xml
+- Automatic generation of `sitemap.xml` and `rss.xml` files
 - [Live re-rendering of markdown and data](https://twitter.com/adamghill/status/1487522925393715205) when markdown or JSON data files are saved with the magic of https://github.com/adamchainz/django-browser-reload
 - All the power of Django templates, template tags, and filters inside markdown files
 - Can include other Django apps for additional functionality

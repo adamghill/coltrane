@@ -238,6 +238,16 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
     if coltrane_site:
         default_settings["COLTRANE"]["SITE"] = coltrane_site
 
+    coltrane_title = getenv("COLTRANE_TITLE")
+
+    if coltrane_title:
+        default_settings["COLTRANE"]["TITLE"] = coltrane_title
+
+    coltrane_description = getenv("COLTRANE_DESCRIPTION")
+
+    if coltrane_description:
+        default_settings["COLTRANE"]["DESCRIPTION"] = coltrane_description
+
     if is_whitenoise_installed:
         default_settings["WHITENOISE_MANIFEST_STRICT"] = False
         default_settings[
