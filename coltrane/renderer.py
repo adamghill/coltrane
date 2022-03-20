@@ -144,6 +144,9 @@ def render_markdown(
     data = get_data()
     context["data"] = data
 
+    if request:
+        context["request"] = request
+
     # Add rendered content to the context
     content = render_html_with_django(html, context, request)
     context["content"] = mark_safe(content)

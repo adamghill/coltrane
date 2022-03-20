@@ -68,7 +68,7 @@ def test_include_md_metadata_in_template(client, settings, tmp_path: Path):
         """
 ## partial
 
-{{ request }}
+{{ variable }}
 
 """
     )
@@ -76,7 +76,7 @@ def test_include_md_metadata_in_template(client, settings, tmp_path: Path):
     (tmp_path / "content").mkdir()
     (tmp_path / "content/index.md").write_text(
         """---
-request: this-is-a-string-in-the-template
+variable: this-is-a-string-in-the-template
 ---
 
 # index
