@@ -1,3 +1,7 @@
+# 0.18.0
+
+- Add `toc` to the template context which provides a table of contents for the markdown.
+
 # 0.17.0
 
 - Fix bug with relative URLs when generating `sitemap.xml`
