@@ -1,3 +1,7 @@
+# 0.18.2
+
+- Add `request` to the template context when building static sites.
+
 # 0.18.1
 
 - Fix bug where static site path was incorrect.
