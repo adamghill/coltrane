@@ -16,6 +16,7 @@ def test_directory_contents(settings, tmp_path: Path):
     expected = [
         {
             "template": "coltrane/content.html",
+            "toc": ANY,
             "slug": "test",
             "now": ANY,
         }
@@ -35,6 +36,7 @@ def test_directory_contents_subdirectory_content(settings, tmp_path: Path):
     expected = [
         {
             "template": "coltrane/content.html",
+            "toc": ANY,
             "slug": "test1/test2",
             "now": ANY,
         }
@@ -67,6 +69,7 @@ def test_directory_contents_explicit_directory(settings, tmp_path: Path):
     expected = [
         {
             "template": "coltrane/content.html",
+            "toc": ANY,
             "slug": "test/test",
             "now": ANY,
         }
@@ -92,6 +95,7 @@ index
     expected = [
         {
             "template": "coltrane/content.html",
+            "toc": ANY,
             "slug": "test",
             "title": "this is a title",
             "now": ANY,
@@ -112,6 +116,7 @@ def test_directory_contents_safe_string_subdirectory_content(settings, tmp_path:
     expected = [
         {
             "template": "coltrane/content.html",
+            "toc": ANY,
             "slug": "test1/test2",
             "now": ANY,
         }
@@ -131,6 +136,7 @@ def test_directory_contents_exclude(settings, tmp_path: Path):
     expected = [
         {
             "template": "coltrane/content.html",
+            "toc": ANY,
             "slug": "test",
             "now": ANY,
         }
@@ -150,6 +156,7 @@ def test_directory_contents_exclude_with_slash(settings, tmp_path: Path):
     expected = [
         {
             "template": "coltrane/content.html",
+            "toc": ANY,
             "slug": "test",
             "now": ANY,
         }
