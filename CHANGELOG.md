@@ -1,3 +1,7 @@
+# 0.18.1
+
+- Fix bug where static site path was incorrect.
+
 # 0.18.0
 
 - Add `toc` to the template context which provides a table of contents for the markdown.
