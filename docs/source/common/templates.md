@@ -69,7 +69,8 @@ The specified template context includes:
 - `now` which provides the current `datetime` (would be the time of HTML rendering for static site)
 - `request` which provides the current request for an integrated or standalone site
 - `debug` which contains the the `DEBUG` setting for an integrated or standalone site (if `INTERNAL_IPS` has the current request's IP which is usually `127.0.0.1` for local development)
-- `slug` which contains the current file's "slug" (would be `articles/some-new-article` if there was a markdown file at `content/articles/some-new-article.md`)
+- `slug` which contains the current file's "slug" (e.g. `articles/some-new-article` if there was a markdown file at `content/articles/some-new-article.md`)
+- `toc` which is an automatically generated table of contents rendered as HTML
 
 **`data/index.json`**
 

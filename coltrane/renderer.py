@@ -63,8 +63,6 @@ def render_markdown_path(path) -> Dict[str, Optional[Dict]]:
         extras=markdown_extras,
     )
 
-    # TODO: hasattr(content, "toc_html")
-
     metadata = content.metadata
 
     if metadata is None:
@@ -77,6 +75,9 @@ def render_markdown_path(path) -> Dict[str, Optional[Dict]]:
         metadata["draft"] = metadata["draft"] == "true"
 
     metadata["now"] = now()
+
+    if hasattr(content, "toc_html"):
+        metadata["toc"] = mark_safe(content.toc_html)
 
     return (str(content), metadata)
 
