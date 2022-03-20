@@ -103,13 +103,22 @@ class ManifestItem:
 
         return generated_file_path
 
+    @property
+    def url_slug(self):
+        url_slug = f"/{self.slug}"
+
+        if url_slug.endswith("/index"):
+            url_slug = url_slug[:-6]
+
+        return url_slug
+
     def render_html(self):
         """
         Renders the markdown file into HTML.
         """
 
         # Mock an HttpRequest when generating the HTML for static sites
-        request = StaticRequest(path=self.directory, META={})
+        request = StaticRequest(path=self.url_slug, META={})
 
         (template, context) = render_markdown(self.slug, request)
         rendered_html = render_to_string(template, context)
