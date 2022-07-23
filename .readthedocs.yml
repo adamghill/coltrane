@@ -1,6 +1,7 @@
 version: 2
 
 sphinx:
+  configuration: docs/source/conf.py
   fail_on_warning: true
   builder: dirhtml
 
@@ -9,6 +10,7 @@ formats:
   - epub
 
 python:
+  version: 3
   install:
     - method: pip
       path: .
