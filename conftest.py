@@ -21,7 +21,7 @@ def pytest_configure():
         ROOT_URLCONF="coltrane.urls",
         INSTALLED_APPS=[
             "django.contrib.sitemaps",
-            "django_fastdev.django_app.FastDevConfig",
+            "django_fastdev.apps.FastDevConfig",
             "coltrane",
         ],
         CACHES={
