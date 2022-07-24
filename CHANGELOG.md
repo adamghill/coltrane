@@ -1,3 +1,7 @@
+# 0.18.3
+
+- Fix bug where templatetags could not be loaded when the base directory was ".".
+
 # 0.18.2
 
 - Add `request` to the template context when building static sites.

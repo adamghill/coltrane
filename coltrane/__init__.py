@@ -65,7 +65,11 @@ def _get_template_tag_module_name(base_dir: Path, file: Path) -> str:
     """
 
     # TODO: Cleaner way to convert a string path to a module dot notation?
-    module_name = str(file).replace(str(base_dir), "")
+    module_name = str(file)
+    
+    if str(base_dir) != ".":
+        module_name = module_name.replace(str(base_dir), "")
+
     module_name = module_name.replace("/", ".")
 
     if module_name.startswith("."):
@@ -98,8 +102,8 @@ def _get_default_template_settings(base_dir: Path) -> List:
                         base_dir, template_tag_path
                     )
                     template_tags.append(module_name)
-                except InvalidTemplateLibrary:
-                    pass
+                except InvalidTemplateLibrary as e:
+                    logger.exception(e)
 
     builtins = [
         "django.contrib.humanize.templatetags.humanize",
