@@ -31,7 +31,7 @@ INTERNAL_IPS=127.0.0.1,localhost,192.168.0.1
 The acceptable host or domain names when the site is deployed to production. Must be set when `DEBUG` is set to `False`. Defaults to `""`. If more than one host name is required, separate them by commas.
 
 ```shell
-ALLOWED_HOSTS=coltrane-web.com
+ALLOWED_HOSTS=coltrane.com
 ```
 
 ### COLTRANE_SITE
@@ -39,7 +39,7 @@ ALLOWED_HOSTS=coltrane-web.com
 The hosting domain's scheme and domain.
 
 ```shell
-COLTRANE_SITE=https://coltrane-web.com
+COLTRANE_SITE=https://coltrane.com
 ```
 
 ### COLTRANE_TITLE

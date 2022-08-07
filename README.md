@@ -3,13 +3,13 @@
 </p>
 <p align="center">A simple content site framework that harnesses the power of Django without the hassle 🎵</p>
 
-![PyPI](https://img.shields.io/pypi/v/coltrane-web?color=blue&style=flat-square)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/coltrane-web?color=blue&style=flat-square)
+![PyPI](https://img.shields.io/pypi/v/coltrane?color=blue&style=flat-square)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/coltrane?color=blue&style=flat-square)
 ![GitHub Sponsors](https://img.shields.io/github/sponsors/adamghill?color=blue&style=flat-square)
 
 📖 Complete documentation: https://coltrane.readthedocs.io
 
-📦 Package located at https://pypi.org/project/coltrane-web/
+📦 Package located at https://pypi.org/project/coltrane/
 
 ## ⭐ Features
 
@@ -26,7 +26,7 @@
 ## ⚡ Quick start for a new static site
 
 1. `mkdir new-site && cd new-site` to create a new folder
-1. `poetry init --no-interaction --dependency 'coltrane-web:<1' && poetry install` to create a new virtual environment and install the `coltrane` package
+1. `poetry init --no-interaction --dependency 'coltrane:<1' && poetry install` to create a new virtual environment and install the `coltrane` package
 1. `poetry run coltrane create` to create the folder structure for a new site
 1. Update `content/index.md`
 1. `poetry run coltrane play` for a local development server

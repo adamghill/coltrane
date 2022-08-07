@@ -12,10 +12,10 @@
 
 `coltrane` can be installed with deployment features for production by installing the `deploy` extras.
 
-`poetry add coltrane-web -E deploy`
+`poetry add coltrane -E deploy`
 
 ```{note}
-If using `pip` you can do something like: `pip install coltrane-web[deploy]`.
+If using `pip` you can do something like: `pip install coltrane[deploy]`.
 ```
 
 ### Required settings
@@ -24,7 +24,7 @@ If using `pip` you can do something like: `pip install coltrane-web[deploy]`.
 
 ```shell
 DEBUG=False
-ALLOWED_HOSTS=coltrane-web.com,www.coltrane-web.com
+ALLOWED_HOSTS=coltrane.com,www.coltrane.com
 ```
 
 ### Gunicorn
