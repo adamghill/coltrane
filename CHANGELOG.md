@@ -1,3 +1,7 @@
+# 0.19.0
+
+- Update project name to `coltrane`.
+
 # 0.18.3
 
 - Fix bug where templatetags could not be loaded when the base directory was ".".
