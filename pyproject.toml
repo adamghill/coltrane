@@ -4,8 +4,8 @@ authors = [{name = "Adam Hill", email = "adam@adamghill.com"}]
 dynamic = ["version", "description"]
 
 [tool.poetry]
-name = "coltrane"
-version = "0.19.0"
+name = "coltrane-web"
+version = "0.18.4"
 description = "A simple content site framework that harnesses the power of Django without the hassle."
 authors = ["adamghill <adam@adamghill.com>"]
 license = "MIT"
