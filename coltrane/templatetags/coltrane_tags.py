@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict, Union, List
 
 from django import template
 from django.core.handlers.wsgi import WSGIRequest
@@ -25,7 +25,7 @@ class NoParentError(Exception):
 @register.simple_tag(takes_context=True)
 def directory_contents(
     context, directory: str = None, exclude: str = None
-) -> Dict[str, str]:
+) -> List[Dict[str, str]]:
     if not directory:
         request = context["request"]
         directory = request.path
