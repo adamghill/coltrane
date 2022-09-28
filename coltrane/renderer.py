@@ -51,7 +51,7 @@ class StaticRequest:
         return self.path.startswith("https://")
 
 
-def render_markdown_path(path) -> Dict[str, Optional[Dict]]:
+def render_markdown_path(path) -> Tuple[str, Optional[Dict]]:
     """
     Renders the markdown file located at path.
     """
@@ -82,7 +82,7 @@ def render_markdown_path(path) -> Dict[str, Optional[Dict]]:
     return (str(content), metadata)
 
 
-def _get_markdown_content_as_html(slug: str) -> Dict[str, Optional[Dict]]:
+def _get_markdown_content_as_html(slug: str) -> Tuple[str, Optional[Dict]]:
     """
     Converts markdown file based on the slug into HTML.
     """
