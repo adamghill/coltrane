@@ -5,12 +5,13 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.template.base import Node
 from django.template.exceptions import TemplateSyntaxError
 from django.template.loader_tags import construct_relative_path
-from django.utils.safestring import SafeString
+from django.utils.safestring import SafeString, mark_safe
 
 from coltrane.renderer import (
     get_html_and_markdown,
     render_html_with_django,
     render_markdown_path,
+    render_markdown_text,
 )
 from coltrane.retriever import get_content_directory, get_content_paths
 
@@ -140,4 +141,12 @@ def do_include_md(parser, token):
 
     return IncludeMarkdownNode(
         parser.compile_filter(bits[1]),
+    )
+
+
+@register.filter(takes_context=True)
+def to_html(context: dict, text: str) -> str:
+    (html, metadata) = render_markdown_text(text)
+    return mark_safe(
+        render_html_with_django(html, metadata, request=context["request"])
     )

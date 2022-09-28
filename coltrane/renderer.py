@@ -9,7 +9,7 @@ from django.utils.html import mark_safe  # type: ignore
 from django.utils.timezone import now
 
 import dateparser
-from markdown2 import markdown_path
+from markdown2 import markdown_path, Markdown, markdown
 
 from .config.paths import get_content_directory
 from .config.settings import get_markdown_extras
@@ -51,18 +51,10 @@ class StaticRequest:
         return self.path.startswith("https://")
 
 
-def render_markdown_path(path) -> Tuple[str, Optional[Dict]]:
+def _parse_and_update_metadata(content: Markdown) -> dict:
     """
-    Renders the markdown file located at path.
+    Add new, parse and/or cast exiting values to metadata.
     """
-
-    markdown_extras = get_markdown_extras()
-
-    content = markdown_path(
-        path,
-        extras=markdown_extras,
-    )
-
     metadata = content.metadata
 
     if metadata is None:
@@ -78,6 +70,33 @@ def render_markdown_path(path) -> Tuple[str, Optional[Dict]]:
 
     if hasattr(content, "toc_html"):
         metadata["toc"] = mark_safe(content.toc_html)
+
+    return metadata
+
+
+def render_markdown_path(path) -> Tuple[str, Optional[Dict]]:
+    """
+    Renders the markdown file located at path.
+    """
+
+    markdown_extras = get_markdown_extras()
+
+    content = markdown_path(
+        path,
+        extras=markdown_extras,
+    )
+
+    metadata = _parse_and_update_metadata(content)
+
+    return (str(content), metadata)
+
+
+def render_markdown_text(text: str) -> Tuple[str, Optional[Dict]]:
+    markdown_extras = get_markdown_extras()
+
+    content = markdown(text, extras=markdown_extras)
+
+    metadata = _parse_and_update_metadata(content)
 
     return (str(content), metadata)
 

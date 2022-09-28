@@ -154,6 +154,40 @@ A `filter` that returns the parent directory for a particular path. Can be passe
 {{ 'http://localhost/articles/some-article'|parent|parent }} == ''
 ```
 
+#### `to_html`
+
+Convert raw markdown text to html. This is probably the most useful in `integrated` mode.
+
+`views.py`
+```python
+def my_view(request):
+    markdown_text = """---
+title: Article 1
+---
+
+# {{ title }}
+"""
+    ...
+```
+
+`my_template.html`
+```html
+<main>
+    {{ markdown_text|to_html }}
+</main>
+
+```
+
+Rendered html content
+```html
+<main>
+   <h1>Article 1</h1>
+</main>
+
+```
+
+
+
 ### Humanize template tags
 
 `django.contrib.humanize` [includes a useful template tags](https://docs.djangoproject.com/en/stable/ref/contrib/humanize/) to format numbers and dates in human-friendly ways. Normally it needs to be enabled and loaded in templates manually, but `coltrane` enables it by default so it is available to use in markdown content files automatically.
