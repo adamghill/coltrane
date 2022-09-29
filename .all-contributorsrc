@@ -1,0 +1,26 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "Tobi-De",
+      "name": "Tobi DEGNON",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40334729?v=4",
+      "profile": "https://github.com/Tobi-De",
+      "contributions": [
+        "test",
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "coltrane",
+  "projectOwner": "adamghill"
+}
