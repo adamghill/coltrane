@@ -11,6 +11,10 @@ The template context for each markdown file rendered by `coltrane` includes:
 - `slug` which contains the current file's "slug" (e.g. `articles/some-new-article` if there was a markdown file at `content/articles/some-new-article.md`)
 - `toc` which is an automatically generated table of contents rendered as HTML
 
+`coltrane` also searches for some special keywords in the frontmatter and applies changes to them if they are found, the currently supported keywords are :
+
+- `publish_date`, this is converted to a python datetime instance using the excellent [dateparser library](https://dateparser.readthedocs.io/en/latest/), read their docs to see all supported formats.
+
 **`data/index.json`**
 
 ```json
@@ -23,6 +27,7 @@ The template context for each markdown file rendered by `coltrane` includes:
 ---
 this_is_a_variable: This is a good test
 template: some_app/custom-template.html
+publish_date: 2022-02-26 10:26:02
 ---
 
 {{ this_is_a_variable }}
@@ -30,6 +35,8 @@ template: some_app/custom-template.html
 Data from JSON files: {{ data.index.test }}
 
 Current datetime: {{ now }}
+
+Publish date: {{ publish_date|naturalday }}
 ```
 
 **`some_app/templates/some_app/custom-template.html`**
@@ -46,5 +53,7 @@ Current datetime: {{ now }}
 <p>Data from JSON files: Great</p>
 
 <p>Current datetime: 8 Jan. 11, 2022, 10:02 p.m.</p>
+
+<p>Publish date: Feb. 26, 2022</p>
 ```
 
