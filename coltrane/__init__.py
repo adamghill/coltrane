@@ -66,7 +66,7 @@ def _get_template_tag_module_name(base_dir: Path, file: Path) -> str:
 
     # TODO: Cleaner way to convert a string path to a module dot notation?
     module_name = str(file)
-    
+
     if str(base_dir) != ".":
         module_name = module_name.replace(str(base_dir), "")
 

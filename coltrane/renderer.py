@@ -9,7 +9,7 @@ from django.utils.html import mark_safe  # type: ignore
 from django.utils.timezone import now
 
 import dateparser
-from markdown2 import markdown_path, Markdown, markdown
+from markdown2 import Markdown, markdown, markdown_path
 
 from .config.paths import get_content_directory
 from .config.settings import get_markdown_extras
@@ -53,8 +53,9 @@ class StaticRequest:
 
 def _parse_and_update_metadata(content: Markdown) -> dict:
     """
-    Add new, parse and/or cast exiting values to metadata.
+    Add new, parse and/or cast existing values to metadata.
     """
+
     metadata = content.metadata
 
     if metadata is None:

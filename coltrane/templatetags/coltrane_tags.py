@@ -1,4 +1,4 @@
-from typing import Dict, Union, List
+from typing import Dict, List, Union
 
 from django import template
 from django.core.handlers.wsgi import WSGIRequest
