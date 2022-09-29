@@ -68,8 +68,8 @@ def render_markdown_path(path) -> Dict[str, Optional[Dict]]:
     if metadata is None:
         metadata = {}
 
-    if "date" in metadata:
-        metadata["date"] = dateparser.parse(metadata["date"])
+    if "publish_date" in metadata:
+        metadata["publish_date"] = dateparser.parse(metadata["publish_date"])
 
     if "draft" in metadata:
         metadata["draft"] = metadata["draft"] == "true"

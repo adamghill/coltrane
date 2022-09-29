@@ -102,6 +102,7 @@ integrated/integration
 
 common/markdown
 common/templates
+common/context
 common/data
 common/static-files
 common/settings
