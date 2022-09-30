@@ -23,7 +23,7 @@ test data
     expected_content = "<p>test data</p>\n"
     expected_data = {}
 
-    static_request = StaticRequest(path="/", META={})
+    static_request = StaticRequest(path="/")
 
     (actual_template, actual_context) = render_markdown("test-2", static_request)
 
@@ -43,7 +43,7 @@ class MarkdownContent:
 
 @patch("coltrane.renderer.markdown_path", return_value=MarkdownContent(metadata=None))
 def test_render_markdown_metadata(settings, tmp_path: Path):
-    static_request = StaticRequest(path="/", META={})
+    static_request = StaticRequest(path="/")
 
     (_, metadata) = render_markdown("test-2", static_request)
     assert metadata.get("content") == "test-content"

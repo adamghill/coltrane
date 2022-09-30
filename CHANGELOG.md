@@ -1,7 +1,8 @@
 # 0.20.0-dev
 
-- Breaking change: change `date` to `publish_date` in metadata. [#39](https://github.com/adamghill/coltrane/pull/37) by [Tobi-De](https://github.com/Tobi-De)
 - Add `to_html` template tag. [#37](https://github.com/adamghill/coltrane/pull/37) by [Tobi-De](https://github.com/Tobi-De)
+- Breaking change: change `date` to `publish_date` in metadata. [#39](https://github.com/adamghill/coltrane/pull/37) by [Tobi-De](https://github.com/Tobi-De)
+- Breaking change: change `SITE` setting to `SITE_URL`.
 
 # 0.19.0
 

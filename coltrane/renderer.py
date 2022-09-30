@@ -12,7 +12,7 @@ import dateparser
 from markdown2 import Markdown, markdown, markdown_path
 
 from .config.paths import get_content_directory
-from .config.settings import get_markdown_extras
+from .config.settings import get_markdown_extras, get_site_url
 from .retriever import get_data
 
 
@@ -32,20 +32,26 @@ class StaticRequest:
     path: str
     META: Dict = field(default_factory=dict)
     GET: Dict = field(default_factory=dict)
+    _site_url: str = None
 
+    def __init__(self, path: str, meta=None, get=None):
+        self.path = path
+        self.META = meta or {}
+        self.GET = get or {}
+        self._site_url = get_site_url()
+    
     @property
-    def site(self):
-        _site = settings.COLTRANE.get("SITE")
-        assert _site, "COLTRANE_SITE is required in .env"
+    def site_url(self):
+        assert self._site_url, "COLTRANE_SITE_URL in .env or COLTRANE.SITE_URL in settings file is required"
 
-        return _site
+        return self._site_url
 
     @property
     def scheme(self) -> str:
-        return self.site.split("://")[0]
+        return self.site_url.split("://")[0]
 
     def get_host(self) -> str:
-        return self.site.split("://")[1]
+        return self.site_url.split("://")[1]
 
     def is_secure(self) -> bool:
         return self.path.startswith("https://")

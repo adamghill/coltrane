@@ -4,7 +4,7 @@ from coltrane.config.settings import (
     DEFAULT_COLTRANE_SETTINGS,
     get_coltrane_settings,
     get_description,
-    get_site,
+    get_site_url,
     get_title,
 )
 
@@ -26,9 +26,9 @@ def test_get_coltrane_settings_invalid_type(settings):
         get_coltrane_settings()
 
 
-def test_get_site(settings):
-    setattr(settings, "COLTRANE", {"SITE": "http://test-site.com"})
-    assert get_site() == "http://test-site.com"
+def test_get_site_url(settings):
+    setattr(settings, "COLTRANE", {"SITE_URL": "http://test-site.com"})
+    assert get_site_url() == "http://test-site.com"
 
 
 def test_get_title(settings):

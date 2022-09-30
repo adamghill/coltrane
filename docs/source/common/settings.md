@@ -81,3 +81,14 @@ COLTRANE = {
     "VIEW_CACHE": {"SECONDS": 60 * 15, "CACHE_NAME": "coltrane-view-cache"},
 }
 ```
+
+#### SITE_URL
+
+Because RSS requires an absolute URL, `coltrane` needs to know about the current domain for the site.
+
+```python
+COLTRANE = {
+    # other settings
+    "SITE_URL": "https://example.com",
+}
+```

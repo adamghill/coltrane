@@ -33,7 +33,7 @@ def test_item_link(settings, tmp_path: Path):
 
 def test_item_link_site_with_slash(settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
-    settings.COLTRANE["SITE"] = "http://localhost/"
+    settings.COLTRANE["SITE_URL"] = "http://localhost/"
 
     (tmp_path / "content").mkdir()
     (tmp_path / "content/test.md").write_text("test data")

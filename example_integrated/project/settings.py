@@ -126,4 +126,4 @@ STATIC_URL = "/static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-COLTRANE = {"SITE": "http://example.com"}
+COLTRANE = {"SITE_URL": "http://example.com"}

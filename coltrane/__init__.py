@@ -237,10 +237,10 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         "SETTINGS_MODULE": "coltrane",
     }
 
-    coltrane_site = getenv("COLTRANE_SITE")
+    coltrane_site_url = getenv("COLTRANE_SITE_URL")
 
-    if coltrane_site:
-        default_settings["COLTRANE"]["SITE"] = coltrane_site
+    if coltrane_site_url:
+        default_settings["COLTRANE"]["SITE_URL"] = coltrane_site_url
 
     coltrane_title = getenv("COLTRANE_TITLE")
 

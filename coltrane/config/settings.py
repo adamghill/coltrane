@@ -45,12 +45,12 @@ def get_markdown_extras() -> int:
     return get_coltrane_settings().get("MARKDOWN_EXTRAS", DEFAULT_MARKDOWN_EXTRAS)
 
 
-def get_site() -> str:
+def get_site_url() -> str:
     """
     Get the configured site.
     """
 
-    return get_coltrane_settings().get("SITE")
+    return get_coltrane_settings().get("SITE_URL")
 
 
 def get_title() -> str:

@@ -6,10 +6,10 @@ Coltrane will automatically create an `rss.xml` file or path with all of the con
 
 Because RSS requires an absolute URL, `coltrane` needs to know about the current domain for the site.
 
-For integrated or standalone mode, `COLTRANE_SITE` needs to be set in the `.env` file. For integrated mode, the settings file requires something like the following.
+For integrated or standalone mode, `COLTRANE_SITE_URL` needs to be set in the `.env` file. For integrated mode, the settings file requires something like the following.
 
 ```python
 COLTRANE = {
-    "SITE": "https://example.com",
+    "SITE_URL": "https://example.com",
 }
 ```

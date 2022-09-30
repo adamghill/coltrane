@@ -8,7 +8,7 @@ For local web development `coltrane` uses an `.env` file in the base directory f
 DEBUG=True
 INTERNAL_IPS=127.0.0.1
 ALLOWED_HOSTS=
-COLTRANE_SITE=
+COLTRANE_SITE_URL=
 SECRET_KEY=this-would-be-lots-of-random-characters
 ```
 
@@ -34,12 +34,12 @@ The acceptable host or domain names when the site is deployed to production. Mus
 ALLOWED_HOSTS=coltrane.com
 ```
 
-### COLTRANE_SITE
+### COLTRANE_SITE_URL
 
 The hosting domain's scheme and domain.
 
 ```shell
-COLTRANE_SITE=https://coltrane.com
+COLTRANE_SITE_URL=https://coltrane.com
 ```
 
 ### COLTRANE_TITLE

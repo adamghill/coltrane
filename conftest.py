@@ -12,7 +12,7 @@ def pytest_configure():
 
     templates = deepcopy(_get_default_template_settings(base_dir))
     coltrane_settings = deepcopy(DEFAULT_COLTRANE_SETTINGS)
-    coltrane_settings["SITE"] = "http://localhost"
+    coltrane_settings["SITE_URL"] = "http://localhost"
 
     settings.configure(
         BASE_DIR=base_dir,
