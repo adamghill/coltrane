@@ -1,7 +1,4 @@
 <p align="center">
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
   <a href="https://coltrane.readthedocs.io"><h1 align="center">coltrane</h1></a>
 </p>
 <p align="center">A simple content site framework that harnesses the power of Django without the hassle 🎵</p>
@@ -9,6 +6,9 @@
 ![PyPI](https://img.shields.io/pypi/v/coltrane?color=blue&style=flat-square)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/coltrane?color=blue&style=flat-square)
 ![GitHub Sponsors](https://img.shields.io/github/sponsors/adamghill?color=blue&style=flat-square)
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 📖 Complete documentation: https://coltrane.readthedocs.io
 
