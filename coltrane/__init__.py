@@ -103,7 +103,7 @@ def _get_default_template_settings(base_dir: Path) -> List:
                     )
                     template_tags.append(module_name)
                 except InvalidTemplateLibrary as e:
-                    logger.exception(e)
+                    logger.debug(e)
 
     builtins = [
         "django.contrib.humanize.templatetags.humanize",
