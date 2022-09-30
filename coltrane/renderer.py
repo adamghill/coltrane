@@ -32,19 +32,18 @@ class StaticRequest:
     path: str
     META: Dict = field(default_factory=dict)
     GET: Dict = field(default_factory=dict)
-    _site_url: str = None
 
     def __init__(self, path: str, meta=None, get=None):
         self.path = path
         self.META = meta or {}
         self.GET = get or {}
-        self._site_url = get_site_url()
     
     @property
     def site_url(self):
-        assert self._site_url, "COLTRANE_SITE_URL in .env or COLTRANE.SITE_URL in settings file is required"
+        site_url = get_site_url()
+        assert site_url, "COLTRANE_SITE_URL in .env or COLTRANE.SITE_URL in settings file is required"
 
-        return self._site_url
+        return site_url
 
     @property
     def scheme(self) -> str:
