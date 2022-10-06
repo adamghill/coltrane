@@ -57,9 +57,9 @@ def directory_contents(
                 if exclude == content_slug:
                     continue
 
-            (_, metadata) = get_html_and_markdown(content_slug)
+            rendered_markdown = get_html_and_markdown(content_slug)
 
-            contents.append(metadata)
+            contents.append(rendered_markdown.metadata)
 
     return contents
 
@@ -109,14 +109,14 @@ class IncludeMarkdownNode(Node):
             template = context.template.engine.select_template((template_name,))
             cache[template_name] = template
 
-        (html, metadata) = render_markdown_path(template.origin.name)
+        rendered_markdown = render_markdown_path(template.origin.name)
 
         for c in context:
             for key, value in c.items():
-                if key not in metadata:
-                    metadata[key] = value
+                if key not in rendered_markdown.metadata:
+                    rendered_markdown.metadata[key] = value
 
-        return render_html_with_django(html, metadata)
+        return render_html_with_django(rendered_markdown)
 
 
 @register.tag("include_md")
@@ -146,7 +146,8 @@ def do_include_md(parser, token):
 
 @register.filter(takes_context=True)
 def to_html(context: dict, text: str) -> str:
-    (html, metadata) = render_markdown_text(text)
+    rendered_markdown = render_markdown_text(text)
+
     return mark_safe(
-        render_html_with_django(html, metadata, request=context["request"])
+        render_html_with_django(rendered_markdown, request=context["request"])
     )

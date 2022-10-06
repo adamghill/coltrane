@@ -105,9 +105,9 @@ def get_content_items(skip_draft: bool = True) -> Iterable[ContentItem]:
     content_directory_path_length = len(str(content_directory))
 
     for path in paths:
-        (html, metadata) = render_markdown_path(path)
+        rendered_markdown = render_markdown_path(path)
 
-        if skip_draft and "draft" in metadata and metadata["draft"] is True:
+        if skip_draft and "draft" in rendered_markdown.metadata and rendered_markdown.metadata["draft"] is True:
             continue
 
         path_str = str(path)
@@ -119,7 +119,8 @@ def get_content_items(skip_draft: bool = True) -> Iterable[ContentItem]:
             relative_url = relative_url[:-6]
 
         content_item = ContentItem(
-            path=path, metadata=metadata, html=html, relative_url=relative_url
+            path=path, metadata=rendered_markdown.metadata,
+            html=rendered_markdown.content, relative_url=relative_url
         )
         _items.append(content_item)
 

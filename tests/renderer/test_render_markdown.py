@@ -25,12 +25,12 @@ test data
 
     static_request = StaticRequest(path="/")
 
-    (actual_template, actual_context) = render_markdown("test-2", static_request)
+    rendered_markdown = render_markdown("test-2", static_request)
 
-    assert actual_template == expected_template
-    assert actual_context.get("content") == expected_content
-    assert actual_context.get("data") == expected_data
-    assert actual_context.get("template") == expected_template
+    assert rendered_markdown.content == expected_template
+    assert rendered_markdown.metadata.get("content") == expected_content
+    assert rendered_markdown.metadata.get("data") == expected_data
+    assert rendered_markdown.metadata.get("template") == expected_template
 
 
 @dataclass
@@ -45,5 +45,5 @@ class MarkdownContent:
 def test_render_markdown_metadata(settings, tmp_path: Path):
     static_request = StaticRequest(path="/")
 
-    (_, metadata) = render_markdown("test-2", static_request)
-    assert metadata.get("content") == "test-content"
+    rendered_markdown = render_markdown("test-2", static_request)
+    assert rendered_markdown.metadata.get("content") == "test-content"

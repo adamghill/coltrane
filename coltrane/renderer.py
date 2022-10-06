@@ -1,8 +1,8 @@
 import logging
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Dict, Optional, Tuple, Union
 
-from django.conf import settings
 from django.http import HttpRequest
 from django.template import engines
 from django.utils.html import mark_safe  # type: ignore
@@ -56,6 +56,12 @@ class StaticRequest:
         return self.path.startswith("https://")
 
 
+@dataclass
+class RenderedMarkdown:
+    content: str
+    metadata: Dict
+
+
 def _parse_and_update_metadata(content: Markdown) -> dict:
     """
     Add new, parse and/or cast existing values to metadata.
@@ -80,34 +86,7 @@ def _parse_and_update_metadata(content: Markdown) -> dict:
     return metadata
 
 
-def render_markdown_path(path) -> Tuple[str, Optional[Dict]]:
-    """
-    Renders the markdown file located at path.
-    """
-
-    markdown_extras = get_markdown_extras()
-
-    content = markdown_path(
-        path,
-        extras=markdown_extras,
-    )
-
-    metadata = _parse_and_update_metadata(content)
-
-    return (str(content), metadata)
-
-
-def render_markdown_text(text: str) -> Tuple[str, Optional[Dict]]:
-    markdown_extras = get_markdown_extras()
-
-    content = markdown(text, extras=markdown_extras)
-
-    metadata = _parse_and_update_metadata(content)
-
-    return (str(content), metadata)
-
-
-def _get_markdown_content_as_html(slug: str) -> Tuple[str, Optional[Dict]]:
+def _get_markdown_content_as_html(slug: str) -> RenderedMarkdown:
     """
     Converts markdown file based on the slug into HTML.
     """
@@ -117,8 +96,35 @@ def _get_markdown_content_as_html(slug: str) -> Tuple[str, Optional[Dict]]:
     return render_markdown_path(path)
 
 
+def render_markdown_path(path: Path) -> RenderedMarkdown:
+    """
+    Renders the markdown file located at path.
+    """
+
+    markdown_extras = get_markdown_extras()
+    content = markdown_path(
+        path,
+        extras=markdown_extras,
+    )
+    metadata = _parse_and_update_metadata(content)
+
+    return RenderedMarkdown(str(content), metadata)
+
+
+def render_markdown_text(text: str) -> RenderedMarkdown:
+    """
+    Renders the markdown text.
+    """
+
+    markdown_extras = get_markdown_extras()
+    content = markdown(text, extras=markdown_extras)
+    metadata = _parse_and_update_metadata(content)
+
+    return RenderedMarkdown(str(content), metadata)
+
+
 def render_html_with_django(
-    html: str, context: Dict, request: HttpRequest = None
+    rendered_markdown: RenderedMarkdown, request: HttpRequest = None
 ) -> str:
     """
     Takes the rendered HTML from the markdown uses Django to fill in any template
@@ -126,13 +132,14 @@ def render_html_with_django(
     """
 
     django_engine = engines["django"]
-    template = django_engine.from_string(html)
+    template = django_engine.from_string(rendered_markdown.content)
 
-    return str(template.render(context=context, request=request))
+    return str(template.render(context=rendered_markdown.metadata, request=request))
 
 
-def get_html_and_markdown(slug: str) -> Tuple[str, Dict]:
-    (html, metadata) = _get_markdown_content_as_html(slug)
+def get_html_and_markdown(slug: str) -> RenderedMarkdown:
+    rendered_markdown = _get_markdown_content_as_html(slug)
+    metadata = rendered_markdown.metadata
 
     if metadata is None:
         metadata = {}
@@ -142,12 +149,14 @@ def get_html_and_markdown(slug: str) -> Tuple[str, Dict]:
 
     metadata["slug"] = slug
 
-    return (html, metadata)
+    rendered_markdown.metadata = metadata
+
+    return rendered_markdown
 
 
 def render_markdown(
     slug: str, request: Union[HttpRequest, StaticRequest]
-) -> Tuple[str, Dict]:
+) -> RenderedMarkdown:
     """
     Renders the markdown from the `slug` by:
     1. Rendering the markdown file into HTML
@@ -155,15 +164,15 @@ def render_markdown(
         data in JSON files and markdown frontmatter
 
     Returns:
-        Tuple of template file name (i.e. `coltrane/content.html`) and context dictionary.
+        `RenderedMarkdown` with template file name (i.e. `coltrane/content.html`) and context dictionary.
     """
 
-    (html, metadata) = get_html_and_markdown(slug)
+    rendered_markdown = get_html_and_markdown(slug)
 
     context = {}
 
     # Start with any metadata from the markdown frontmatter
-    context.update(metadata)
+    context.update(rendered_markdown.metadata)
 
     # Add JSON data to the context
     data = get_data()
@@ -173,8 +182,8 @@ def render_markdown(
         context["request"] = request
 
     # Add rendered content to the context
-    content = render_html_with_django(html, context, request)
+    content = render_html_with_django(rendered_markdown, request)
     context["content"] = mark_safe(content)
     template = context["template"]
 
-    return (template, context)
+    return RenderedMarkdown(template, context)

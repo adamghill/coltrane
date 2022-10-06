@@ -1,6 +1,8 @@
 from pathlib import Path
 from unittest.mock import call, patch
 
+from coltrane.renderer import RenderedMarkdown
+
 
 def test_404(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
@@ -141,7 +143,7 @@ def test_url_slug_cache(client, settings, tmp_path: Path):
 
     with patch(
         "coltrane.views._get_from_cache_if_enabled",
-        return_value=("coltrane/content.html", context),
+        return_value=(RenderedMarkdown("coltrane/content.html", context)),
     ) as _get_from_cache_if_enabled:
         with patch(
             "coltrane.views._set_in_cache_if_enabled"
