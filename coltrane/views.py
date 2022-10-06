@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.utils.cache import patch_response_headers
 
 from .config.cache import ViewCache
-from .renderer import render_markdown
+from .renderer import RenderedMarkdown, render_markdown
 
 
 logger = logging.getLogger(__name__)
@@ -28,13 +28,12 @@ def _normalize_slug(slug: str) -> str:
     return slug
 
 
-def _get_from_cache_if_enabled(slug: str) -> Tuple[str, Dict]:
+def _get_from_cache_if_enabled(slug: str) -> RenderedMarkdown:
     """
     Gets the slug from the cache if it's enabled.
     """
 
-    template = None
-    context = None
+    rendered_markdown = None
     view_cache = ViewCache()
 
     if view_cache.is_enabled:
@@ -42,12 +41,12 @@ def _get_from_cache_if_enabled(slug: str) -> Tuple[str, Dict]:
         cached_value = view_cache.cache.get(cache_key)
 
         if cached_value:
-            (template, context) = cached_value
+            rendered_markdown = cached_value
 
-    return (template, context)
+    return rendered_markdown
 
 
-def _set_in_cache_if_enabled(slug: str, template: str, context: Dict) -> None:
+def _set_in_cache_if_enabled(slug: str, rendered_markdown: RenderedMarkdown) -> None:
     """
     Sets everything in the cache if it's enabled.
     """
@@ -58,7 +57,7 @@ def _set_in_cache_if_enabled(slug: str, template: str, context: Dict) -> None:
         cache_key = f"{view_cache.cache_key_namespace}{slug}"
         view_cache.cache.set(
             cache_key,
-            (template, context),
+            rendered_markdown,
             view_cache.seconds,
         )
 
@@ -70,28 +69,25 @@ def content(request: HttpRequest, slug: str = "index"):
     Will cache the rendered content if enabled.
     """
 
-    template = ""
-    context = {}
     slug = _normalize_slug(slug)
-
-    (template, context) = _get_from_cache_if_enabled(slug)
+    rendered_markdown = _get_from_cache_if_enabled(slug)
 
     try:
-        if not template or not context:
-            (template, context) = render_markdown(slug, request=request)
-            _set_in_cache_if_enabled(slug, template, context)
+        if not rendered_markdown:
+            rendered_markdown = render_markdown(slug, request=request)
+            _set_in_cache_if_enabled(slug, rendered_markdown)
     except FileNotFoundError:
         try:
             slug_with_index = f"{slug}/index"
-            (template, context) = render_markdown(slug_with_index, request=request)
-            _set_in_cache_if_enabled(slug_with_index, template, context)
+            rendered_markdown = render_markdown(slug_with_index, request=request)
+            _set_in_cache_if_enabled(slug_with_index, rendered_markdown)
         except FileNotFoundError:
             raise Http404(f"{slug} cannot be found")
 
     response = render(
         request,
-        template,
-        context=context,
+        rendered_markdown.content,
+        context=rendered_markdown.metadata,
     )
 
     view_cache = ViewCache()
