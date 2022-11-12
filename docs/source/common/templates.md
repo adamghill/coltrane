@@ -125,6 +125,33 @@ If the request url is https://localhost:8000/ and there are these files:
 </ul>
 ```
 
+**Exclude a slug from being included**
+
+If the request url is https://localhost:8000/ and there are these files:
+
+- content/articles/article1.md
+- content/articles/article2.md
+
+```markdown
+# Articles
+
+{% directory_contents "articles" exclude="article1" as directory_contents %}
+
+{% for content in directory_contents %}
+
+- {{ content.slug }}
+
+{% endfor %}
+```
+
+```html
+<h1 id="articles">Articles</h1>
+
+<ul>
+  <li>article2</li>
+</ul>
+```
+
 #### `include_md`
 
 Similar to the [`include`](https://docs.djangoproject.com/en/stable/ref/templates/builtins/#include) template tag, but can be used to include a markdown file and have it render correctly into HTML. It can be used in markdown files or in HTML templates.
