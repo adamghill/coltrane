@@ -57,9 +57,11 @@ def blob():
     expected = """<h1 id="title">{{ title }}</h1>
 
 {% verbatim %}
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">blob</span><span class="p">():</span>
+<div class="codehilite">
+<pre><span></span><code><span class="k">def</span> <span class="nf">blob</span><span class="p">():</span>
     <span class="k">pass</span>
-</code></pre></div>
+</code></pre>
+</div>
 {% endverbatim %}
 """
 
@@ -87,12 +89,14 @@ function App() {
     expected = """<h1 id="title">{{ title }}</h1>
 
 {% verbatim %}
-<div class="codehilite"><pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="codehilite">
+<pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
 <span class="w">    </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">style</span><span class="o">=</span><span class="p">{{</span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;16px&quot;</span><span class="p">}}</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span><span class="w"></span>
 <span class="w">  </span><span class="p">);</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</code></pre></div>
+</code></pre>
+</div>
 {% endverbatim %}
 """
 
