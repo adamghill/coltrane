@@ -1,15 +1,16 @@
+import codecs
 import logging
+import re
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Tuple, Union
 
-from django.conf import settings
 from django.http import HttpRequest
 from django.template import engines
 from django.utils.html import mark_safe  # type: ignore
 from django.utils.timezone import now
 
 import dateparser
-from markdown2 import Markdown, markdown, markdown_path
+from markdown2 import Markdown, markdown
 
 from .config.paths import get_content_directory
 from .config.settings import get_markdown_extras, get_site_url
@@ -85,24 +86,28 @@ def render_markdown_path(path) -> Tuple[str, Dict]:
     Renders the markdown file located at path.
     """
 
-    markdown_extras = get_markdown_extras()
+    with codecs.open(path, "r", encoding="utf-8") as f:
+        text = f.read()
 
-    content = markdown_path(
-        path,
-        extras=markdown_extras,
-    )
-
-    metadata = _parse_and_update_metadata(content)
-
-    return (str(content), metadata)
+        return render_markdown_text(text)
 
 
 def render_markdown_text(text: str) -> Tuple[str, Dict]:
     markdown_extras = get_markdown_extras()
 
-    content = markdown(text, extras=markdown_extras)
+    # Wrap code fences with Django `verbatim` templatetag
+    text = re.sub(pattern=r"```.*?```", repl="{% verbatim %}\n\g<0>\n{% endverbatim %}", string=text, flags=re.RegexFlag.DOTALL)
+
+    content = markdown(
+        text=text,
+        extras=markdown_extras
+    )
 
     metadata = _parse_and_update_metadata(content)
+
+    # Remove `p` tags that get added to the `verbatim` templatetag
+    content = content.replace("<p>{% verbatim %}</p>\n", "{% verbatim %}")
+    content = content.replace("\n<p>{% endverbatim %}</p>", "{% endverbatim %}")
 
     return (str(content), metadata)
 

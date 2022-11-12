@@ -1,6 +1,4 @@
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict
 from unittest.mock import patch
 
 from coltrane.renderer import StaticRequest, render_markdown
@@ -33,15 +31,7 @@ test data
     assert actual_context.get("template") == expected_template
 
 
-@dataclass
-class MarkdownContent:
-    metadata: Dict
-
-    def __str__(self):
-        return "test-content"
-
-
-@patch("coltrane.renderer.markdown_path", return_value=MarkdownContent(metadata=None))
+@patch("coltrane.renderer.render_markdown_path", return_value=("test-content", {}))
 def test_render_markdown_metadata(settings, tmp_path: Path):
     static_request = StaticRequest(path="/")
 
