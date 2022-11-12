@@ -63,6 +63,9 @@ pywatchman = "^1.4.1"
 django-stubs = "^1.9.0"
 coverage = {extras = ["toml"], version = "^6.2"}
 pytest-cov = "^3.0.0"
+pytest-icdiff = "^0.6"
+types-toml = "^0.10.8"
+types-dateparser = "^1.1.4"
 
 [tool.isort]
 default_section = "THIRDPARTY"
