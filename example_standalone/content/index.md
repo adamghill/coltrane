@@ -10,6 +10,22 @@ test_string: this is a test string
 
 # {{ h1 }}
 
+```html
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+```
+
+```javascript
+function App() {
+  return (
+    <div style={{padding: "16px"}}>
+      ...
+    </div>
+  );
+}
+```
+
+
 This is a test
 
 _ok_
