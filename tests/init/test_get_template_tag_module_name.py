@@ -17,7 +17,7 @@ def test_get_template_tag_module_name():
     assert actual == expected
 
 
-def test_get_template_tag_module_name():
+def test_get_template_tag_module_name_invalid_missing_extension():
     with pytest.raises(InvalidTemplateLibrary):
         _get_template_tag_module_name(
             Path("../example_standalone"),
@@ -25,7 +25,7 @@ def test_get_template_tag_module_name():
         )
 
 
-def test_get_template_tag_module_name_invalid():
+def test_get_template_tag_module_name_invalid_wrong_file():
     with pytest.raises(InvalidTemplateLibrary):
         _get_template_tag_module_name(
             Path("../example_standalone"),

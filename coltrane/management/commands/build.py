@@ -13,8 +13,8 @@ from django.contrib.sitemaps.views import sitemap
 from django.core import management
 from django.core.management.base import BaseCommand
 
-from halo import Halo
-from log_symbols.symbols import LogSymbols
+from halo import Halo  # type: ignore
+from log_symbols.symbols import LogSymbols  # type: ignore
 
 from coltrane.config.paths import (
     get_base_directory,
@@ -246,14 +246,14 @@ class Command(BaseCommand):
 
             for path in get_content_paths():
                 future = executor.submit(self._output_markdown_file, path)
-                ex = future.exception()
+                exception = future.exception()
 
-                if ex:
-                    error_detail = f"{ex.__class__.__name__}: {ex}"
+                if exception:
+                    error_detail = f"{exception.__class__.__name__}: {exception}"
 
-                    if ex.__class__.__name__ == "FastDevVariableDoesNotExist":
+                    if exception.__class__.__name__ == "FastDevVariableDoesNotExist":
                         error_detail = (
-                            str(ex)
+                            str(exception)
                             .replace("\n    ", ", ")
                             .replace(":\n, ", ": ")
                             .replace(

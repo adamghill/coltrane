@@ -22,7 +22,7 @@ DEFAULT_TEMPLATE = "coltrane/content.html"
 
 
 @dataclass
-class StaticRequest:
+class StaticRequest(HttpRequest):
     """
     Used to mock an HttpRequest when generating the HTML for static sites.
 
@@ -47,10 +47,10 @@ class StaticRequest:
 
     @property
     def scheme(self) -> str:
-        return self.site_url.split("://")[0]
+        return str(self.site_url.split("://")[0])
 
     def get_host(self) -> str:
-        return self.site_url.split("://")[1]
+        return str(self.site_url.split("://")[1])
 
     def is_secure(self) -> bool:
         return self.path.startswith("https://")
@@ -80,7 +80,7 @@ def _parse_and_update_metadata(content: Markdown) -> dict:
     return metadata
 
 
-def render_markdown_path(path) -> Tuple[str, Optional[Dict]]:
+def render_markdown_path(path) -> Tuple[str, Dict]:
     """
     Renders the markdown file located at path.
     """
@@ -97,7 +97,7 @@ def render_markdown_path(path) -> Tuple[str, Optional[Dict]]:
     return (str(content), metadata)
 
 
-def render_markdown_text(text: str) -> Tuple[str, Optional[Dict]]:
+def render_markdown_text(text: str) -> Tuple[str, Dict]:
     markdown_extras = get_markdown_extras()
 
     content = markdown(text, extras=markdown_extras)

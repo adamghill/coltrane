@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 
 from django.conf import settings
 
@@ -45,7 +45,7 @@ def get_markdown_extras() -> int:
     return get_coltrane_settings().get("MARKDOWN_EXTRAS", DEFAULT_MARKDOWN_EXTRAS)
 
 
-def get_site_url() -> str:
+def get_site_url() -> Optional[str]:
     """
     Get the configured site.
     """
@@ -53,7 +53,7 @@ def get_site_url() -> str:
     return get_coltrane_settings().get("SITE_URL")
 
 
-def get_title() -> str:
+def get_title() -> Optional[str]:
     """
     Get the configured title.
     """
@@ -61,7 +61,7 @@ def get_title() -> str:
     return get_coltrane_settings().get("TITLE")
 
 
-def get_description() -> str:
+def get_description() -> Optional[str]:
     """
     Get the configured description.
     """

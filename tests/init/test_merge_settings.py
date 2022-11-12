@@ -3,7 +3,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 from coltrane import _merge_settings
-from tests.init.test_initialize import DEFAULT_SETTINGS, _get_settings_with_whitenoise
+from tests.init.test_initialize import (  # type: ignore
+    DEFAULT_SETTINGS,
+    _get_settings_with_whitenoise,
+)
 
 
 @patch("coltrane._is_whitenoise_installed", return_value=True)

@@ -10,11 +10,11 @@ from subprocess import run as run_process
 from django.core.management.utils import get_random_secret_key
 
 import click
-import rich_click
+import rich_click  # type: ignore
 
 
-click.Command.format_help = rich_click.rich_format_help
-click.Group.format_help = rich_click.rich_format_help
+click.Command.format_help = rich_click.rich_format_help  # type: ignore
+click.Group.format_help = rich_click.rich_format_help  # type: ignore
 
 
 DEFAULT_APP = """#!/usr/bin/env python

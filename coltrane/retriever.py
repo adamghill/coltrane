@@ -107,7 +107,7 @@ def get_content_items(skip_draft: bool = True) -> Iterable[ContentItem]:
     for path in paths:
         (html, metadata) = render_markdown_path(path)
 
-        if skip_draft and "draft" in metadata and metadata["draft"] is True:
+        if skip_draft and metadata and "draft" in metadata and metadata["draft"] is True:
             continue
 
         path_str = str(path)

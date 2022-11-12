@@ -34,7 +34,7 @@ def directory_contents(
         # Force SafeString to be a normal string so it can be used with `Path` later
         directory = directory + ""
 
-    if directory.startswith("/"):
+    if directory and directory.startswith("/"):
         directory = directory[1:]
 
     content_paths = get_content_paths(directory)
@@ -66,7 +66,7 @@ def directory_contents(
 
 @register.filter()
 def parent(path: Union[str, WSGIRequest] = "") -> str:
-    if hasattr(path, "path"):
+    if isinstance(path, WSGIRequest) or hasattr(path, "path"):
         # Handle if a `request` is passed in
         path = path.path
 
@@ -147,6 +147,7 @@ def do_include_md(parser, token):
 @register.filter(takes_context=True)
 def to_html(context: dict, text: str) -> str:
     (html, metadata) = render_markdown_text(text)
+
     return mark_safe(
         render_html_with_django(html, metadata, request=context["request"])
     )

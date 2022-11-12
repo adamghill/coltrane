@@ -161,7 +161,7 @@ def _is_whitenoise_installed() -> bool:
     """
 
     try:
-        import whitenoise
+        import whitenoise  # type: ignore
 
         return True
     except ModuleNotFoundError:

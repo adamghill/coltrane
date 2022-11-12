@@ -33,8 +33,8 @@ def _get_from_cache_if_enabled(slug: str) -> Tuple[str, Dict]:
     Gets the slug from the cache if it's enabled.
     """
 
-    template = None
-    context = None
+    template: str = None
+    context: Dict = None
     view_cache = ViewCache()
 
     if view_cache.is_enabled:
@@ -71,7 +71,7 @@ def content(request: HttpRequest, slug: str = "index"):
     """
 
     template = ""
-    context = {}
+    context: Dict = {}
     slug = _normalize_slug(slug)
 
     (template, context) = _get_from_cache_if_enabled(slug)

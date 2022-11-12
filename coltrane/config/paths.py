@@ -10,10 +10,7 @@ def get_base_directory() -> Path:
     """
 
     if hasattr(settings, "BASE_DIR"):
-        if isinstance(settings.BASE_DIR, str):
-            return Path(settings.BASE_DIR)
-
-        return settings.BASE_DIR
+        return Path(settings.BASE_DIR)
 
     return Path(getcwd())
 
@@ -63,7 +60,7 @@ def get_output_directory() -> Path:
     """
 
     try:
-        return settings.COLTRANE["OUTPUT"]["DIRECTORY"]
+        return Path(settings.COLTRANE["OUTPUT"]["DIRECTORY"])
     except (AttributeError, KeyError):
         pass
 
@@ -83,7 +80,7 @@ def get_staticfiles_json() -> Path:
     Get the path of Django's `staticfiles.json` manifest file.
     """
 
-    return settings.STATIC_ROOT / "staticfiles.json"
+    return Path(settings.STATIC_ROOT) / "staticfiles.json"
 
 
 def get_output_static_directory() -> Path:
@@ -91,4 +88,4 @@ def get_output_static_directory() -> Path:
     Get the path of Django's static path.
     """
 
-    return settings.STATIC_ROOT
+    return Path(settings.STATIC_ROOT)
