@@ -23,10 +23,41 @@ class NoParentError(Exception):
     pass
 
 
+def _is_content_slug_in_string(content_slug: str, slugs: str) -> bool:
+    """
+    Whether a content slug is included in a string. Handles if `string` is
+    comma-delimited list of slugs. Also handles any individual slug 
+    to check having a forward-slash prefix.
+    """
+
+    if not slugs:
+        return False
+    
+    assert isinstance(slugs, str), "Slugs must be a string"
+
+    split_slugs = slugs.split(",")
+
+    for slug_to_check in split_slugs:
+        slug_to_check = slug_to_check.strip()
+
+        if slug_to_check.startswith("/"):
+            slug_to_check = slug_to_check[1:]
+
+        if slug_to_check == content_slug:
+            return True
+    
+    return False
+
+
 @register.simple_tag(takes_context=True)
 def directory_contents(
     context, directory: str = None, exclude: str = None
 ) -> List[Dict[str, str]]:
+    """
+    Returns a list of content metadata for a particular directory. Useful for
+    listing links to content.
+    """
+
     if not directory:
         request = context["request"]
         directory = request.path
@@ -50,12 +81,8 @@ def directory_contents(
                 content_slug = f"{directory}/{path_slug}"
                 content_directory = content_directory / directory
 
-            if exclude:
-                if exclude.startswith("/"):
-                    exclude = exclude[1:]
-
-                if exclude == content_slug:
-                    continue
+            if _is_content_slug_in_string(content_slug=content_slug, slugs=exclude):
+                continue
 
             (_, metadata) = get_html_and_markdown(content_slug)
 
@@ -66,6 +93,10 @@ def directory_contents(
 
 @register.filter()
 def parent(path: Union[str, WSGIRequest] = "") -> str:
+    """
+    Gets the the directory above `path`.
+    """
+
     if isinstance(path, WSGIRequest) or hasattr(path, "path"):
         # Handle if a `request` is passed in
         path = path.path
@@ -146,6 +177,10 @@ def do_include_md(parser, token):
 
 @register.filter(takes_context=True)
 def to_html(context: dict, text: str) -> str:
+    """
+    Converts markdown to HTML.
+    """
+
     (html, metadata) = render_markdown_text(text)
 
     return mark_safe(
