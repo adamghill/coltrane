@@ -1,3 +1,8 @@
+# 0.21.0
+
+- Add `order_by` to `directory_contents` templatetag.
+- Fix `TOC` outputting 'None' when it should be `None`.
+
 # 0.20.0
 
 - Add `to_html` template tag. [#37](https://github.com/adamghill/coltrane/pull/37) by [Tobi-De](https://github.com/Tobi-De)
