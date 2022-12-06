@@ -62,10 +62,7 @@ def _parse_and_update_metadata(content: Markdown) -> dict:
     Add new, parse and/or cast existing values to metadata.
     """
 
-    metadata = content.metadata
-
-    if metadata is None:
-        metadata = {}
+    metadata = content.metadata or {}
 
     if "publish_date" in metadata:
         metadata["publish_date"] = dateparser.parse(metadata["publish_date"])
