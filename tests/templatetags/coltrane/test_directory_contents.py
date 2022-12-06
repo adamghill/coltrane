@@ -185,3 +185,69 @@ def test_directory_contents_exclude_with_comma_delimited_string(settings, tmp_pa
     actual = directory_contents(context, exclude="/another-test , yet-more-test")
 
     assert actual == expected
+
+
+def test_directory_contents_order_by(settings, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content/test.md").write_text("test data")
+    (tmp_path / "content/another-test.md").write_text("another test")
+    (tmp_path / "content/yet-more-test.md").write_text("another test")
+
+    context = {"request": StaticRequest("/")}
+    expected = [
+        {
+            "template": "coltrane/content.html",
+            "toc": None,
+            "slug": "another-test",
+            "now": ANY,
+        },
+        {
+            "template": "coltrane/content.html",
+            "toc": None,
+            "slug": "test",
+            "now": ANY,
+        },
+        {
+            "template": "coltrane/content.html",
+            "toc": None,
+            "slug": "yet-more-test",
+            "now": ANY,
+        },
+    ]
+    actual = directory_contents(context, order_by="slug")
+
+    assert actual == expected
+
+
+def test_directory_contents_order_by_reversed(settings, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content/test.md").write_text("test data")
+    (tmp_path / "content/another-test.md").write_text("another test")
+    (tmp_path / "content/yet-more-test.md").write_text("another test")
+
+    context = {"request": StaticRequest("/")}
+    expected = [
+        {
+            "template": "coltrane/content.html",
+            "toc": None,
+            "slug": "yet-more-test",
+            "now": ANY,
+        },
+        {
+            "template": "coltrane/content.html",
+            "toc": None,
+            "slug": "test",
+            "now": ANY,
+        },
+        {
+            "template": "coltrane/content.html",
+            "toc": None,
+            "slug": "another-test",
+            "now": ANY,
+        },        
+    ]
+    actual = directory_contents(context, order_by="-slug")
+
+    assert actual == expected

@@ -51,7 +51,7 @@ def _is_content_slug_in_string(content_slug: str, slugs: str) -> bool:
 
 @register.simple_tag(takes_context=True)
 def directory_contents(
-    context, directory: str = None, exclude: str = None
+    context, directory: str = None, exclude: str = None, order_by=None
 ) -> List[Dict[str, str]]:
     """
     Returns a list of content metadata for a particular directory. Useful for
@@ -87,6 +87,20 @@ def directory_contents(
             (_, metadata) = get_html_and_markdown(content_slug)
 
             contents.append(metadata)
+    
+    if order_by and contents:
+        is_reverse = False
+
+        if order_by[0] == "-":
+            is_reverse = order_by[0] == "-"
+            order_by = order_by[1:]
+        
+        def _directory_content_sorter(_metadata: Dict) -> str:
+            value = _metadata.get(order_by, "") or ""
+
+            return str(value)
+
+        contents.sort(key=_directory_content_sorter, reverse=is_reverse)
 
     return contents
 
