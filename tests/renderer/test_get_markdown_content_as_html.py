@@ -44,7 +44,7 @@ test data
     )
 
     rendered_html = "<p>test data</p>\n"
-    context = {"template": "test-template.html", "toc": ANY, "now": ANY}
+    context = {"template": "test-template.html", "toc": None, "now": ANY}
     expected = (rendered_html, context)
     actual = _get_markdown_content_as_html("test-1")
 

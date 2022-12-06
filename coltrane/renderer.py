@@ -76,7 +76,10 @@ def _parse_and_update_metadata(content: Markdown) -> dict:
     metadata["now"] = now()
 
     if hasattr(content, "toc_html"):
-        metadata["toc"] = mark_safe(content.toc_html)
+        metadata["toc"] = None
+
+        if content.toc_html:
+            metadata["toc"] = mark_safe(content.toc_html)
 
     return metadata
 
