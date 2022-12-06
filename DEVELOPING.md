@@ -3,5 +3,6 @@
 1. Update CHANGELOG.md
 1. Commit changes
 1. Tag commit with new version
+1. Push `git --tags push origin main`
 1. `poe publish`
 1. Update [GitHub Releases](https://github.com/adamghill/coltrane/releases/new)
