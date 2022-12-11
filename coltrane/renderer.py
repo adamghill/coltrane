@@ -11,13 +11,7 @@ from django.utils.text import slugify
 from django.utils.timezone import now
 
 import dateparser
-import frontmatter
-import mistune
-import pygments
 from markdown2 import Markdown, markdown
-from minestrone import HTML
-from mistune.directives import Admonition, FencedDirective
-from mistune.renderers.html import HTMLRenderer, safe_entity
 
 from .config.paths import get_content_directory
 from .config.settings import (
@@ -232,59 +226,74 @@ class Markdown2MarkdownRenderer(MarkdownRenderer):
         return (content, metadata)
 
 
-class CustomHTMLRenderer(HTMLRenderer):
-    def _color_with_pygments(self, codeblock, lexer, **formatter_opts):
-        class HtmlCodeFormatter(pygments.formatters.HtmlFormatter):
-            def _wrap_code(self, inner):
-                """
-                A function for use in a Pygments Formatter which wraps in <code> tags.
-                """
-
-                yield 0, "<code>"
-
-                for tup in inner:
-                    yield tup
-
-                yield 0, "</code>"
-
-            def _add_newline(self, inner):
-                # Add newlines around the inner contents so that _strict_tag_block_re matches the outer div.
-                yield 0, "\n"
-                yield from inner
-                yield 0, "\n"
-
-            def wrap(self, source):
-                """
-                Return the source with a code, pre, and div.
-                """
-
-                return self._add_newline(self._wrap_pre(self._wrap_code(source)))
-
-        formatter_opts.setdefault("cssclass", "codehilite")
-        formatter = HtmlCodeFormatter(**formatter_opts)
-
-        return pygments.highlight(codeblock, lexer, formatter)
-
-    def block_code(self, code: str, info=None) -> str:
-        language = ""
-
-        if info is not None:
-            info = safe_entity(info.strip())
-            language = info.split(None, 1)[0]
-
-            if language:
-                try:
-                    lexer = pygments.lexers.get_lexer_by_name(language)
-
-                    return self._color_with_pygments(code, lexer)
-                except pygments.util.ClassNotFound:
-                    pass
-
-        return f"<pre><code>{code}</code></pre>\n"
-
-
 class MistuneMarkdownRenderer(MarkdownRenderer):
+    try:
+        from mistune.renderers.html import HTMLRenderer
+    except ImportError:
+        HTMLRenderer = object
+
+    class CustomHTMLRenderer(HTMLRenderer):
+        def _color_with_pygments(self, codeblock, lexer, **formatter_opts):
+            import pygments
+            from pygments.formatters import HtmlFormatter
+
+            class HtmlCodeFormatter(HtmlFormatter):
+                def _wrap_code(self, inner):
+                    """
+                    A function for use in a Pygments Formatter which wraps in <code> tags.
+                    """
+
+                    yield 0, "<code>"
+
+                    for tup in inner:
+                        yield tup
+
+                    yield 0, "</code>"
+
+                def _add_newline(self, inner):
+                    # Add newlines around the inner contents so that _strict_tag_block_re matches the outer div.
+                    yield 0, "\n"
+                    yield from inner
+                    yield 0, "\n"
+
+                def wrap(self, source):
+                    """
+                    Return the source with a code, pre, and div.
+                    """
+
+                    return self._add_newline(self._wrap_pre(self._wrap_code(source)))
+
+            formatter_opts.setdefault("cssclass", "codehilite")
+            formatter = HtmlCodeFormatter(**formatter_opts)
+
+            return pygments.highlight(codeblock, lexer, formatter)
+
+        def block_code(self, code: str, info=None) -> str:
+            import mistune
+            import pygments
+            from pygments.lexers import get_lexer_by_name
+            from pygments.util import ClassNotFound
+
+            language = ""
+
+            if info is not None:
+                info = mistune.renderers.html.safe_entity(info.strip())
+                language = info.split(None, 1)[0]
+
+                if language:
+                    try:
+                        lexer = get_lexer_by_name(language)
+
+                        return self._color_with_pygments(code, lexer)
+                    except ClassNotFound:
+                        pass
+
+            return f"<pre><code>{code}</code></pre>\n"
+
     def __init__(self):
+        import mistune
+        from mistune.directives import Admonition, FencedDirective
+
         plugins = get_mistune_plugins() + [
             FencedDirective(
                 [
@@ -294,11 +303,11 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
         ]
 
         self.mistune_markdown = mistune.create_markdown(
-            renderer=CustomHTMLRenderer(),
+            renderer=MistuneMarkdownRenderer.CustomHTMLRenderer(),
             plugins=plugins,
         )
 
-    def _parse_and_update_metadata(self, post: frontmatter.Post) -> dict:
+    def _parse_and_update_metadata(self, post) -> Dict:
         """
         Add new, parse and/or cast existing values to metadata.
 
@@ -322,6 +331,8 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
         return metadata
 
     _current_header_int = None
+    _current_nested_idx = 0
+    _headers = {}
 
     def _generate_toc(self, content, metadata):
         """
@@ -329,43 +340,66 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
         `metadata` with HTML for a table of contents.
         """
 
+        from django.utils.html import strip_tags
+
+        from minestrone import HTML
+
         html = HTML(content)
         toc_html = "<ul>"
         spaces = ""
 
         for el in html.query("*"):
             if el.name in ("h1", "h2", "h3", "h4", "h5", "h6"):
-                header_text_slug = slugify(el.text)
+                header_text_slug = slugify(strip_tags(el.text))
                 el.id = header_text_slug
                 header_int = int(el.name[1:])
 
-                if self._current_header_int is None:
-                    pass
+                if self._current_nested_idx == 0:
+                    self._current_nested_idx += 1
                 elif self._current_header_int < header_int:
                     toc_html = f"{toc_html}\n{spaces}<ul>"
+                    self._current_nested_idx += 1
                 elif self._current_header_int == header_int:
                     toc_html = f"{toc_html}</li>"
+                # elif self._current_nested_idx == header_int:
+                #     toc_html = f"{toc_html}</li>"
                 else:
-                    if self._current_header_int:
-                        for _ in range(self._current_header_int - header_int):
-                            spaces = spaces[2:]
-                            toc_html = f"{toc_html}</li>\n{spaces}</ul>"
-                            self._current_header_int -= 1
+                    if self._current_nested_idx:
+                        for _ in range(self._current_nested_idx):
+                            # print("_current_header_int", self._current_header_int)
+                            # print("header_int", header_int)
+                            # print("_current_nested_idx", self._current_nested_idx)
+                            # print()
 
-                            if self._current_header_int == header_int:
+                            spaces = spaces[2:]
+
+                            if self._current_nested_idx == 1:
                                 toc_html = f"{toc_html}</li>"
+                            else:
+                                toc_html = f"{toc_html}</li>\n{spaces}</ul>"
+
+                            self._current_header_int -= 1
+                            self._current_nested_idx -= 1
+
+                            # if self._current_header_int == header_int:
+                            #     toc_html = f"{toc_html}</li>"
+
+                    self._current_nested_idx += 1
 
                 self._current_header_int = header_int
-                spaces = " " * (self._current_header_int * 2)
+
+                # self._current_nested_idx += 1
+                spaces = " " * (self._current_nested_idx * 2)
+
                 toc_html = f'{toc_html}\n{spaces}<li><a href="#{header_text_slug}">{el.text}</a>'
 
         # Close li and ul tags at the end
-        if self._current_header_int:
-            for _ in range(self._current_header_int):
+        if self._current_nested_idx:
+            for _ in range(self._current_nested_idx):
                 spaces = spaces[2:]
                 toc_html = f"{toc_html}</li>\n{spaces}</ul>"
 
-                self._current_header_int -= 1
+                self._current_nested_idx -= 1
 
         toc_html = f"{toc_html}\n"
 
@@ -375,6 +409,8 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
         return (content, metadata)
 
     def render_markdown_text(self, text: str) -> Tuple[str, Dict]:
+        import frontmatter
+
         frontmatter_post = frontmatter.loads(text)
 
         content = self.pre_process_markdown(frontmatter_post.content)
