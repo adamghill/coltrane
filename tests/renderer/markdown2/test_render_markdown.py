@@ -1,10 +1,17 @@
 from pathlib import Path
 from unittest.mock import patch
 
-from coltrane.renderer import StaticRequest, render_markdown
+import pytest
+
+from coltrane.renderer import Markdown2MarkdownRenderer, StaticRequest
 
 
-def test_render_markdown(settings, tmp_path: Path):
+@pytest.fixture
+def markdown_renderer():
+    return Markdown2MarkdownRenderer()
+
+
+def test_render_markdown(markdown_renderer, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
     (tmp_path / "content").mkdir()
@@ -23,7 +30,9 @@ test data
 
     static_request = StaticRequest(path="/")
 
-    (actual_template, actual_context) = render_markdown("test-2", static_request)
+    (actual_template, actual_context) = markdown_renderer.render_markdown(
+        "test-2", static_request
+    )
 
     assert actual_template == expected_template
     assert actual_context.get("content") == expected_content
@@ -31,9 +40,14 @@ test data
     assert actual_context.get("template") == expected_template
 
 
-@patch("coltrane.renderer.render_markdown_path", return_value=("test-content", {}))
-def test_render_markdown_metadata(settings, tmp_path: Path):
+@patch(
+    "coltrane.renderer.Markdown2MarkdownRenderer.render_markdown_path",
+    return_value=("test-content", {}),
+)
+def test_render_markdown_metadata(
+    render_markdown_path, markdown_renderer, settings, tmp_path: Path
+):
     static_request = StaticRequest(path="/")
 
-    (_, metadata) = render_markdown("test-2", static_request)
+    (_, metadata) = markdown_renderer.render_markdown("test-2", static_request)
     assert metadata.get("content") == "test-content"

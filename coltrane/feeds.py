@@ -7,11 +7,13 @@ from .retriever import ContentItem, get_content_items
 class ContentFeed(Feed):
     title = get_title()
     description = get_description()
-    
+
     @property
     def site_url(self):
         site_url = get_site_url()
-        assert site_url, "COLTRANE_SITE_URL in .env or COLTRANE.SITE_URL in settings file is required"
+        assert (
+            site_url
+        ), "COLTRANE_SITE_URL in .env or COLTRANE.SITE_URL in settings file is required"
 
         return site_url
 

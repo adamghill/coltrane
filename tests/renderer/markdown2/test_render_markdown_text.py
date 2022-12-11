@@ -1,21 +1,28 @@
-from coltrane.renderer import render_markdown_text
+import pytest
+
+from coltrane.renderer import Markdown2MarkdownRenderer
 
 
-def test_render_markdown_text():
+@pytest.fixture
+def markdown_renderer():
+    return Markdown2MarkdownRenderer()
+
+
+def test_render_markdown_text(markdown_renderer):
     markdown_content = """---
 title: My test markdown title
 ---
     
 # {{ title }}
 """
-    (content, metadata) = render_markdown_text(markdown_content)
+    (content, metadata) = markdown_renderer.render_markdown_text(markdown_content)
     expected = '<h1 id="title">{{ title }}</h1>'
 
     assert metadata.get("title") == "My test markdown title"
     assert content.strip() == expected
 
 
-def test_render_markdown_text_with_code_fence():
+def test_render_markdown_text_with_code_fence(markdown_renderer):
     markdown_content = """---
 title: My test markdown title
 ---
@@ -27,7 +34,7 @@ this is a lot of code
 ```
 """
 
-    (content, metadata) = render_markdown_text(markdown_content)
+    (content, metadata) = markdown_renderer.render_markdown_text(markdown_content)
     expected = """<h1 id="title">{{ title }}</h1>
 
 {% verbatim %}
@@ -40,7 +47,7 @@ this is a lot of code
     assert content == expected
 
 
-def test_render_markdown_text_with_code_fence_with_language():
+def test_render_markdown_text_with_code_fence_with_language(markdown_renderer):
     markdown_content = """---
 title: My test markdown title
 ---
@@ -53,7 +60,7 @@ def blob():
 ```
 """
 
-    (content, metadata) = render_markdown_text(markdown_content)
+    (content, metadata) = markdown_renderer.render_markdown_text(markdown_content)
     expected = """<h1 id="title">{{ title }}</h1>
 
 {% verbatim %}
@@ -69,7 +76,7 @@ def blob():
     assert content == expected
 
 
-def test_render_markdown_text_with_code_fence_react():
+def test_render_markdown_text_with_code_fence_react(markdown_renderer):
     markdown_content = """---
 title: My test markdown title
 ---
@@ -85,7 +92,7 @@ function App() {
 ```
 """
 
-    (content, metadata) = render_markdown_text(markdown_content)
+    (content, metadata) = markdown_renderer.render_markdown_text(markdown_content)
     expected = """<h1 id="title">{{ title }}</h1>
 
 {% verbatim %}
@@ -104,7 +111,7 @@ function App() {
     assert content == expected
 
 
-def test_render_markdown_text_with_back_ticks():
+def test_render_markdown_text_with_back_ticks(markdown_renderer):
     markdown_content = """---
 title: My test markdown title
 ---
@@ -114,7 +121,7 @@ title: My test markdown title
 `this is code`
 """
 
-    (content, metadata) = render_markdown_text(markdown_content)
+    (content, metadata) = markdown_renderer.render_markdown_text(markdown_content)
     expected = """<h1 id="title">{{ title }}</h1>
 
 <p><code>this is code</code></p>

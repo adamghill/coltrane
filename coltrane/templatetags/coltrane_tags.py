@@ -7,12 +7,7 @@ from django.template.exceptions import TemplateSyntaxError
 from django.template.loader_tags import construct_relative_path
 from django.utils.safestring import SafeString, mark_safe
 
-from coltrane.renderer import (
-    get_html_and_markdown,
-    render_html_with_django,
-    render_markdown_path,
-    render_markdown_text,
-)
+from coltrane.renderer import MarkdownRenderer
 from coltrane.retriever import get_content_directory, get_content_paths
 
 
@@ -26,13 +21,13 @@ class NoParentError(Exception):
 def _is_content_slug_in_string(content_slug: str, slugs: str) -> bool:
     """
     Whether a content slug is included in a string. Handles if `string` is
-    comma-delimited list of slugs. Also handles any individual slug 
+    comma-delimited list of slugs. Also handles any individual slug
     to check having a forward-slash prefix.
     """
 
     if not slugs:
         return False
-    
+
     assert isinstance(slugs, str), "Slugs must be a string"
 
     split_slugs = slugs.split(",")
@@ -45,7 +40,7 @@ def _is_content_slug_in_string(content_slug: str, slugs: str) -> bool:
 
         if slug_to_check == content_slug:
             return True
-    
+
     return False
 
 
@@ -84,17 +79,19 @@ def directory_contents(
             if _is_content_slug_in_string(content_slug=content_slug, slugs=exclude):
                 continue
 
-            (_, metadata) = get_html_and_markdown(content_slug)
+            (_, metadata) = MarkdownRenderer.instance().get_html_and_markdown(
+                content_slug
+            )
 
             contents.append(metadata)
-    
+
     if order_by and contents:
         is_reverse = False
 
         if order_by[0] == "-":
             is_reverse = order_by[0] == "-"
             order_by = order_by[1:]
-        
+
         def _directory_content_sorter(_metadata: Dict) -> str:
             value = _metadata.get(order_by, "") or ""
 
@@ -154,14 +151,16 @@ class IncludeMarkdownNode(Node):
             template = context.template.engine.select_template((template_name,))
             cache[template_name] = template
 
-        (html, metadata) = render_markdown_path(template.origin.name)
+        (html, metadata) = MarkdownRenderer.instance().render_markdown_path(
+            template.origin.name
+        )
 
         for c in context:
             for key, value in c.items():
                 if key not in metadata:
                     metadata[key] = value
 
-        return render_html_with_django(html, metadata)
+        return MarkdownRenderer.instance().render_html_with_django(html, metadata)
 
 
 @register.tag("include_md")
@@ -195,8 +194,9 @@ def to_html(context: dict, text: str) -> str:
     Converts markdown to HTML.
     """
 
-    (html, metadata) = render_markdown_text(text)
-
-    return mark_safe(
-        render_html_with_django(html, metadata, request=context["request"])
+    (html, metadata) = MarkdownRenderer.instance().render_markdown_text(text)
+    rendered_html = MarkdownRenderer.instance().render_html_with_django(
+        html, metadata, request=context["request"]
     )
+
+    return mark_safe(rendered_html)

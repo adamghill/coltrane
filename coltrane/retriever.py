@@ -95,7 +95,7 @@ class ContentItem:
 
 
 def get_content_items(skip_draft: bool = True) -> Iterable[ContentItem]:
-    from .renderer import render_markdown_path
+    from .renderer import MarkdownRenderer
 
     paths = get_content_paths()
     _items = []
@@ -105,9 +105,14 @@ def get_content_items(skip_draft: bool = True) -> Iterable[ContentItem]:
     content_directory_path_length = len(str(content_directory))
 
     for path in paths:
-        (html, metadata) = render_markdown_path(path)
+        (html, metadata) = MarkdownRenderer.instance().render_markdown_path(path)
 
-        if skip_draft and metadata and "draft" in metadata and metadata["draft"] is True:
+        if (
+            skip_draft
+            and metadata
+            and "draft" in metadata
+            and metadata["draft"] is True
+        ):
             continue
 
         path_str = str(path)

@@ -7,7 +7,7 @@ from typing import Dict, Optional
 from django.template.loader import render_to_string
 
 from coltrane.config.paths import get_output_directory, get_staticfiles_json
-from coltrane.renderer import StaticRequest, render_markdown
+from coltrane.renderer import MarkdownRenderer, StaticRequest
 
 
 @dataclass
@@ -120,7 +120,9 @@ class ManifestItem:
         # Mock an HttpRequest when generating the HTML for static sites
         request = StaticRequest(path=self.url_slug)
 
-        (template, context) = render_markdown(self.slug, request)
+        (template, context) = MarkdownRenderer.instance().render_markdown(
+            self.slug, request
+        )
         rendered_html = render_to_string(template, context)
 
         return rendered_html

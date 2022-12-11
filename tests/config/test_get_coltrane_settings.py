@@ -4,6 +4,7 @@ from coltrane.config.settings import (
     DEFAULT_COLTRANE_SETTINGS,
     get_coltrane_settings,
     get_description,
+    get_markdown_renderer,
     get_site_url,
     get_title,
 )
@@ -39,3 +40,15 @@ def test_get_title(settings):
 def test_get_description(settings):
     setattr(settings, "COLTRANE", {"DESCRIPTION": "test description"})
     assert get_description() == "test description"
+
+
+def test_get_markdown_renderer(settings):
+    assert get_markdown_renderer() == "markdown2"
+
+    setattr(settings, "COLTRANE", {"MARKDOWN_RENDERER": "mistune"})
+    assert get_markdown_renderer() == "mistune"
+
+    setattr(settings, "COLTRANE", {"MARKDOWN_RENDERER": "invalid-markdown-renderer"})
+
+    with pytest.raises(AssertionError):
+        get_markdown_renderer()

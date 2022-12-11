@@ -108,7 +108,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "certifi"
-version = "2022.9.24"
+version = "2022.12.7"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "main"
 optional = true
@@ -219,7 +219,7 @@ Django = ">=3.2"
 
 [[package]]
 name = "django-fastdev"
-version = "1.7.2"
+version = "1.7.3"
 description = "Django-fastdev is an app that makes it faster and more fun to develop Django apps"
 category = "main"
 optional = false
@@ -230,7 +230,7 @@ Django = ">=2.0"
 
 [[package]]
 name = "django-stubs"
-version = "1.13.0"
+version = "1.13.1"
 description = "Mypy stubs for Django"
 category = "dev"
 optional = false
@@ -501,7 +501,7 @@ python-versions = "*"
 
 [[package]]
 name = "mdit-py-plugins"
-version = "0.3.1"
+version = "0.3.3"
 description = "Collection of plugins for markdown-it-py"
 category = "main"
 optional = true
@@ -511,9 +511,9 @@ python-versions = ">=3.7"
 markdown-it-py = ">=1.0.0,<3.0.0"
 
 [package.extras]
-testing = ["pytest-regressions", "pytest-cov", "pytest", "coverage"]
-rtd = ["sphinx-book-theme (>=0.1.0,<0.2.0)", "myst-parser (>=0.16.1,<0.17.0)", "attrs"]
 code_style = ["pre-commit"]
+rtd = ["attrs", "myst-parser (>=0.16.1,<0.17.0)", "sphinx-book-theme (>=0.1.0,<0.2.0)"]
+testing = ["coverage", "pytest", "pytest-cov", "pytest-regressions"]
 
 [[package]]
 name = "mdurl"
@@ -522,6 +522,30 @@ description = "Markdown URL utilities"
 category = "main"
 optional = true
 python-versions = ">=3.7"
+
+[[package]]
+name = "minestrone"
+version = "0.5.0"
+description = "Search, modify, and parse messy HTML with ease."
+category = "main"
+optional = true
+python-versions = ">=3.6.2,<4.0.0"
+
+[package.dependencies]
+beautifulsoup4 = ">=4.10.0,<5.0.0"
+
+[package.extras]
+lxml = ["lxml (==4.9.1)"]
+html5 = ["html5lib (==1.1)"]
+docs = ["Sphinx (>=4.3.2,<5.0.0)", "linkify-it-py (>=1.0.3,<2.0.0)", "myst-parser (>=0.16.1,<0.17.0)", "furo (>=2021.11.23,<2022.0.0)", "sphinx-copybutton (>=0.4.0,<0.5.0)", "attrs (>=21.4.0,<22.0.0)", "toml"]
+
+[[package]]
+name = "mistune"
+version = "3.0.0rc4"
+description = "A sane Markdown parser with useful plugins and renderers"
+category = "main"
+optional = true
+python-versions = "*"
 
 [[package]]
 name = "mypy"
@@ -575,14 +599,11 @@ testing = ["beautifulsoup4", "coverage", "docutils (>=0.17.0,<0.18.0)", "pytest 
 
 [[package]]
 name = "packaging"
-version = "21.3"
+version = "22.0"
 description = "Core utilities for Python packages"
 category = "main"
 optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-pyparsing = ">=2.0.2,<3.0.5 || >3.0.5"
+python-versions = ">=3.7"
 
 [[package]]
 name = "pastel"
@@ -594,7 +615,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "pathspec"
-version = "0.10.2"
+version = "0.10.3"
 description = "Utility library for gitignore style pattern matching of file paths."
 category = "dev"
 optional = false
@@ -602,7 +623,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "platformdirs"
-version = "2.5.4"
+version = "2.6.0"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 category = "dev"
 optional = false
@@ -681,17 +702,6 @@ python-versions = ">=3.6"
 
 [package.extras]
 plugins = ["importlib-metadata"]
-
-[[package]]
-name = "pyparsing"
-version = "3.0.9"
-description = "pyparsing module - Classes and methods to define and execute parsing grammars"
-category = "main"
-optional = false
-python-versions = ">=3.6.8"
-
-[package.extras]
-diagrams = ["railroad-diagrams", "jinja2"]
 
 [[package]]
 name = "pytest"
@@ -779,6 +789,21 @@ python-versions = ">=3.7"
 
 [package.extras]
 cli = ["click (>=5.0)"]
+
+[[package]]
+name = "python-frontmatter"
+version = "1.0.0"
+description = "Parse and manage posts with YAML (or other) frontmatter"
+category = "main"
+optional = true
+python-versions = "*"
+
+[package.dependencies]
+PyYAML = "*"
+
+[package.extras]
+docs = ["sphinx"]
+test = ["pytest", "toml", "pyaml"]
 
 [[package]]
 name = "pytz"
@@ -1202,11 +1227,12 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "flake8 (<5)", "pytest-co
 [extras]
 deploy = ["gunicorn", "whitenoise"]
 docs = ["Sphinx", "linkify-it-py", "myst-parser", "furo", "sphinx-copybutton", "sphinx-autobuild", "toml", "attrs"]
+mistune = ["mistune", "python-frontmatter", "pygments", "minestrone"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "be132a8d398839d14e65c0010b1b8937fda79378afa0c7b30e0c1dc838aa845e"
+content-hash = "a638491728655a9550f5154b4ff25d46f401f45a238c7f6abea7820a57f1bf8c"
 
 [metadata.files]
 alabaster = []
@@ -1250,6 +1276,8 @@ markupsafe = []
 mccabe = []
 mdit-py-plugins = []
 mdurl = []
+minestrone = []
+mistune = []
 mypy = []
 mypy-extensions = []
 myst-parser = []
@@ -1264,13 +1292,13 @@ py = []
 pycodestyle = []
 pyflakes = []
 pygments = []
-pyparsing = []
 pytest = []
 pytest-cov = []
 pytest-django = []
 pytest-icdiff = []
 python-dateutil = []
 python-dotenv = []
+python-frontmatter = []
 pytz = []
 pytz-deprecation-shim = []
 pywatchman = []

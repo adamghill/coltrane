@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.utils.cache import patch_response_headers
 
 from .config.cache import ViewCache
-from .renderer import render_markdown
+from .renderer import MarkdownRenderer
 
 
 logger = logging.getLogger(__name__)
@@ -78,12 +78,16 @@ def content(request: HttpRequest, slug: str = "index"):
 
     try:
         if not template or not context:
-            (template, context) = render_markdown(slug, request=request)
+            (template, context) = MarkdownRenderer.instance().render_markdown(
+                slug, request=request
+            )
             _set_in_cache_if_enabled(slug, template, context)
     except FileNotFoundError:
         try:
             slug_with_index = f"{slug}/index"
-            (template, context) = render_markdown(slug_with_index, request=request)
+            (template, context) = MarkdownRenderer.instance().render_markdown(
+                slug_with_index, request=request
+            )
             _set_in_cache_if_enabled(slug_with_index, template, context)
         except FileNotFoundError:
             raise Http404(f"{slug} cannot be found")

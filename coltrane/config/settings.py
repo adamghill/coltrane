@@ -1,9 +1,9 @@
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from django.conf import settings
 
 
-# List of all available extras: https://github.com/trentm/python-markdown2/wiki/Extras
+# List of all available `Markdown2` extras: https://github.com/trentm/python-markdown2/wiki/Extras
 DEFAULT_MARKDOWN_EXTRAS = [
     "fenced-code-blocks",
     "header-ids",
@@ -19,7 +19,25 @@ DEFAULT_MARKDOWN_EXTRAS = [
     "toc",
 ]
 
-DEFAULT_COLTRANE_SETTINGS = {"MARKDOWN_EXTRAS": DEFAULT_MARKDOWN_EXTRAS}
+# List of available `mistune` plugins: https://mistune.lepture.com/en/latest/plugins.html
+DEFAULT_MISTUNE_PLUGINS = [
+    "strikethrough",
+    "footnotes",
+    "table",
+    "task_lists",
+    "def_list",
+    "abbr",
+    "mark",
+    "insert",
+    "superscript",
+    "subscript",
+]
+
+DEFAULT_COLTRANE_SETTINGS = {
+    "MARKDOWN_RENDERER": "markdown2",
+    "MARKDOWN_EXTRAS": DEFAULT_MARKDOWN_EXTRAS,
+    "MISTUNE_PLUGINS": DEFAULT_MISTUNE_PLUGINS,
+}
 
 
 def get_coltrane_settings() -> Dict:
@@ -37,12 +55,31 @@ def get_coltrane_settings() -> Dict:
     return DEFAULT_COLTRANE_SETTINGS
 
 
-def get_markdown_extras() -> int:
+def get_markdown_renderer() -> str:
     """
-    Get the markdown extras.
+    Get the markdown renderer. Either "markdown2" or "mistune".
+    """
+
+    markdown_renderer = get_coltrane_settings().get("MARKDOWN_RENDERER", "markdown2")
+    assert markdown_renderer in ["markdown2", "mistune"]
+
+    return markdown_renderer
+
+
+def get_markdown_extras() -> List[str]:
+    """
+    Get the `markdown2` extras.
     """
 
     return get_coltrane_settings().get("MARKDOWN_EXTRAS", DEFAULT_MARKDOWN_EXTRAS)
+
+
+def get_mistune_plugins() -> List[str]:
+    """
+    Get the `mistune` plugins.
+    """
+
+    return get_coltrane_settings().get("MISTUNE_PLUGINS", DEFAULT_MISTUNE_PLUGINS)
 
 
 def get_site_url() -> Optional[str]:

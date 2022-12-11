@@ -5,6 +5,7 @@ Settings specified in a `COLTRANE` dictionary.
 ```python
 # default `coltrane` settings
 COLTRANE = {
+    "MARKDOWN_RENDERER": "markdown2",
     "MARKDOWN_EXTRAS": [
         "fenced-code-blocks",
         "header-ids",
@@ -18,6 +19,18 @@ COLTRANE = {
         "numbering",
         "strike",
         "toc",
+    ],
+    "MISTUNE_PLUGINS": [
+        "strikethrough",
+        "footnotes",
+        "table",
+        "task_lists",
+        "def_list",
+        "abbr",
+        "mark",
+        "insert",
+        "superscript",
+        "subscript",
     ]
 }
 ```
@@ -27,7 +40,7 @@ When `coltrane` is integrated into an existing Django site the `coltrane` settin
 
 ```python
 # existing app.py file
-wsgi = initialize(MARKDOWN_EXTRAS=["metadata",])
+wsgi = initialize(MARKDOWN_EXTRAS=["metadata",], MISTUNE_PLUGINS=["table",])
 # rest of the app.py file
 ```
 
@@ -35,9 +48,17 @@ wsgi = initialize(MARKDOWN_EXTRAS=["metadata",])
 
 ## Keys
 
+### MARKDOWN_RENDERER
+
+Which markdown renderer to use. Value can be either "markdown2" or "mistune". The default for 0.22.0 and below is [`markdown2`](https://github.com/trentm/python-markdown2). After that it will be [`mistune`](https://github.com/lepture/mistune).
+
+To enable `mistune` for version 0.22.0:
+1. `poetry install --extras mistune`
+2. Add `COLTRANE["MARKDOWN_RENDERER"] = "mistune"` to settings
+
 ### MARKDOWN_EXTRAS
 
-The features that should be enabled when rendering markdown. A list of all available features: https://github.com/trentm/python-markdown2/wiki/Extras. The default extras are:
+The features that should be enabled when rendering markdown with `markdown2`. A list of all available features: https://github.com/trentm/python-markdown2/wiki/Extras. The default extras are:
 
 ```python
 [
@@ -53,6 +74,25 @@ The features that should be enabled when rendering markdown. A list of all avail
     "numbering",
     "strike",
     "toc",
+]
+```
+
+### MISTUNE_PLUGINS
+
+The features that should be enabled when rendering markdown with `mistune`. A list of all available features: https://mistune.lepture.com/en/latest/plugins.html. The default extras are:
+
+```python
+[
+    "strikethrough",
+    "footnotes",
+    "table",
+    "task_lists",
+    "def_list",
+    "abbr",
+    "mark",
+    "insert",
+    "superscript",
+    "subscript",
 ]
 ```
 

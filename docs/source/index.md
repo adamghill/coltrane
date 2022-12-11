@@ -16,11 +16,11 @@
 
 ## Installation
 
-Because `coltrane` can be used in a few different ways, the documentation is split into different sections depending on the desired outcome.
+Because `coltrane` can be used in a few different ways, the documentation is split into different sections.
 
-- Markdown is rendered into HTML and output to a folder on disk with a [static site](static/index)
-- Django dynamically renders markdown from a [simplified standalone Django project](standalone/index)
-- Django dynamically renders markdown [from within an existing Django project](integrated/index)
+- [static site](static/index)
+- [simplified standalone Django project](standalone/index)
+- [integrated into an existing Django project](integrated/index)
 
 ### Optional installation
 
