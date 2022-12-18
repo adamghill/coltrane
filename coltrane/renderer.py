@@ -153,7 +153,6 @@ class MarkdownRenderer:
         """
 
         (html, metadata) = self.get_html_and_markdown(slug)
-
         context = {}
 
         # Start with any metadata from the markdown frontmatter
@@ -342,19 +341,7 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
 
         last_header_int = None
         nested_count = 0
-        strings = ["<ul>"]
-
-        lowest_header_int = 6
-
-        for el in html.query("*"):
-            if el.name in ("h1", "h2", "h3", "h4", "h5", "h6"):
-                header_int = int(el.name[1:])
-
-                if header_int < lowest_header_int:
-                    lowest_header_int = header_int
-
-                    if header_int == 1:
-                        break
+        strings = []
 
         for el in html.query("*"):
             if el.name not in ("h1", "h2", "h3", "h4", "h5", "h6"):
@@ -366,7 +353,8 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
             header_int = int(el.name[1:])
 
             if nested_count == 0:
-                # Get the initial header
+                # Add the initial header
+                strings.append("<ul>")
                 nested_count += 1
             elif last_header_int < header_int:
                 # The header is a higher number than the last one
