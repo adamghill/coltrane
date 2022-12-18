@@ -411,6 +411,28 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
         content = str(html)
 
         return (content, metadata)
+    
+    def pre_process_markdown(self, text: str) -> str:
+        text = super().pre_process_markdown(text)
+
+        # Replace DTL variables in markdown links with a marker for later; mistune won't
+        # parse the link if if there is an empty string, and will urlencode { and }
+        text = re.sub(
+            pattern=r"\({{\s*(\S+)\s*}}\)",
+            repl="(DJANGO-TEMPLATE-VARIABLE-BEGIN-\g<1>-DJANGO-TEMPLATE-VARIABLE-END)",
+            string=text,
+            flags=re.RegexFlag.DOTALL,
+        )
+
+        return text
+    
+    def post_process_html(self, html: str) -> str:
+        html = super().post_process_html(html)
+
+        # Replace the DTL variable marker so that Django variables will work for the next stage
+        html = html.replace("DJANGO-TEMPLATE-VARIABLE-BEGIN-", "{{ ").replace("-DJANGO-TEMPLATE-VARIABLE-END", " }}")
+
+        return html
 
     def render_markdown_text(self, text: str) -> Tuple[str, Dict]:
         import frontmatter

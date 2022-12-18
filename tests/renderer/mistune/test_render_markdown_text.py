@@ -136,3 +136,27 @@ is maintained by the <abbr title="World Wide Web Consortium">W3C</abbr>.</p>
 """
 
     assert content == expected
+
+
+def test_render_href_with_django_template_language_with_spaces(markdown_renderer):
+    markdown_content = """
+[{{ link_name }}]({{ link_href }})
+"""
+
+    (actual, _) = markdown_renderer.render_markdown_text(markdown_content)
+    expected = """<p><a href="{{ link_href }}">{{ link_name }}</a></p>
+"""
+
+    assert actual == expected
+
+def test_render_href_with_django_template_language_without_spaces(markdown_renderer):
+    markdown_content = """
+[{{ link_name }}]({{link_href}})
+"""
+
+    (actual, _) = markdown_renderer.render_markdown_text(markdown_content)
+    expected = """<p><a href="{{ link_href }}">{{ link_name }}</a></p>
+"""
+
+    assert actual == expected
+    
