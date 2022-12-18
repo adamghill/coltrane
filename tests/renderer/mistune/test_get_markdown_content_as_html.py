@@ -50,13 +50,7 @@ def test_get_markdown_content_toc(markdown_renderer, settings, tmp_path: Path):
 <h2 id="test-data">test data</h2>
 """
 
-    expected_toc = """<ul>
-  <li><a href="#title">title</a>
-  <ul>
-    <li><a href="#test-data">test data</a></li>
-  </ul></li>
-</ul>
-"""
+    expected_toc = '<ul><li><a href="#title">title</a><ul><li><a href="#test-data">test data</a></li></ul></li></ul>'
 
     expected_metadata = {
         "now": ANY,

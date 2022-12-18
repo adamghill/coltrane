@@ -2,6 +2,7 @@ import codecs
 import logging
 import re
 from dataclasses import dataclass, field
+from html import unescape
 from typing import Dict, Optional, Tuple, Union
 
 from django.http import HttpRequest
@@ -270,7 +271,6 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
 
         def block_code(self, code: str, info=None) -> str:
             import mistune
-            import pygments
             from pygments.lexers import get_lexer_by_name
             from pygments.util import ClassNotFound
 
@@ -326,13 +326,7 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
 
         metadata["now"] = now()
 
-        # metadata["toc"] gets generated in _generate_toc
-
         return metadata
-
-    _current_header_int = None
-    _current_nested_idx = 0
-    _headers = {}
 
     def _generate_toc(self, content, metadata):
         """
@@ -345,63 +339,73 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
         from minestrone import HTML
 
         html = HTML(content)
-        toc_html = "<ul>"
-        spaces = ""
+
+        last_header_int = None
+        nested_count = 0
+        strings = ["<ul>"]
+
+        lowest_header_int = 6
 
         for el in html.query("*"):
             if el.name in ("h1", "h2", "h3", "h4", "h5", "h6"):
-                header_text_slug = slugify(strip_tags(el.text))
-                el.id = header_text_slug
                 header_int = int(el.name[1:])
 
-                if self._current_nested_idx == 0:
-                    self._current_nested_idx += 1
-                elif self._current_header_int < header_int:
-                    toc_html = f"{toc_html}\n{spaces}<ul>"
-                    self._current_nested_idx += 1
-                elif self._current_header_int == header_int:
-                    toc_html = f"{toc_html}</li>"
-                # elif self._current_nested_idx == header_int:
-                #     toc_html = f"{toc_html}</li>"
-                else:
-                    if self._current_nested_idx:
-                        for _ in range(self._current_nested_idx):
-                            # print("_current_header_int", self._current_header_int)
-                            # print("header_int", header_int)
-                            # print("_current_nested_idx", self._current_nested_idx)
-                            # print()
+                if header_int < lowest_header_int:
+                    lowest_header_int = header_int
 
-                            spaces = spaces[2:]
+                    if header_int == 1:
+                        break
 
-                            if self._current_nested_idx == 1:
-                                toc_html = f"{toc_html}</li>"
-                            else:
-                                toc_html = f"{toc_html}</li>\n{spaces}</ul>"
+        for el in html.query("*"):
+            if el.name not in ("h1", "h2", "h3", "h4", "h5", "h6"):
+                continue
 
-                            self._current_header_int -= 1
-                            self._current_nested_idx -= 1
+            header_text_slug = slugify(strip_tags(el.text))
+            el.id = header_text_slug
 
-                            # if self._current_header_int == header_int:
-                            #     toc_html = f"{toc_html}</li>"
+            header_int = int(el.name[1:])
 
-                    self._current_nested_idx += 1
+            if nested_count == 0:
+                # Get the initial header
+                nested_count += 1
+            elif last_header_int < header_int:
+                # The header is a higher number than the last one
+                strings.append("<ul>")
+                nested_count += 1
+            elif last_header_int == header_int:
+                # The header is at the same level
+                strings.append("</li>")
+            elif last_header_int > header_int:
+                # The header is at a lower level
+                for idx in range(nested_count):
+                    if nested_count == 1:
+                        # Last level so finish with a `li`
+                        strings.append("</li>")
+                    elif idx == (last_header_int - header_int):
+                        # The current loop is equal to the difference
+                        # between the last header and the current header
+                        strings.append("</li>")
+                    else:
+                        # Skip down a level
+                        strings.append("</li></ul>")
+                    
+                    nested_count -= 1
 
-                self._current_header_int = header_int
+                    if idx == (last_header_int - header_int):
+                        # Break out of the loop because this iteration has gotten to the
+                        # correct level
+                        break
 
-                # self._current_nested_idx += 1
-                spaces = " " * (self._current_nested_idx * 2)
+                nested_count += 1
 
-                toc_html = f'{toc_html}\n{spaces}<li><a href="#{header_text_slug}">{el.text}</a>'
+            strings.append(f'<li><a href="#{header_text_slug}">{el.text}</a>')
+            last_header_int = header_int
 
-        # Close li and ul tags at the end
-        if self._current_nested_idx:
-            for _ in range(self._current_nested_idx):
-                spaces = spaces[2:]
-                toc_html = f"{toc_html}</li>\n{spaces}</ul>"
+        # Close the correct number of `li` and `ul` tags at the end
+        for _ in range(nested_count):
+            strings.append("</li></ul>")
 
-                self._current_nested_idx -= 1
-
-        toc_html = f"{toc_html}\n"
+        toc_html = "".join(strings)
 
         metadata["toc"] = mark_safe(toc_html)
         content = str(html)
@@ -412,9 +416,11 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
         import frontmatter
 
         frontmatter_post = frontmatter.loads(text)
+        content = frontmatter_post.content
 
         content = self.pre_process_markdown(frontmatter_post.content)
         content = self.mistune_markdown(content)
+        content = unescape(content)
         content = self.post_process_html(content)
 
         metadata = self._parse_and_update_metadata(frontmatter_post)

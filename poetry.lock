@@ -382,15 +382,15 @@ python-versions = "*"
 
 [[package]]
 name = "isort"
-version = "5.10.1"
+version = "5.11.2"
 description = "A Python utility / library to sort Python imports."
 category = "dev"
 optional = false
-python-versions = ">=3.6.1,<4.0"
+python-versions = ">=3.7.0"
 
 [package.extras]
-pipfile_deprecated_finder = ["pipreqs", "requirementslib"]
-requirements_deprecated_finder = ["pipreqs", "pip-api"]
+pipfile-deprecated-finder = ["pipreqs", "requirementslib"]
+requirements-deprecated-finder = ["pipreqs", "pip-api"]
 colors = ["colorama (>=0.4.3,<0.5.0)"]
 plugins = ["setuptools"]
 
@@ -525,11 +525,11 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "minestrone"
-version = "0.5.0"
+version = "0.6.2"
 description = "Search, modify, and parse messy HTML with ease."
 category = "main"
 optional = true
-python-versions = ">=3.6.2,<4.0.0"
+python-versions = ">=3.7,<4.0.0"
 
 [package.dependencies]
 beautifulsoup4 = ">=4.10.0,<5.0.0"
@@ -1232,7 +1232,7 @@ mistune = ["mistune", "python-frontmatter", "pygments", "minestrone"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "a638491728655a9550f5154b4ff25d46f401f45a238c7f6abea7820a57f1bf8c"
+content-hash = "33d1cd5e5f7677ac0124c083ab7cf281100c6c61a5f093eca2fc365d72484de5"
 
 [metadata.files]
 alabaster = []
