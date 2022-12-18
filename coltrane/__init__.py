@@ -170,6 +170,33 @@ def _is_whitenoise_installed() -> bool:
     return False
 
 
+def _set_coltrane_setting(
+    settings: Dict, initialize_settings: Dict, setting_name: str
+) -> Dict:
+    """
+    Sets a setting on the `COLTRANE` dictionary that is in the environment or passed
+    in to `initialize`. Environment takes precedence.
+
+    For example:
+    - `COLTRANE_TITLE=Awesome Blog 1` in `.env` equals `COLTRANE['TITLE'] = 'Awesome Blog 1'` in settings
+    - `initialize(COLTRANE_TITLE='Awesome Blog 2')` equals `COLTRANE['TITLE'] = 'Awesome Blog 2'` in settings
+    - `COLTRANE_TITLE=Awesome Blog 3` in `.env` and `initialize(COLTRANE_TITLE='Awesome Blog 4')` equals
+        `COLTRANE['TITLE'] = 'Awesome Blog 3'` in settings
+    """
+
+    value = getenv(setting_name) or initialize_settings.get(setting_name)
+
+    if value:
+        key_name = setting_name.replace("COLTRANE_", "")
+
+        if "COLTRANE" not in settings:
+            settings["COLTRANE"] = {}
+
+        settings["COLTRANE"][key_name] = value
+
+    return settings
+
+
 def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str, Any]:
     """
     Merges the passed-in settings into the default `coltrane` settings.
@@ -237,20 +264,18 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         "SETTINGS_MODULE": "coltrane",
     }
 
-    coltrane_site_url = getenv("COLTRANE_SITE_URL")
-
-    if coltrane_site_url:
-        default_settings["COLTRANE"]["SITE_URL"] = coltrane_site_url
-
-    coltrane_title = getenv("COLTRANE_TITLE")
-
-    if coltrane_title:
-        default_settings["COLTRANE"]["TITLE"] = coltrane_title
-
-    coltrane_description = getenv("COLTRANE_DESCRIPTION")
-
-    if coltrane_description:
-        default_settings["COLTRANE"]["DESCRIPTION"] = coltrane_description
+    default_settings = _set_coltrane_setting(
+        default_settings, django_settings, "COLTRANE_SITE_URL"
+    )
+    default_settings = _set_coltrane_setting(
+        default_settings, django_settings, "COLTRANE_TITLE"
+    )
+    default_settings = _set_coltrane_setting(
+        default_settings, django_settings, "COLTRANE_DESCRIPTION"
+    )
+    default_settings = _set_coltrane_setting(
+        default_settings, django_settings, "COLTRANE_MARKDOWN_RENDERER"
+    )
 
     if is_whitenoise_installed:
         default_settings["WHITENOISE_MANIFEST_STRICT"] = False
