@@ -105,6 +105,7 @@ common/templates
 common/context
 common/data
 common/static-files
+common/sitemap
 common/rss
 common/settings
 common/env
