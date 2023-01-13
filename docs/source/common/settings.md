@@ -136,7 +136,7 @@ COLTRANE = {
 
 ### EXTRA_FILE_NAMES
 
-Any additional non-markdown file names that should be included. The file names retrieved from the `content` directory and will be included where content is built or served. Defaults to an empty array.
+Any additional non-markdown file names that should be included. The file names will be retrieved from the `content` directory and will be built or served (depending on the mode). Defaults to an empty array.
 
 ```python
 COLTRANE = {

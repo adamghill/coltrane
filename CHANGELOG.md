@@ -1,3 +1,7 @@
+# 0.23.0
+
+- Add `EXTRA_FILE_NAMES` setting to support serving static files like `robots.txt`.
+
 # 0.22.0
 
 - Add support for rendering markdown with `mistune`. See [MARKDOWN_RENDERED](settings.md#markdown-renderer) for how to enable. `mistune` will be the default renderer after 0.22.0 because it is 1) faster rendering markdown than `markdown2`, 2) enables new functionality like `abbr`, 3) fixed a bug in the generation of the tables of contents HTML, and 4) has a plugin architecture to add new features.
