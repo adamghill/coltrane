@@ -31,7 +31,8 @@ COLTRANE = {
         "insert",
         "superscript",
         "subscript",
-    ]
+    ],
+    EXTRA_FILE_NAMES=[],
 }
 ```
 
@@ -122,7 +123,7 @@ COLTRANE = {
 }
 ```
 
-#### SITE_URL
+### SITE_URL
 
 Because RSS requires an absolute URL, `coltrane` needs to know about the current domain for the site.
 
@@ -130,5 +131,16 @@ Because RSS requires an absolute URL, `coltrane` needs to know about the current
 COLTRANE = {
     # other settings
     "SITE_URL": "https://example.com",
+}
+```
+
+### EXTRA_FILE_NAMES
+
+Any additional non-markdown file names that should be included. The file names retrieved from the `content` directory and will be included where content is built or served. Defaults to an empty array.
+
+```python
+COLTRANE = {
+    # other settings
+    "EXTRA_FILE_NAMES": []",
 }
 ```

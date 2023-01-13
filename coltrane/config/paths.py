@@ -39,6 +39,14 @@ def get_content_directory() -> Path:
     return get_base_directory() / "content"
 
 
+def get_file_path(file_name: str) -> Path:
+    """
+    Get the path of a file in the content directory.
+    """
+
+    return get_base_directory() / "content" / file_name
+
+
 def get_output_directory_name() -> str:
     """
     Gets the output directory name from settings if it is  set. Defaults to "output".

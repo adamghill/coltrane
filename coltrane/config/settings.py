@@ -34,9 +34,13 @@ DEFAULT_MISTUNE_PLUGINS = [
 ]
 
 DEFAULT_COLTRANE_SETTINGS = {
+    "TITLE": "",
+    "DESCRIPTION": "",
+    "SITE_URL": "",
     "MARKDOWN_RENDERER": "markdown2",
     "MARKDOWN_EXTRAS": DEFAULT_MARKDOWN_EXTRAS,
     "MISTUNE_PLUGINS": DEFAULT_MISTUNE_PLUGINS,
+    "EXTRA_FILE_NAMES": [],
 }
 
 
@@ -104,3 +108,10 @@ def get_description() -> Optional[str]:
     """
 
     return get_coltrane_settings().get("DESCRIPTION")
+
+
+def get_extra_file_names() -> List[str]:
+    return get_coltrane_settings().get(
+        "EXTRA_FILE_NAMES",
+        [],
+    )

@@ -4,6 +4,7 @@ from coltrane.config.settings import (
     DEFAULT_COLTRANE_SETTINGS,
     get_coltrane_settings,
     get_description,
+    get_extra_file_names,
     get_markdown_renderer,
     get_site_url,
     get_title,
@@ -52,3 +53,8 @@ def test_get_markdown_renderer(settings):
 
     with pytest.raises(AssertionError):
         get_markdown_renderer()
+
+
+def test_get_extra_file_names(settings):
+    setattr(settings, "COLTRANE", {"EXTRA_FILE_NAMES": ["robots.txt"]})
+    assert get_extra_file_names() == ["robots.txt"]

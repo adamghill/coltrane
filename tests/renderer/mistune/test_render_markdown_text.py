@@ -89,11 +89,11 @@ function App() {
     (content, metadata) = markdown_renderer.render_markdown_text(markdown_content)
     expected = """<h1 id="title">{{ title }}</h1>
 {% verbatim %}<div class="codehilite">
-<pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">style</span><span class="o">=</span><span class="p">{{</span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="s2">"16px"</span><span class="p">}}</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span><span class="w"></span>
-<span class="w">  </span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">style</span><span class="o">=</span><span class="p">{{</span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="s2">"16px"</span><span class="p">}}</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
 </code></pre>
 </div>{% endverbatim %}
 """
@@ -149,6 +149,7 @@ def test_render_href_with_django_template_language_with_spaces(markdown_renderer
 
     assert actual == expected
 
+
 def test_render_href_with_django_template_language_without_spaces(markdown_renderer):
     markdown_content = """
 [{{ link_name }}]({{link_href}})
@@ -159,4 +160,3 @@ def test_render_href_with_django_template_language_without_spaces(markdown_rende
 """
 
     assert actual == expected
-    

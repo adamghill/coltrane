@@ -45,6 +45,8 @@ DEFAULT_INSTALLED_APPS = [
     "coltrane",
 ]
 
+COLTRANE_SETTINGS_THAT_ARE_ARRAYS = ("EXTRA_FILE_NAMES",)
+
 
 def _get_base_dir(base_dir: Optional[Path]) -> Path:
     """
@@ -184,15 +186,20 @@ def _set_coltrane_setting(
         `COLTRANE['TITLE'] = 'Awesome Blog 3'` in settings
     """
 
-    value = getenv(setting_name) or initialize_settings.get(setting_name)
+    coltrane_setting_name = f"COLTRANE_{setting_name}"
+    value = getenv(coltrane_setting_name) or initialize_settings.get(
+        coltrane_setting_name
+    )
 
     if value:
-        key_name = setting_name.replace("COLTRANE_", "")
-
+        # Make sure there is a `COLTRANE` setting
         if "COLTRANE" not in settings:
             settings["COLTRANE"] = {}
 
-        settings["COLTRANE"][key_name] = value
+        if setting_name in COLTRANE_SETTINGS_THAT_ARE_ARRAYS:
+            settings["COLTRANE"][setting_name] = value.split(",")
+        else:
+            settings["COLTRANE"][setting_name] = value
 
     return settings
 
@@ -264,18 +271,11 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         "SETTINGS_MODULE": "coltrane",
     }
 
-    default_settings = _set_coltrane_setting(
-        default_settings, django_settings, "COLTRANE_SITE_URL"
-    )
-    default_settings = _set_coltrane_setting(
-        default_settings, django_settings, "COLTRANE_TITLE"
-    )
-    default_settings = _set_coltrane_setting(
-        default_settings, django_settings, "COLTRANE_DESCRIPTION"
-    )
-    default_settings = _set_coltrane_setting(
-        default_settings, django_settings, "COLTRANE_MARKDOWN_RENDERER"
-    )
+    # Check for `COLTRANE` settings in env variables or passed into app.initialize()
+    for setting_name in DEFAULT_COLTRANE_SETTINGS.keys():
+        default_settings = _set_coltrane_setting(
+            default_settings, django_settings, setting_name
+        )
 
     if is_whitenoise_installed:
         default_settings["WHITENOISE_MANIFEST_STRICT"] = False
