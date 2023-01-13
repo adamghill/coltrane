@@ -141,6 +141,6 @@ Any additional non-markdown file names that should be included. The file names w
 ```python
 COLTRANE = {
     # other settings
-    "EXTRA_FILE_NAMES": []",
+    "EXTRA_FILE_NAMES": [],
 }
 ```

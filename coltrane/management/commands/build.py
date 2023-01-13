@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from io import StringIO
 from multiprocessing import cpu_count
 from pathlib import Path
+from shutil import copy2
 from types import SimpleNamespace
 from typing import Dict, List
 
@@ -18,6 +19,8 @@ from log_symbols.symbols import LogSymbols  # type: ignore
 
 from coltrane.config.paths import (
     get_base_directory,
+    get_extra_file_paths,
+    get_file_path,
     get_output_directory,
     get_output_json,
     get_output_static_directory,
@@ -218,6 +221,13 @@ class Command(BaseCommand):
         spinner.start("Collect static files")
         collectstatic_stdout = collectstatic_future.result()
         spinner.succeed(collectstatic_stdout)
+
+        spinner.start("Copy extra files")
+        extra_file_count = 0
+        for extra_file_path in get_extra_file_paths():
+            copy2(extra_file_path, self.output_directory)
+            extra_file_count += 1
+        spinner.succeed(f"Copy {extra_file_count} extra files")
 
         if not self.is_force and self.manifest.static_files_manifest_changed:
             # At least one static file has changed, so re-render all files because

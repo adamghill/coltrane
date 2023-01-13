@@ -1,7 +1,10 @@
 from os import getcwd
 from pathlib import Path
+from typing import Iterable
 
 from django.conf import settings
+
+from coltrane.config.settings import get_extra_file_names
 
 
 def get_base_directory() -> Path:
@@ -37,6 +40,14 @@ def get_content_directory() -> Path:
     """
 
     return get_base_directory() / "content"
+
+
+def get_extra_file_paths() -> Iterable[Path]:
+    for file_name in get_extra_file_names():
+        file_path = get_file_path(file_name)
+
+        if file_path.exists():
+            yield file_path
 
 
 def get_file_path(file_name: str) -> Path:

@@ -5,7 +5,7 @@ dynamic = ["version", "description"]
 
 [tool.poetry]
 name = "coltrane"
-version = "0.23.0"
+version = "0.23.1"
 description = "A simple content site framework that harnesses the power of Django without the hassle."
 authors = ["adamghill <adam@adamghill.com>"]
 license = "MIT"
@@ -118,7 +118,8 @@ module = ["markdown2"]
 ignore_missing_imports = true
 
 [tool.poe.tasks]
-r = { cmd = "example_standalone/app.py runserver 0:8045", help = "Start dev server" }
+r = { cmd = "example_standalone/app.py runserver 0:8045", help = "Start dev server for example_standalone" }
+record = { cmd = "coltrane record", cwd = "example_standalone", help = "Build example_standalone" }
 g = { cmd = "gunicorn -b localhost:8045 example_standalone.app:wsgi", help = "Start gunicorn" }
 t = { cmd = "pytest -m 'not slow'", help = "Run tests" }
 tc = { cmd = "pytest --cov=coltrane", help = "Run tests with coverage" }

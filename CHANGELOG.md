@@ -1,3 +1,7 @@
+# 0.23.1
+
+- Include extra files when building the static site.
+
 # 0.23.0
 
 - Add `EXTRA_FILE_NAMES` setting to support serving static files like `robots.txt`.

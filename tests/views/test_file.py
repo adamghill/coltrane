@@ -5,8 +5,6 @@ from django.test import override_settings
 
 import pytest
 
-from coltrane.config.settings import DEFAULT_COLTRANE_SETTINGS
-
 
 @pytest.mark.urls("coltrane.urls")
 def test_file_with_data(client, settings, tmp_path: Path):
