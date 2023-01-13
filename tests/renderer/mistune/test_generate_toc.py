@@ -36,36 +36,32 @@ more stuff here
 </ul>
 """,
     ),
-# Not sure how this should function
-#     (
-#         """
-# ## second header
-
-# ## another second header
-
-# ### third header
-
-# # first header
-
-# more stuff here
-# """,
-#         """
-# <ul>
-#   <li>
-#     <a href="#second-header">second header</a>
-#   </li>
-#   <li>
-#     <a href="#another-second-header">another second header</a>
-#     <ul>
-#       <li><a href="#third-header">third header</a></li>
-#     </ul>
-#   </li>
-#   <li>
-#     <a href="#first-header">first header</a>
-#   </li>
-# </ul>
-# """,
-#     ),
+    # Not sure how this should function
+    #     (
+    #         """
+    # ## second header
+    # ## another second header
+    # ### third header
+    # # first header
+    # more stuff here
+    # """,
+    #         """
+    # <ul>
+    #   <li>
+    #     <a href="#second-header">second header</a>
+    #   </li>
+    #   <li>
+    #     <a href="#another-second-header">another second header</a>
+    #     <ul>
+    #       <li><a href="#third-header">third header</a></li>
+    #     </ul>
+    #   </li>
+    #   <li>
+    #     <a href="#first-header">first header</a>
+    #   </li>
+    # </ul>
+    # """,
+    #     ),
     (
         """
 # `code` header

@@ -376,7 +376,7 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
                     else:
                         # Skip down a level
                         strings.append("</li></ul>")
-                    
+
                     nested_count -= 1
 
                     if idx == (last_header_int - header_int):
@@ -399,7 +399,7 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
         content = str(html)
 
         return (content, metadata)
-    
+
     def pre_process_markdown(self, text: str) -> str:
         text = super().pre_process_markdown(text)
 
@@ -413,12 +413,14 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
         )
 
         return text
-    
+
     def post_process_html(self, html: str) -> str:
         html = super().post_process_html(html)
 
         # Replace the DTL variable marker so that Django variables will work for the next stage
-        html = html.replace("DJANGO-TEMPLATE-VARIABLE-BEGIN-", "{{ ").replace("-DJANGO-TEMPLATE-VARIABLE-END", " }}")
+        html = html.replace("DJANGO-TEMPLATE-VARIABLE-BEGIN-", "{{ ").replace(
+            "-DJANGO-TEMPLATE-VARIABLE-END", " }}"
+        )
 
         return html
 
