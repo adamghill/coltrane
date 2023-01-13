@@ -117,20 +117,62 @@ warn_unused_configs = true
 module = ["markdown2"]
 ignore_missing_imports = true
 
-[tool.poe.tasks]
-r = { cmd = "example_standalone/app.py runserver 0:8045", help = "Start dev server for example_standalone" }
-record = { cmd = "coltrane record", cwd = "example_standalone", help = "Build example_standalone" }
-g = { cmd = "gunicorn -b localhost:8045 example_standalone.app:wsgi", help = "Start gunicorn" }
-t = { cmd = "pytest -m 'not slow'", help = "Run tests" }
-tc = { cmd = "pytest --cov=coltrane", help = "Run tests with coverage" }
-cr = { cmd = "coverage report", help = "Show coverage report" }
-my = { cmd = "mypy .", help = "Run mypy" }
-b = { cmd = "black . --check --quiet", help = "Run black" }
-i = { cmd = "isort . --check --quiet", help = "Run isort" }
-tm = ["b", "i", "tc", "my"]
-sa = { cmd = "sphinx-autobuild -W docs/source docs/build", help = "Sphinx autobuild" }
-sb = { cmd = "sphinx-build -W docs/source docs/build", help = "Build documentation" }
-publish = { shell = "poetry publish --build -r test && poetry publish" }
+[tool.poe.tasks.secret]
+script = "django.core.management.utils:get_random_secret_key()"
+print_result = true
+
+[tool.poe.tasks.r]
+cmd = "example_standalone/app.py runserver 0:8045"
+help = "Start dev server for example_standalone"
+
+[tool.poe.tasks.record]
+cmd = "coltrane record"
+cwd = "example_standalone"
+help = "Build example_standalone"
+
+[tool.poe.tasks.g]
+cmd = "gunicorn -b localhost:8045 example_standalone.app:wsgi"
+help = "Start gunicorn"
+
+[tool.poe.tasks.t]
+cmd = "pytest -m 'not slow'"
+help = "Run tests"
+
+[tool.poe.tasks.tc]
+cmd = "pytest --cov=coltrane"
+help = "Run tests with coverage"
+
+[tool.poe.tasks.cr]
+cmd = "coverage report"
+help = "Show coverage report"
+
+[tool.poe.tasks.my]
+cmd = "mypy ."
+help = "Run mypy"
+
+[tool.poe.tasks.b]
+cmd = "black . --check --quiet"
+help = "Run black"
+
+[tool.poe.tasks.i]
+cmd = "isort . --check --quiet"
+help = "Run isort"
+
+[tool.poe.tasks.tm]
+sequence = ["b", "i", "tc", "my"]
+ignore_fail = "return_non_zero"
+help = "Run all of the test-related stuff"
+
+[tool.poe.tasks.sa]
+cmd = "sphinx-autobuild -W docs/source docs/build"
+help = "Sphinx autobuild"
+
+[tool.poe.tasks.sb]
+cmd = "sphinx-build -W docs/source docs/build"
+help = "Build documentation"
+
+[tool.poe.tasks.publish]
+shell = "poetry publish --build -r test && poetry publish"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
