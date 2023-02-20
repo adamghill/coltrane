@@ -4,6 +4,7 @@ import re
 from dataclasses import dataclass, field
 from html import unescape
 from typing import Dict, Optional, Tuple, Union
+from urllib.parse import unquote
 
 from django.http import HttpRequest
 from django.template import engines
@@ -27,6 +28,8 @@ from .retriever import get_data
 logger = logging.getLogger(__name__)
 
 DEFAULT_TEMPLATE = "coltrane/content.html"
+
+SPACE_REPLACEMENT = "DJANGO-TEMPLATE-TAG-SPACE"
 
 
 @dataclass
@@ -403,8 +406,8 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
     def pre_process_markdown(self, text: str) -> str:
         text = super().pre_process_markdown(text)
 
-        # Replace DTL variables in markdown links with a marker for later; mistune won't
-        # parse the link if if there is an empty string, and will urlencode { and }
+        # Replace Django template variables in markdown with a marker for later because
+        # mistune won't match markdown commands if there are empty strings
         text = re.sub(
             pattern=r"\({{\s*(\S+)\s*}}\)",
             repl="(DJANGO-TEMPLATE-VARIABLE-BEGIN-\g<1>-DJANGO-TEMPLATE-VARIABLE-END)",
@@ -412,15 +415,54 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
             flags=re.RegexFlag.DOTALL,
         )
 
+        # Get all matches for Django template tags for later adjustment
+        pattern = r"\({%\s*(\S+)\s*(.*?)\s*%}\)"
+        template_tag_matches = re.findall(
+            pattern=pattern, string=text, flags=re.RegexFlag.DOTALL
+        )
+
+        # Replace Django template tags in markdown with a marker for later because
+        # mistune won't match markdown commands if there are empty strings
+        text = re.sub(
+            pattern=pattern,
+            repl=f"(DJANGO-TEMPLATE-TAG-BEGIN-\g<1>{SPACE_REPLACEMENT}\g<2>-DJANGO-TEMPLATE-TAG-END)",
+            string=text,
+            flags=re.RegexFlag.DOTALL,
+        )
+
+        # Replace spaces between the Django template tag args/kwargs with something that
+        # can be removed later
+        for match in template_tag_matches:
+            # Replace empty string with `SPACE_REPLACEMENT`
+            # Replace double quote with a single quote
+            template_tag_args = (
+                match[1].replace(" ", SPACE_REPLACEMENT).replace('"', "'")
+            )
+
+            text = text.replace(match[1], template_tag_args)
+
         return text
 
     def post_process_html(self, html: str) -> str:
         html = super().post_process_html(html)
 
-        # Replace the DTL variable marker so that Django variables will work for the next stage
+        # Replace the Django template language variable marker so that Django
+        # variables will work for the next stage
         html = html.replace("DJANGO-TEMPLATE-VARIABLE-BEGIN-", "{{ ").replace(
             "-DJANGO-TEMPLATE-VARIABLE-END", " }}"
         )
+
+        # Replace the Django template tag variable marker so that Django
+        # template tags will work for the next stage
+        html = html.replace("DJANGO-TEMPLATE-TAG-BEGIN-", "{% ").replace(
+            "-DJANGO-TEMPLATE-TAG-END", " %}"
+        )
+
+        # Fix replacement string characters done in `pre_process_markdown`
+        html = html.replace(SPACE_REPLACEMENT, " ")
+
+        # Convert strings that were urlencoded by `mistune` back to their original form
+        html = unquote(html)
 
         return html
 
@@ -432,7 +474,7 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
 
         content = self.pre_process_markdown(frontmatter_post.content)
         content = self.mistune_markdown(content)
-        content = unescape(content)
+        content = unescape(content)  # type: ignore
         content = self.post_process_html(content)
 
         metadata = self._parse_and_update_metadata(frontmatter_post)
