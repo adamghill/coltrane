@@ -107,7 +107,7 @@ If the request url is https://localhost:8000/ and there are these files:
 ```markdown
 # Articles
 
-{% directory_contents "articles" as directory_contents %}
+{% directory_contents 'articles' as directory_contents %}
 
 {% for content in directory_contents %}
 
@@ -117,7 +117,7 @@ If the request url is https://localhost:8000/ and there are these files:
 ```
 
 ```html
-<h1 id="articles">Articles</h1>
+<h1 id='articles'>Articles</h1>
 
 <ul>
   <li>article1</li>
@@ -135,7 +135,7 @@ If the request url is https://localhost:8000/ and there are these files:
 ```markdown
 # Articles
 
-{% directory_contents "articles" exclude="article1" as directory_contents %}
+{% directory_contents 'articles' exclude='article1' as directory_contents %}
 
 {% for content in directory_contents %}
 
@@ -164,7 +164,7 @@ If the request url is https://localhost:8000/ and these files are present in the
 ```markdown
 # Sorted Articles
 
-{% directory_contents order_by="slug" as directory_contents %}
+{% directory_contents order_by='slug' as directory_contents %}
 
 {% for content in directory_contents %}
 
@@ -185,7 +185,7 @@ If the request url is https://localhost:8000/ and these files are present in the
 ```markdown
 # Reverse Sorted Articles
 
-{% directory_contents order_by="-slug" as directory_contents %}
+{% directory_contents order_by='-slug' as directory_contents %}
 
 {% for content in directory_contents %}
 
@@ -253,7 +253,6 @@ title: Article 1
 <main>
     {{ markdown_text|to_html }}
 </main>
-
 ```
 
 Rendered html content
@@ -261,10 +260,7 @@ Rendered html content
 <main>
    <h1>Article 1</h1>
 </main>
-
 ```
-
-
 
 ### Humanize template tags
 
@@ -289,7 +285,7 @@ def test(value, arg):
 **`content/index.md`**
 
 ```markdown
-{{ "This"|test }}
+{{ 'This'|test }}
 ```
 
 **Generated `index.html`**

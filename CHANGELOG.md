@@ -1,3 +1,7 @@
+# 0.24.0
+
+- Support Django template tags with the `mistune` markdown renderer.
+
 # 0.23.1
 
 - Include extra files when building the static site.
