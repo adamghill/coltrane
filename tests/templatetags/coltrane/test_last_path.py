@@ -1,51 +1,51 @@
 from coltrane.templatetags.coltrane_tags import last_path
 
 
-def test_last_path_root(request):
+class WSGIRequest:
+    def __init__(self, path: str):
+        self.path = path
+
+
+def test_last_path_root():
     expected = ""
 
-    request.path = "/"
-    context = {"request": request}
+    context = {"request": WSGIRequest("/")}
     actual = last_path(context=context)
 
     assert expected == actual
 
 
-def test_last_path_empty(request):
+def test_last_path_empty():
     expected = ""
 
-    request.path = ""
-    context = {"request": request}
+    context = {"request": WSGIRequest("")}
     actual = last_path(context=context)
 
     assert expected == actual
 
 
-def test_last_path_file(request):
+def test_last_path_file():
     expected = "cool"
 
-    request.path = "/cool"
-    context = {"request": request}
+    context = {"request": WSGIRequest("/cool")}
     actual = last_path(context=context)
 
     assert expected == actual
 
 
-def test_last_path_subdirectory(request):
+def test_last_path_subdirectory():
     expected = "cool"
 
-    request.path = "/something/cool"
-    context = {"request": request}
+    context = {"request": WSGIRequest("/something/cool")}
     actual = last_path(context=context)
 
     assert expected == actual
 
 
-def test_last_path_subdirectory_with_trailing_slash(request):
+def test_last_path_subdirectory_with_trailing_slash():
     expected = "something"
 
-    request.path = "/something/"
-    context = {"request": request}
+    context = {"request": WSGIRequest("/something/")}
     actual = last_path(context=context)
 
     assert expected == actual
