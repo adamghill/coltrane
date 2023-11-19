@@ -42,6 +42,13 @@ def get_content_directory() -> Path:
     return get_base_directory() / "content"
 
 
+def get_templates_directory() -> Path:
+    """Get the path of the HTML templates directory."""
+
+    # TODO: Support other directories defined in django.conf.settings.TEMPLATES.DIRS.
+    return get_base_directory() / "templates"
+
+
 def get_extra_file_paths() -> Iterable[Path]:
     for file_name in get_extra_file_names():
         file_path = get_file_path(file_name)

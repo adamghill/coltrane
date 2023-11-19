@@ -1,4 +1,5 @@
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
+from django.http import Http404
 
 from django import template
 from django.core.handlers.wsgi import WSGIRequest
@@ -9,7 +10,6 @@ from django.utils.safestring import SafeString, mark_safe
 
 from coltrane.renderer import MarkdownRenderer
 from coltrane.retriever import get_content_directory, get_content_paths
-
 
 register = template.Library()
 
@@ -200,3 +200,29 @@ def to_html(context: dict, text: str) -> str:
     )
 
     return mark_safe(rendered_html)
+
+
+@register.simple_tag
+def raise_404(message: Optional[str] = None):
+    """Raise a 404 with an optional message."""
+
+    if message:
+        raise Http404(message)
+
+    raise Http404()
+
+
+@register.simple_tag(takes_context=True)
+def last_path(context: dict) -> str:
+    """Return the last part of the `HTTPRequest` path.
+
+    For example, if `request.path` is "/something/cool", "cool" would be returned.
+    """
+
+    request = context["request"]
+    path = request.path
+
+    if path.endswith("/"):
+        path = path[:-1]
+
+    return path.split("/")[-1:][0]

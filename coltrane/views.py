@@ -1,11 +1,13 @@
 import logging
+from django.template import TemplateDoesNotExist
+from django.template.loader import select_template
 from typing import Dict, Tuple
 
 from django.http import FileResponse, Http404, HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.utils.cache import patch_response_headers
 
-from coltrane.config.paths import get_file_path
+from coltrane.config.paths import get_file_path, get_templates_directory
 
 from .config.cache import ViewCache
 from .renderer import MarkdownRenderer
@@ -67,32 +69,62 @@ def _set_in_cache_if_enabled(slug: str, template: str, context: Dict) -> None:
 
 def content(request: HttpRequest, slug: str = "index") -> HttpResponse:
     """
-    Renders the markdown file stored in `content` based on the slug from the URL.
+    Renders the markdown file stored in `content` or HTML template based on the slug from the URL.
     Adds data into the context from `data.json` and JSON files in the `data` directory.
+
     Will cache the rendered content if enabled.
     """
 
     template: str = ""
     context: Dict = {}
     slug = _normalize_slug(slug)
+    slug_with_index = f"{slug}/index"
 
     (template, context) = _get_from_cache_if_enabled(slug)
+    set_in_cache = False
 
     try:
         if not template or not context:
+            set_in_cache = True
+
             (template, context) = MarkdownRenderer.instance().render_markdown(
                 slug, request=request
             )
-            _set_in_cache_if_enabled(slug, template, context)
     except FileNotFoundError:
         try:
-            slug_with_index = f"{slug}/index"
             (template, context) = MarkdownRenderer.instance().render_markdown(
                 slug_with_index, request=request
             )
-            _set_in_cache_if_enabled(slug_with_index, template, context)
         except FileNotFoundError:
-            raise Http404(f"{slug} cannot be found")
+            # Check if HTML templates exist and use them if available
+            # Otherwise, check for wildcards
+            potential_templates = [
+                f"{slug}.html",
+                f"{slug_with_index}.html",
+                f"{slug}/*.html",  # TODO: not sure this makes sense
+            ]
+
+            sub_directories = slug.split("/")[:-1]
+            parent_directory = "/".join(sub_directories)
+
+            # If a template directory exists for this slug, that should prevent checking
+            # for a parent directory's wildcard.
+            if not (get_templates_directory() / slug).exists():
+                potential_parent_template = f"{parent_directory}/*.html"
+
+                if not parent_directory:
+                    potential_parent_template = "*.html"
+
+                potential_templates.append(potential_parent_template)
+
+            try:
+                found_template = select_template(potential_templates)
+                template = found_template.template.name
+            except TemplateDoesNotExist:
+                raise Http404(f"{slug} cannot be found")
+
+    if set_in_cache:
+        _set_in_cache_if_enabled(slug, template, context)
 
     response = render(
         request,
