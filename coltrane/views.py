@@ -1,17 +1,15 @@
 import logging
-from django.template import TemplateDoesNotExist
-from django.template.loader import select_template
 from typing import Dict, Tuple
 
 from django.http import FileResponse, Http404, HttpRequest, HttpResponse
 from django.shortcuts import render
+from django.template import TemplateDoesNotExist
+from django.template.loader import select_template
 from django.utils.cache import patch_response_headers
 
+from coltrane.config.cache import ViewCache
 from coltrane.config.paths import get_file_path, get_templates_directory
-
-from .config.cache import ViewCache
-from .renderer import MarkdownRenderer
-
+from coltrane.renderer import MarkdownRenderer
 
 logger = logging.getLogger(__name__)
 
@@ -87,14 +85,10 @@ def content(request: HttpRequest, slug: str = "index") -> HttpResponse:
         if not template or not context:
             set_in_cache = True
 
-            (template, context) = MarkdownRenderer.instance().render_markdown(
-                slug, request=request
-            )
+            (template, context) = MarkdownRenderer.instance().render_markdown(slug, request=request)
     except FileNotFoundError:
         try:
-            (template, context) = MarkdownRenderer.instance().render_markdown(
-                slug_with_index, request=request
-            )
+            (template, context) = MarkdownRenderer.instance().render_markdown(slug_with_index, request=request)
         except FileNotFoundError:
             # Check if HTML templates exist and use them if available
             # Otherwise, check for wildcards
@@ -121,7 +115,7 @@ def content(request: HttpRequest, slug: str = "index") -> HttpResponse:
                 found_template = select_template(potential_templates)
                 template = found_template.template.name
             except TemplateDoesNotExist:
-                raise Http404(f"{slug} cannot be found")
+                raise Http404(f"{slug} cannot be found") from None
 
     if set_in_cache:
         _set_in_cache_if_enabled(slug, template, context)
@@ -140,7 +134,7 @@ def content(request: HttpRequest, slug: str = "index") -> HttpResponse:
     return response
 
 
-def file(request, file_name: str) -> FileResponse:
+def file(request, file_name: str) -> FileResponse:  # noqa: ARG001
     """
     Serves a file from the file path.
     Based on code in https://adamj.eu/tech/2022/01/18/how-to-add-a-favicon-to-your-django-site/#what-the-file-type.

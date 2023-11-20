@@ -1,5 +1,6 @@
-from coltrane.templatetags.coltrane_tags import raise_404
 import pytest
+
+from coltrane.templatetags.coltrane_tags import raise_404
 
 
 def test_raise_404():

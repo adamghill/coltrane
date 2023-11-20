@@ -1,8 +1,7 @@
 from pathlib import Path
 
-from django.template.library import InvalidTemplateLibrary
-
 import pytest
+from django.template.library import InvalidTemplateLibrary
 
 from coltrane import _get_template_tag_module_name
 

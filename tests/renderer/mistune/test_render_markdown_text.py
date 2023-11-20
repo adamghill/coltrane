@@ -12,7 +12,7 @@ def test_render_markdown_text(markdown_renderer):
     markdown_content = """---
 title: My test markdown title
 ---
-    
+
 # {{ title }}
 """
     (content, metadata) = markdown_renderer.render_markdown_text(markdown_content)
@@ -96,7 +96,7 @@ function App() {
 <span class="p">}</span>
 </code></pre>
 </div>{% endverbatim %}
-"""
+"""  # noqa: E501
 
     assert metadata.get("title") == "My test markdown title"
     assert content == expected
@@ -106,7 +106,7 @@ def test_render_markdown_text_with_back_ticks(markdown_renderer):
     markdown_content = """---
 title: My test markdown title
 ---
-    
+
 # {{ title }}
 
 `this is code`
@@ -122,7 +122,7 @@ title: My test markdown title
 
 
 def test_render_markdown_text_with_abbr(markdown_renderer):
-    markdown_content = """    
+    markdown_content = """
 The HTML specification
 is maintained by the W3C.
 

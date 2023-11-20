@@ -7,11 +7,9 @@ from pathlib import Path
 from stat import S_IEXEC
 from subprocess import run as run_process
 
-from django.core.management.utils import get_random_secret_key
-
 import click
 import rich_click  # type: ignore
-
+from django.core.management.utils import get_random_secret_key
 
 click.Command.format_help = rich_click.rich_format_help  # type: ignore
 click.Group.format_help = rich_click.rich_format_help  # type: ignore
@@ -45,13 +43,7 @@ def _run_management_command(command_name, *args):
     current_directory = getcwd()
     file_path = Path(current_directory) / "app.py"
 
-    run_process(
-        [
-            file_path,
-            command_name,
-        ]
-        + list(args)
-    )
+    run_process([file_path, command_name, *list(args)])  # noqa: S603, PLW1510
 
 
 class AliasedGroup(click.Group):
@@ -113,9 +105,7 @@ def play(port):
 
 @click.command(help="Generates HTML output.")
 @click.option("--force/--no-force", default=False, help="Force HTML generation")
-@click.option(
-    "--threads", type=int, help="Number of threads to use when generating static files"
-)
+@click.option("--threads", type=int, help="Number of threads to use when generating static files")
 @click.option("--output", help="Output directory")
 @click.option("--ignore/--no-ignore", default=False, help="Ignore errors")
 def record(force, threads, output, ignore):

@@ -30,9 +30,7 @@ test data
 
     static_request = StaticRequest(path="/")
 
-    (actual_template, actual_context) = markdown_renderer.render_markdown(
-        "test-2", static_request
-    )
+    (actual_template, actual_context) = markdown_renderer.render_markdown("test-2", static_request)
 
     assert actual_template == expected_template
     assert actual_context.get("content") == expected_content
@@ -44,9 +42,7 @@ test data
     "coltrane.renderer.Markdown2MarkdownRenderer.render_markdown_path",
     return_value=("test-content", {}),
 )
-def test_render_markdown_metadata(
-    render_markdown_path, markdown_renderer, settings, tmp_path: Path
-):
+def test_render_markdown_metadata(render_markdown_path, markdown_renderer):  # noqa: ARG001
     static_request = StaticRequest(path="/")
 
     (_, metadata) = markdown_renderer.render_markdown("test-2", static_request)

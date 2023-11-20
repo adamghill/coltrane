@@ -1,8 +1,7 @@
 import logging
 from concurrent.futures import ThreadPoolExecutor
 from functools import wraps
-from typing import Dict, List
-
+from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -10,8 +9,8 @@ logger = logging.getLogger(__name__)
 def dict_merge(
     source: Dict,
     destination: Dict,
-    destination_overrides_source=False,
-    path: List[str] = None,
+    destination_overrides_source=False,  # noqa: FBT002
+    path: Optional[List[str]] = None,
 ) -> Dict:
     """
     Deep merge two dictionaries.
@@ -29,15 +28,14 @@ def dict_merge(
                     source=source[key],
                     destination=destination[key],
                     destination_overrides_source=destination_overrides_source,
-                    path=path + [str(key)],
+                    path=[*path, str(key)],
                 )
             elif source[key] == destination[key]:
                 pass  # same leaf value
+            elif destination_overrides_source:
+                source[key] = destination[key]
             else:
-                if destination_overrides_source:
-                    source[key] = destination[key]
-                else:
-                    raise Exception("Conflict at %s" % ".".join(path + [str(key)]))
+                raise Exception("Conflict at %s" % ".".join([*path, str(key)]))
         else:
             source[key] = destination[key]
 

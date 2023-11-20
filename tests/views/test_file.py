@@ -1,9 +1,8 @@
 import importlib
 from pathlib import Path
 
-from django.test import override_settings
-
 import pytest
+from django.test import override_settings
 
 
 @pytest.mark.urls("coltrane.urls")

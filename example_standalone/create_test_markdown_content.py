@@ -3,7 +3,6 @@
 from os import getcwd
 from pathlib import Path
 
-
 for i in range(1, 10000):
     file_name = str(i) + ".md"
     path = Path(getcwd()) / "content" / file_name

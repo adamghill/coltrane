@@ -7,20 +7,18 @@ from multiprocessing import cpu_count
 from pathlib import Path
 from shutil import copy2
 from types import SimpleNamespace
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from django.conf import settings
 from django.contrib.sitemaps.views import sitemap
 from django.core import management
 from django.core.management.base import BaseCommand
-
 from halo import Halo  # type: ignore
 from log_symbols.symbols import LogSymbols  # type: ignore
 
 from coltrane.config.paths import (
     get_base_directory,
     get_extra_file_paths,
-    get_file_path,
     get_output_directory,
     get_output_json,
     get_output_static_directory,
@@ -32,12 +30,11 @@ from coltrane.retriever import get_content_paths
 from coltrane.urls import sitemaps
 from coltrane.utils import threadpool
 
-
 logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = "Build all static HTML files and put them into a directory named output."
+    help = "Build all static HTML files and put them into a directory named output."  # noqa: A003
 
     is_force = False
     threads_count = 2
@@ -73,17 +70,19 @@ class Command(BaseCommand):
         return Manifest(manifest_file=get_output_json())
 
     def _generate_sitemap(self) -> None:
-        assert self.output_directory
+        if not self.output_directory:
+            raise AssertionError("Missing output directory")
 
         sitemap_response = sitemap(request=StaticRequest(path="/"), sitemaps=sitemaps)
         sitemap_xml = sitemap_response.render().content.decode()
         (self.output_directory / "sitemap.xml").write_text(sitemap_xml)
 
     def _generate_rss(self) -> None:
-        assert self.output_directory
+        if not self.output_directory:
+            raise AssertionError("Missing output directory")
 
         content_feed = ContentFeed()
-        feed = content_feed.get_feed(None, request=StaticRequest(path="/"))
+        feed = content_feed.get_feed(None, request=StaticRequest(path="/"))  # type: ignore
         rss_xml = feed.writeString("utf-8")
 
         (self.output_directory / "rss.xml").write_text(rss_xml)
@@ -112,9 +111,7 @@ class Command(BaseCommand):
         # Get output from standard out and clean it up
         stdout.seek(0)
         collectstatic_stdout = stdout.read()
-        collectstatic_stdout = collectstatic_stdout.replace(
-            f" copied to '{str(get_output_static_directory())}'", ""
-        )[1:-2]
+        collectstatic_stdout = collectstatic_stdout.replace(f" copied to '{get_output_static_directory()!s}'", "")[1:-2]
 
         collectstatic_stdout = f"Copy {collectstatic_stdout}"
 
@@ -124,7 +121,8 @@ class Command(BaseCommand):
         return collectstatic_stdout
 
     def _output_markdown_file(self, markdown_file: Path) -> None:
-        assert self.manifest, "Manifest must be loaded first"
+        if not self.manifest:
+            raise AssertionError("Manifest must be loaded first")
 
         is_skipped = False
 
@@ -160,7 +158,7 @@ class Command(BaseCommand):
     def _set_output_directory(self, options: Dict) -> None:
         if "output" in options and options["output"]:
             if not hasattr(settings, "COLTRANE"):
-                setattr(settings, "COLTRANE", {})
+                settings.COLTRANE = {}
 
             if "OUTPUT" not in settings.COLTRANE:
                 settings.COLTRANE["OUTPUT"] = {}
@@ -169,29 +167,23 @@ class Command(BaseCommand):
 
             # Override STATIC_ROOT if the output directory name is manually set
             try:
-                settings.STATIC_ROOT = (
-                    get_base_directory()
-                    / settings.COLTRANE["OUTPUT"]["PATH"]
-                    / "static"
-                )
+                settings.STATIC_ROOT = get_base_directory() / settings.COLTRANE["OUTPUT"]["PATH"] / "static"
             except KeyError:
                 pass
 
             # Override STATIC_ROOT if the output directory is manually set
             try:
-                settings.STATIC_ROOT = (
-                    Path(settings.COLTRANE["OUTPUT"]["DIRECTORY"]) / "static"
-                )
+                settings.STATIC_ROOT = Path(settings.COLTRANE["OUTPUT"]["DIRECTORY"]) / "static"
             except KeyError:
                 pass
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa: ARG002
         self.is_force: bool = False
-        self.manifest: Manifest = None
+        self.manifest: Optional[Manifest] = None
         self.output_result_counts.create_count = 0
         self.output_result_counts.update_count = 0
         self.output_result_counts.skip_count = 0
-        self.output_directory: Path = None
+        self.output_directory: Optional[Path] = None
         self.errors: List[str] = []
 
         start_time = time.time()
@@ -276,7 +268,8 @@ class Command(BaseCommand):
                     error_message = f"Rendering {path} failed. {error_detail}"
                     self.errors.append(error_message)
 
-        result_msg = f"Create {self.output_result_counts.create_count} HTML files, {self.output_result_counts.skip_count} unmodified, {self.output_result_counts.update_count} updated"
+        result_msg = f"Create {self.output_result_counts.create_count} HTML files, \
+{self.output_result_counts.skip_count} unmodified, {self.output_result_counts.update_count} updated"
 
         spinner.succeed(result_msg)
 
@@ -301,18 +294,10 @@ class Command(BaseCommand):
         self.stdout.write()
 
         if self.errors:
-            self.stderr.write(
-                self.style.ERROR(
-                    f"Static site output completed with errors in {elapsed_time:.4f}s\n"
-                )
-            )
+            self.stderr.write(self.style.ERROR(f"Static site output completed with errors in {elapsed_time:.4f}s\n"))
 
             if "ignore" not in options or not options["ignore"]:
                 # Call sys.exit explicitly instead of CommandError for nicer error output
                 sys.exit(1)
         else:
-            self.stdout.write(
-                self.style.SUCCESS(
-                    f"Static site output completed in {elapsed_time:.4f}s"
-                )
-            )
+            self.stdout.write(self.style.SUCCESS(f"Static site output completed in {elapsed_time:.4f}s"))

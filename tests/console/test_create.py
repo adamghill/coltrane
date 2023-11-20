@@ -16,23 +16,23 @@ def test_create(tmp_path):
             result = runner.invoke(cli, ["create"])
             assert result.exit_code == 0
 
-            temp_dir = Path(temp_dir)
+            path_temp_dir = Path(temp_dir)
 
-            app_file = temp_dir / "app.py"
+            app_file = path_temp_dir / "app.py"
             assert app_file.exists()
             assert app_file.read_text() == DEFAULT_APP
 
-            env_file = temp_dir / ".env"
+            env_file = path_temp_dir / ".env"
             assert env_file.exists()
             assert env_file.read_text() == DEFAULT_ENV + "this-is-a-test"
 
-            content_dir = temp_dir / "content"
+            content_dir = path_temp_dir / "content"
             assert content_dir.exists()
 
             assert (content_dir / "index.md").exists()
             assert (content_dir / "index.md").read_text() == "# index.md"
 
-            data_dir = temp_dir / "data"
+            data_dir = path_temp_dir / "data"
             assert data_dir.exists()
 
             assert (

@@ -22,7 +22,7 @@ def test_static_request_missing_site(settings):
     request = StaticRequest(path="/")
 
     with pytest.raises(AssertionError):
-        request.scheme
+        request.scheme  # noqa: B018
 
 
 def test_static_request_missing_coltrane(settings):
@@ -30,4 +30,4 @@ def test_static_request_missing_coltrane(settings):
     request = StaticRequest(path="/")
 
     with pytest.raises(AssertionError):
-        request.scheme
+        request.scheme  # noqa: B018

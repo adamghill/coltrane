@@ -1,8 +1,6 @@
 import pytest
-from minestrone import HTML
 
 from coltrane.renderer import MistuneMarkdownRenderer
-
 
 parameters = [
     (
@@ -278,10 +276,10 @@ def eq(actual, expected):
 
     expected = expected.replace("\n", "").replace("  ", "")
 
-    print("actual:")
-    print(actual)
-    print("expected:")
-    print(expected)
+    print("actual:")  # noqa: T201
+    print(actual)  # noqa: T201
+    print("expected:")  # noqa: T201
+    print(expected)  # noqa: T201
 
     assert actual == expected
 

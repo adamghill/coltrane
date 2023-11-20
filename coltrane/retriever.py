@@ -3,14 +3,16 @@ import logging
 import warnings
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable
+from typing import Dict, Iterable, Optional
 
-from .config.cache import DataCache
-from .config.paths import get_content_directory, get_data_directory, get_data_json
-from .utils import dict_merge
-
+from coltrane.config.cache import DataCache
+from coltrane.config.paths import get_content_directory, get_data_directory, get_data_json
+from coltrane.utils import dict_merge
 
 logger = logging.getLogger(__name__)
+
+
+MARKDOWN_EXTENSION_LENGTH = 3
 
 
 def get_data() -> Dict:
@@ -34,7 +36,7 @@ def get_data() -> Dict:
         data = json.loads(get_data_json().read_bytes())
 
         warnings.warn(
-            "Reading data.json will be deprecated in future versions; use the data directory instead."
+            "Reading data.json will be deprecated in future versions; use the data directory instead.", stacklevel=1
         )
     except FileNotFoundError:
         logger.debug("Missing data.json file")
@@ -43,9 +45,7 @@ def get_data() -> Dict:
 
     for path in data_directory.rglob("*.json"):
         if path.is_file():
-            directory_without_base_and_file_name = (
-                (str(path)).replace(str(data_directory), "").replace(path.name, "")
-            )
+            directory_without_base_and_file_name = (str(path)).replace(str(data_directory), "").replace(path.name, "")
 
             file_name = path.name.replace(".json", "")
             new_data = {file_name: json.loads(path.read_bytes())}
@@ -66,7 +66,7 @@ def get_data() -> Dict:
     return data
 
 
-def get_content_paths(slug: str = None) -> Iterable[Path]:
+def get_content_paths(slug: Optional[str] = None) -> Iterable[Path]:
     """
     Yield `Path`s for all markdown content in the content directory.
     """
@@ -94,38 +94,28 @@ class ContentItem:
     html: str
 
 
-def get_content_items(skip_draft: bool = True) -> Iterable[ContentItem]:
-    from .renderer import MarkdownRenderer
+def get_content_items(skip_draft: bool = True) -> Iterable[ContentItem]:  # noqa: FBT001, FBT002
+    from coltrane.renderer import MarkdownRenderer
 
     paths = get_content_paths()
     _items = []
 
-    MARKDOWN_EXTENSION_LENGTH = 3
     content_directory = get_content_directory()
     content_directory_path_length = len(str(content_directory))
 
     for path in paths:
         (html, metadata) = MarkdownRenderer.instance().render_markdown_path(path)
 
-        if (
-            skip_draft
-            and metadata
-            and "draft" in metadata
-            and metadata["draft"] is True
-        ):
+        if skip_draft and metadata and "draft" in metadata and metadata["draft"] is True:
             continue
 
         path_str = str(path)
-        relative_url = path_str[
-            content_directory_path_length:-MARKDOWN_EXTENSION_LENGTH
-        ]
+        relative_url = path_str[content_directory_path_length:-MARKDOWN_EXTENSION_LENGTH]
 
         if relative_url.endswith("/index"):
             relative_url = relative_url[:-6]
 
-        content_item = ContentItem(
-            path=path, metadata=metadata, html=html, relative_url=relative_url
-        )
+        content_item = ContentItem(path=path, metadata=metadata, html=html, relative_url=relative_url)
         _items.append(content_item)
 
     return _items

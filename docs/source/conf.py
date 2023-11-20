@@ -2,11 +2,10 @@
 
 import toml
 
-
 # -- Project information
 
 project = "coltrane"
-copyright = "2021, Adam Hill"
+copyright = "2021, Adam Hill"  # noqa: A001
 author = "Adam Hill"
 
 pyproject = toml.load("../../pyproject.toml")

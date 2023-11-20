@@ -30,9 +30,7 @@ test data
 
     static_request = StaticRequest(path="/")
 
-    (actual_template, actual_context) = markdown_renderer.render_markdown(
-        "test-2", static_request
-    )
+    (actual_template, actual_context) = markdown_renderer.render_markdown("test-2", static_request)
 
     assert actual_template == expected_template
     assert actual_context.get("content") == expected_content
@@ -45,7 +43,8 @@ test data
     return_value=("test-content", {}),
 )
 def test_render_markdown_metadata(
-    render_markdown_path, markdown_renderer, settings, tmp_path: Path
+    render_markdown_path,  # noqa: ARG001
+    markdown_renderer,
 ):
     static_request = StaticRequest(path="/")
 
@@ -72,9 +71,7 @@ test data
 
     static_request = StaticRequest(path="/")
 
-    (actual_template, actual_context) = markdown_renderer.render_markdown(
-        "test-2", static_request
-    )
+    (actual_template, actual_context) = markdown_renderer.render_markdown("test-2", static_request)
 
     assert actual_template == expected_template
     assert actual_context.get("content") == expected_content

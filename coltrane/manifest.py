@@ -120,9 +120,7 @@ class ManifestItem:
         # Mock an HttpRequest when generating the HTML for static sites
         request = StaticRequest(path=self.url_slug)
 
-        (template, context) = MarkdownRenderer.instance().render_markdown(
-            self.slug, request
-        )
+        (template, context) = MarkdownRenderer.instance().render_markdown(self.slug, request)
         rendered_html = render_to_string(template, context)
 
         return rendered_html
@@ -135,7 +133,7 @@ class ManifestItem:
 
         name = ManifestItem.get_name(path)
         mtime = path.stat().st_mtime
-        md5 = md5_hash(path.read_bytes()).hexdigest()
+        md5 = md5_hash(path.read_bytes()).hexdigest()  # noqa: S324
 
         return ManifestItem(name=name, mtime=mtime, md5=md5)
 
@@ -198,9 +196,7 @@ class ManifestItems:
         for key in initial_data.keys():
             values = initial_data[key]
 
-            self._data[key] = ManifestItem(
-                name=key, mtime=values.get("mtime"), md5=values.get("md5")
-            )
+            self._data[key] = ManifestItem(name=key, mtime=values.get("mtime"), md5=values.get("md5"))
 
     def __iter__(self):
         return iter(self._data.values())
@@ -229,7 +225,7 @@ class Manifest:
 
         if staticfiles_manifest.exists():
             if staticfiles_manifest_item := self.get(staticfiles_manifest):
-                staticfiles_manifest_md5 = md5_hash(
+                staticfiles_manifest_md5 = md5_hash(  # noqa: S324
                     staticfiles_manifest.read_bytes()
                 ).hexdigest()
 

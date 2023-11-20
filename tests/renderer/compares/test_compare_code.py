@@ -2,7 +2,6 @@ import pytest
 
 from coltrane.renderer import Markdown2MarkdownRenderer, MistuneMarkdownRenderer
 
-
 markdown_texts = [
     """
 ```python
@@ -48,6 +47,5 @@ def test_compare_code(text):
     # Remove linebreak differences
     markdown2_content = markdown2_content.replace("\n", "")
     mistune_content = mistune_content.replace("\n", "")
-    print("markdown2_content", markdown2_content)
-    print("mistune_content", mistune_content)
+
     assert markdown2_content == mistune_content

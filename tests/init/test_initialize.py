@@ -13,7 +13,6 @@ from coltrane import (
     initialize,
 )
 
-
 base_dir = Path(".")
 
 DEFAULT_SETTINGS = {

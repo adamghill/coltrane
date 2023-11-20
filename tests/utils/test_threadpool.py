@@ -1,5 +1,3 @@
-from concurrent.futures import ThreadPoolExecutor
-
 from coltrane.utils import threadpool
 
 

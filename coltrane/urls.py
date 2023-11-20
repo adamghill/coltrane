@@ -2,12 +2,10 @@ from django.conf import settings
 from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path, re_path
 
+from coltrane import views
 from coltrane.config.settings import get_extra_file_names
 from coltrane.feeds import ContentFeed
 from coltrane.sitemaps import ContentSitemap
-
-from . import views
-
 
 app_name = "coltrane"
 

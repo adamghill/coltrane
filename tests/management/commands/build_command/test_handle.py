@@ -58,9 +58,7 @@ def test_handle_force_true(_call_collectstatic, settings, tmp_path, build_comman
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._load_manifest", spec=Manifest)
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_static_files_changed_is_force(
-    _call_collectstatic, _load_manifest, settings, tmp_path, build_command
-):
+def test_handle_static_files_changed_is_force(_call_collectstatic, _load_manifest, settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     # Create content directory
@@ -95,9 +93,7 @@ def test_handle_update(_call_collectstatic, settings, tmp_path, build_command):
     create_markdown_file(tmp_path)
 
     # Fake a previous run with the invalid metadata
-    (tmp_path / "output.json").write_text(
-        json.dumps({"test-1.md": {"mtime": -1, "md5": "not-a-hash"}})
-    )
+    (tmp_path / "output.json").write_text(json.dumps({"test-1.md": {"mtime": -1, "md5": "not-a-hash"}}))
 
     build_command.handle(force=False)
 
@@ -108,9 +104,7 @@ def test_handle_update(_call_collectstatic, settings, tmp_path, build_command):
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_skip_because_mtime(
-    _call_collectstatic, settings, tmp_path, build_command
-):
+def test_handle_skip_because_mtime(_call_collectstatic, settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     markdown_file = create_markdown_file(tmp_path)
@@ -119,10 +113,8 @@ def test_handle_skip_because_mtime(
     (tmp_path / "output.json").write_text("{}")
 
     # Fake a previous run with the correct md5
-    md5_hash = md5(markdown_file.read_bytes()).hexdigest()
-    (tmp_path / "output.json").write_text(
-        json.dumps({"test-1.md": {"mtime": -1, "md5": md5_hash}})
-    )
+    md5_hash = md5(markdown_file.read_bytes()).hexdigest()  # noqa: S324
+    (tmp_path / "output.json").write_text(json.dumps({"test-1.md": {"mtime": -1, "md5": md5_hash}}))
 
     build_command.handle(force=False)
 
@@ -133,9 +125,7 @@ def test_handle_skip_because_mtime(
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_skip_because_md5(
-    _call_collectstatic, settings, tmp_path, build_command
-):
+def test_handle_skip_because_md5(_call_collectstatic, settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     markdown_file = create_markdown_file(tmp_path)
@@ -145,9 +135,7 @@ def test_handle_skip_because_md5(
 
     # Fake a previous run with the correct mtime
     mtime = markdown_file.stat().st_mtime
-    (tmp_path / "output.json").write_text(
-        json.dumps({"test-1.md": {"mtime": mtime, "md5": "not-a-hash"}})
-    )
+    (tmp_path / "output.json").write_text(json.dumps({"test-1.md": {"mtime": mtime, "md5": "not-a-hash"}}))
 
     build_command.handle(force=False)
 
@@ -171,9 +159,7 @@ def test_handle_threads(_call_collectstatic, settings, tmp_path, build_command):
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_invalid_threads_count(
-    _call_collectstatic, settings, tmp_path, build_command
-):
+def test_handle_invalid_threads_count(_call_collectstatic, settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     # Create content directory
@@ -187,9 +173,7 @@ def test_handle_invalid_threads_count(
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
 @patch("coltrane.management.commands.build.cpu_count")
-def test_handle_cpu_count_exception(
-    cpu_count, _call_collectstatic, settings, tmp_path, build_command
-):
+def test_handle_cpu_count_exception(cpu_count, _call_collectstatic, settings, tmp_path, build_command):
     cpu_count.side_effect = Exception()
     _reset_settings(settings, tmp_path)
 
@@ -203,9 +187,7 @@ def test_handle_cpu_count_exception(
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_template_error_exit_with_1(
-    _call_collectstatic, settings, tmp_path, build_command
-):
+def test_handle_template_error_exit_with_1(_call_collectstatic, settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     # Force debug to be true to surface template error
@@ -215,18 +197,16 @@ def test_handle_template_error_exit_with_1(
     (tmp_path / "content").mkdir()
     (tmp_path / "content" / "test-1.md").write_text("{{sadf}}")
 
-    with pytest.raises(SystemExit) as exit:
+    with pytest.raises(SystemExit) as err:
         build_command.handle()
 
-    assert exit.type == SystemExit
-    assert exit.value.code == 1
+    assert err.type == SystemExit
+    assert err.value.code == 1
 
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_template_error_formatted(
-    _call_collectstatic, settings, tmp_path, build_command
-):
+def test_handle_template_error_formatted(_call_collectstatic, settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     # Force debug to be true to surface template error
@@ -240,17 +220,12 @@ def test_handle_template_error_formatted(
         build_command.handle()
 
     assert len(build_command.errors) == 1
-    assert (
-        "'sadf' does not exist in template context. Available top level variables:"
-        in build_command.errors[0]
-    )
+    assert "'sadf' does not exist in template context. Available top level variables:" in build_command.errors[0]
 
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_ignore_template_error(
-    _call_collectstatic, settings, tmp_path, build_command
-):
+def test_handle_ignore_template_error(_call_collectstatic, settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     # Force debug to be true to surface template error

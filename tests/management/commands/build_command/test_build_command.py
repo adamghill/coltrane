@@ -4,9 +4,8 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
-from django.core.management import call_command
-
 import pytest
+from django.core.management import call_command
 
 
 def _call_build_command(*args, **kwargs) -> str:
@@ -112,8 +111,8 @@ def test_build_command_updates_output_manifest(_call_collectstatic, settings, tm
     assert (tmp_path / "output" / "test-1" / "index.html").exists()
 
     mtime = markdown_file.stat().st_mtime
-    hash = md5(markdown_file.read_bytes()).hexdigest()
-    expected = '{"test-1.md": {"mtime": ' + str(mtime) + ', "md5": "' + hash + '"}}'
+    file_hash = md5(markdown_file.read_bytes()).hexdigest()  # noqa: S324
+    expected = '{"test-1.md": {f"mtime": ' + str(mtime) + ', "md5": "' + file_hash + '"}}'
     actual = (tmp_path / "output.json").read_text()
 
     assert actual == expected

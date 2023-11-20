@@ -6,24 +6,22 @@ from html import unescape
 from typing import Dict, Optional, Tuple, Union
 from urllib.parse import unquote
 
+import dateparser
 from django.http import HttpRequest
 from django.template import engines
 from django.utils.html import mark_safe  # type: ignore
 from django.utils.text import slugify
 from django.utils.timezone import now
-
-import dateparser
 from markdown2 import Markdown, markdown
 
-from .config.paths import get_content_directory
-from .config.settings import (
+from coltrane.config.paths import get_content_directory
+from coltrane.config.settings import (
     get_markdown_extras,
     get_markdown_renderer,
     get_mistune_plugins,
     get_site_url,
 )
-from .retriever import get_data
-
+from coltrane.retriever import get_data
 
 logger = logging.getLogger(__name__)
 
@@ -52,9 +50,9 @@ class StaticRequest(HttpRequest):
     @property
     def site_url(self):
         site_url = get_site_url()
-        assert (
-            site_url
-        ), "COLTRANE_SITE_URL in .env or COLTRANE.SITE_URL in settings file is required"
+
+        if not site_url:
+            raise AssertionError("COLTRANE_SITE_URL in .env or COLTRANE.SITE_URL in settings file is required")
 
         return site_url
 
@@ -86,7 +84,7 @@ class MarkdownRenderer:
         # `post_process_html`
         text = re.sub(
             pattern=r"```.*?```",
-            repl="{% verbatim %}\n\g<0>\n{% endverbatim %}",
+            repl="{% verbatim %}\n\\g<0>\n{% endverbatim %}",
             string=text,
             flags=re.RegexFlag.DOTALL,
         )
@@ -110,12 +108,10 @@ class MarkdownRenderer:
 
             return self.render_markdown_text(text)
 
-    def render_markdown_text(self, text: str) -> Tuple[str, Dict]:
+    def render_markdown_text(self, text: str) -> Tuple[str, Dict]:  # noqa: ARG002
         raise Exception("Missing render_markdown_text")
 
-    def render_html_with_django(
-        self, html: str, context: Dict, request: HttpRequest = None
-    ) -> str:
+    def render_html_with_django(self, html: str, context: Dict, request: HttpRequest = None) -> str:
         """
         Takes the rendered HTML from the markdown and use Django to fill in any template
         variables from the `context` dictionary.
@@ -247,10 +243,7 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
                     """
 
                     yield 0, "<code>"
-
-                    for tup in inner:
-                        yield tup
-
+                    yield from inner
                     yield 0, "</code>"
 
                 def _add_newline(self, inner):
@@ -296,13 +289,7 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
         import mistune
         from mistune.directives import Admonition, FencedDirective
 
-        plugins = get_mistune_plugins() + [
-            FencedDirective(
-                [
-                    Admonition(),
-                ]
-            ),
-        ]
+        plugins = [*get_mistune_plugins(), FencedDirective([Admonition()])]
 
         self.mistune_markdown = mistune.create_markdown(
             renderer=MistuneMarkdownRenderer.CustomHTMLRenderer(),
@@ -337,7 +324,6 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
         """
 
         from django.utils.html import strip_tags
-
         from minestrone import HTML
 
         html = HTML(content)
@@ -410,22 +396,20 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
         # mistune won't match markdown commands if there are empty strings
         text = re.sub(
             pattern=r"\({{\s*(\S+)\s*}}\)",
-            repl="(DJANGO-TEMPLATE-VARIABLE-BEGIN-\g<1>-DJANGO-TEMPLATE-VARIABLE-END)",
+            repl=r"(DJANGO-TEMPLATE-VARIABLE-BEGIN-\g<1>-DJANGO-TEMPLATE-VARIABLE-END)",
             string=text,
             flags=re.RegexFlag.DOTALL,
         )
 
         # Get all matches for Django template tags for later adjustment
         pattern = r"\({%\s*(\S+)\s*(.*?)\s*%}\)"
-        template_tag_matches = re.findall(
-            pattern=pattern, string=text, flags=re.RegexFlag.DOTALL
-        )
+        template_tag_matches = re.findall(pattern=pattern, string=text, flags=re.RegexFlag.DOTALL)
 
         # Replace Django template tags in markdown with a marker for later because
         # mistune won't match markdown commands if there are empty strings
         text = re.sub(
             pattern=pattern,
-            repl=f"(DJANGO-TEMPLATE-TAG-BEGIN-\g<1>{SPACE_REPLACEMENT}\g<2>-DJANGO-TEMPLATE-TAG-END)",
+            repl=rf"(DJANGO-TEMPLATE-TAG-BEGIN-\g<1>{SPACE_REPLACEMENT}\g<2>-DJANGO-TEMPLATE-TAG-END)",
             string=text,
             flags=re.RegexFlag.DOTALL,
         )
@@ -435,9 +419,7 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
         for match in template_tag_matches:
             # Replace empty string with `SPACE_REPLACEMENT`
             # Replace double quote with a single quote
-            template_tag_args = (
-                match[1].replace(" ", SPACE_REPLACEMENT).replace('"', "'")
-            )
+            template_tag_args = match[1].replace(" ", SPACE_REPLACEMENT).replace('"', "'")
 
             text = text.replace(match[1], template_tag_args)
 
@@ -448,15 +430,11 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
 
         # Replace the Django template language variable marker so that Django
         # variables will work for the next stage
-        html = html.replace("DJANGO-TEMPLATE-VARIABLE-BEGIN-", "{{ ").replace(
-            "-DJANGO-TEMPLATE-VARIABLE-END", " }}"
-        )
+        html = html.replace("DJANGO-TEMPLATE-VARIABLE-BEGIN-", "{{ ").replace("-DJANGO-TEMPLATE-VARIABLE-END", " }}")
 
         # Replace the Django template tag variable marker so that Django
         # template tags will work for the next stage
-        html = html.replace("DJANGO-TEMPLATE-TAG-BEGIN-", "{% ").replace(
-            "-DJANGO-TEMPLATE-TAG-END", " %}"
-        )
+        html = html.replace("DJANGO-TEMPLATE-TAG-BEGIN-", "{% ").replace("-DJANGO-TEMPLATE-TAG-END", " %}")
 
         # Fix replacement string characters done in `pre_process_markdown`
         html = html.replace(SPACE_REPLACEMENT, " ")

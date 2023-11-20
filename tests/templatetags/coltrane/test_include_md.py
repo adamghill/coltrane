@@ -1,9 +1,8 @@
 from copy import deepcopy
 from pathlib import Path
 
-from django.template import TemplateSyntaxError
-
 import pytest
+from django.template import TemplateSyntaxError
 
 from coltrane import _get_default_template_settings
 

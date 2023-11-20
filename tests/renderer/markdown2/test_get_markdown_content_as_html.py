@@ -39,7 +39,7 @@ def test_get_markdown_content_as_html_extras_settings(
     markdown_renderer, settings, tmp_path: Path
 ):
     settings.BASE_DIR = tmp_path
-    setattr(settings, "COLTRANE", {})
+    settings.COLTRANE = {}
     settings.COLTRANE["MARKDOWN_EXTRAS"] = [
         "metadata",
     ]

@@ -1,7 +1,7 @@
 from django.contrib.syndication.views import Feed
 
-from .config.settings import get_description, get_site_url, get_title
-from .retriever import ContentItem, get_content_items
+from coltrane.config.settings import get_description, get_site_url, get_title
+from coltrane.retriever import ContentItem, get_content_items
 
 
 class ContentFeed(Feed):
@@ -11,9 +11,9 @@ class ContentFeed(Feed):
     @property
     def site_url(self):
         site_url = get_site_url()
-        assert (
-            site_url
-        ), "COLTRANE_SITE_URL in .env or COLTRANE.SITE_URL in settings file is required"
+
+        if not site_url:
+            raise AssertionError("COLTRANE_SITE_URL in .env or COLTRANE.SITE_URL in settings file is required")
 
         return site_url
 
@@ -36,5 +36,5 @@ class ContentFeed(Feed):
 
         return link
 
-    def link(self, obj):
+    def link(self, obj):  # noqa: ARG002
         return self.site_url

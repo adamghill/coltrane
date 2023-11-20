@@ -3,8 +3,7 @@ from dataclasses import dataclass
 from django.core.cache import caches
 from django.core.cache.backends.base import BaseCache
 
-from ..config.settings import get_coltrane_settings
-
+from coltrane.config.settings import get_coltrane_settings
 
 AVAILABLE_CACHE_SETTINGS_KEYS = [
     "VIEW_CACHE",
@@ -22,7 +21,9 @@ class Cache:
 
     def __init__(self, settings_key: str):
         self.settings_key = settings_key
-        assert self.settings_key in AVAILABLE_CACHE_SETTINGS_KEYS
+
+        if self.settings_key not in AVAILABLE_CACHE_SETTINGS_KEYS:
+            raise AssertionError("Invalid cache settings key")
 
         coltrane_settings = get_coltrane_settings()
 
@@ -38,9 +39,7 @@ class Cache:
 
             self.cache_key_namespace = f"coltrane:{self.settings_key.lower()}:"
 
-            cache_name = coltrane_settings[self.settings_key].get(
-                "CACHE_NAME", "default"
-            )
+            cache_name = coltrane_settings[self.settings_key].get("CACHE_NAME", "default")
             self.cache = caches[cache_name]
 
 

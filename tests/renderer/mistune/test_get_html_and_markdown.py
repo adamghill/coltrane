@@ -35,7 +35,7 @@ publish_date: 2022-02-26 10:26:02
     (_, metadata) = markdown_renderer.get_html_and_markdown("test-1")
 
     assert isinstance(metadata["publish_date"], datetime)
-    assert metadata["publish_date"] == datetime(2022, 2, 26, 10, 26, 2, 0)
+    assert metadata["publish_date"] == datetime(2022, 2, 26, 10, 26, 2, 0)  # noqa: DTZ001
 
 
 def test_draft_true_in_metadata(markdown_renderer, settings, tmp_path: Path):

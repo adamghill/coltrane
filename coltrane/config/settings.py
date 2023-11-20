@@ -2,7 +2,6 @@ from typing import Dict, List, Optional
 
 from django.conf import settings
 
-
 # List of all available `Markdown2` extras: https://github.com/trentm/python-markdown2/wiki/Extras
 DEFAULT_MARKDOWN_EXTRAS = [
     "fenced-code-blocks",
@@ -50,9 +49,8 @@ def get_coltrane_settings() -> Dict:
     """
 
     if hasattr(settings, "COLTRANE"):
-        assert isinstance(
-            settings.COLTRANE, dict
-        ), "COLTRANE settings should be a dictionary"
+        if not isinstance(settings.COLTRANE, dict):
+            raise TypeError("COLTRANE settings should be a dictionary")
 
         return settings.COLTRANE
 
@@ -65,7 +63,9 @@ def get_markdown_renderer() -> str:
     """
 
     markdown_renderer = get_coltrane_settings().get("MARKDOWN_RENDERER", "markdown2")
-    assert markdown_renderer in ["markdown2", "mistune"]
+
+    if markdown_renderer not in ["markdown2", "mistune"]:
+        raise AssertionError("Invalid markdown renderer")
 
     return markdown_renderer
 
