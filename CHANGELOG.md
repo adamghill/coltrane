@@ -1,3 +1,9 @@
+# 0.25.0
+
+- If a markdown file with a slug cannot be found, look for a template with the same slug. Special case for `*.html` which can be a fall-back option to render for any slug.
+- Add `raise_404` template tag.
+- Add `last_path` template tag.
+
 # 0.24.0
 
 - Support Django template tags with the `mistune` markdown renderer.

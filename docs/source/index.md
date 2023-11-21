@@ -14,7 +14,7 @@
 - Include any third-party [`Django` app](https://djangopackages.org) for additional functionality
 - Optional building of static HTML files
 
-## 🤓 What is a Dynamic Site Generator?
+## What is a Dynamic Site Generator?
 
 `coltrane` is similar to a static site generator -- it takes `markdown` content and renders it as HTML. However, it also provides an opinionated framework for building dynamic websites.
 
