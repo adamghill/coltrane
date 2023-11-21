@@ -1,19 +1,18 @@
 # Context
 
-The template context for each markdown file rendered by `coltrane` includes:
+The template context for each `markdown` file includes:
 
-- all variables from the markdown frontmatter
-- rendered markdown HTML in `content`
+- all variables from the `markdown` frontmatter
+- rendered `markdown` HTML in `content`
 - JSON data from the `data` directory
-- `now` which provides the current `datetime` (would be the time of HTML rendering for static site)
-- `request` which provides the current request for an integrated or standalone site
-- `debug` which contains the `DEBUG` setting for an integrated or standalone site (if `INTERNAL_IPS` has the current request's IP which is usually `127.0.0.1` for local development)
+- `now` which provides the current `datetime` (would be the time of HTML rendering for when generating a static site)
+- `request` which provides the current request
+- `debug` which contains the `DEBUG` setting (or if `INTERNAL_IPS` has the current request's IP)
 - `slug` which contains the current file's "slug" (e.g. `articles/some-new-article` if there was a markdown file at `content/articles/some-new-article.md`)
 - `toc` which is an automatically generated table of contents rendered as HTML
+- if `publish_date` is found, it is converted to a Python `datetime` instance using the excellent [dateparser](https://dateparser.readthedocs.io/en/latest/) library
 
-`coltrane` also searches for some special keywords in the frontmatter and applies changes to them if they are found, the currently supported keywords are :
-
-- `publish_date`, this is converted to a python datetime instance using the excellent [dateparser library](https://dateparser.readthedocs.io/en/latest/), read their docs to see all supported formats.
+## Example context
 
 **`data/index.json`**
 

@@ -1,118 +1,111 @@
 # Introduction
 
-`coltrane` is a content site framework that harnesses the power of Django without the hassle. It can be used to generate a static site for easy serving of HTML files or as an opinionated Django package to render markdown.
+`coltrane` is a [**Dynamic Site Generator**](index.md#what-is-a-dynamic-site-generator) that harnesses the power of `Django` without the hassle. It can also be used to build a static HTML site or as a third-party `Django` app.
 
 ## ⭐ Features
 
-- Can either generate a static HTML site, be deployed as a standalone Django site, or integrated into an existing Django site
-- Reads markdown content and renders it in HTML
-- Can use data from JSON files in templates and markdown content
+- Render `markdown` files as HTML with automatic URL routing based on the filesystem
+- Use JSON files as data sources in content
 - Automatic generation of `sitemap.xml` and `rss.xml` files
 - Can also serve non-markdown files like `robots.txt`
-- [Live re-rendering of markdown and data](https://twitter.com/adamghill/status/1487522925393715205) when markdown or JSON data files are saved with the magic of https://github.com/adamchainz/django-browser-reload
-- All the power of Django templates, template tags, and filters inside markdown files
-- Can include other Django apps for additional functionality
-- Custom Template tags are supported and are enabled automatically for use in markdown content
-- Opinionated standalone Django project setup where deployment (including static files) just works "out of the box"
+- Local development server with live re-rendering of markdown and data
+- Deployment best practices with `whitenoise` and `gunicorn` already configured
+- Leverage custom or built-in `Django` template tags and filters
+- Include any third-party [`Django` app](https://djangopackages.org) for additional functionality
+- Optional building of static HTML files
 
-## Installation
+## 🤓 What is a Dynamic Site Generator?
 
-Because `coltrane` can be used in a few different ways, the documentation is split into different sections.
+`coltrane` is similar to a static site generator -- it takes `markdown` content and renders it as HTML. However, it also provides an opinionated framework for building dynamic websites.
 
-- [static site](static/index)
-- [simplified standalone Django project](standalone/index)
-- [integrated into an existing Django project](integrated/index)
+## 🎵 What's with the name?
 
-### Optional installation
+`coltrane` is built on top of the `Django` web framework, which is named after [Django Reinhardt](https://en.wikipedia.org/wiki/Django_Reinhardt). This framework is named after [John Coltrane](https://en.wikipedia.org/wiki/John_Coltrane), another (more avant-garde 🎶) jazz musician.
 
-- Enable `watchman` for less resource-intensive autoreload on MacOS: `brew install watchman`
+## 🙏 Inspiration
 
-## What's with the name?
+https://twitter.com/willmcgugan/status/1477283879841157123 for the initial inspiration and my reaction https://twitter.com/adamghill/status/1477414858396164096.
 
-`coltrane` is built on top of the Django web framework, which is named after [Django Reinhardt](https://en.wikipedia.org/wiki/Django_Reinhardt). Following in that tradition, I named this static site framework after [John Coltrane](https://en.wikipedia.org/wiki/John_Coltrane), another jazz musician.
+## ⚙️ Dependencies
 
-## Related projects
-
-There are a ton of other static site generators out there. Here are a few Python static site generators in case it's useful.
-
-- [Pelican](https://getpelican.com/): Pelican is a static site generator that requires no database or server-side logic
-- [Combine](https://combine.dropseed.dev/): Build a straightforward marketing or documentation website with the power of Jinja. No fancy JavaScript here — this is just like the good old days
-- [Nikola](https://getnikola.com/): In goes content, out comes a website, ready to deploy.
-- [Lektor](https://www.getlektor.com/): A flexible and powerful static content management system for building complex and beautiful websites out of flat files
-- [corvid](https://github.com/di/corvid): An opinionated simple static site generator
-- [jamstack](https://github.com/Abdur-RahmaanJ/jamstack): The easiest way to create jamstack sites, as simple or as complex as you like
-
-## Inspiration and thanks
-
-- https://twitter.com/willmcgugan/status/1477283879841157123 for the initial inspiration and my reaction: https://twitter.com/adamghill/status/1477414858396164096
-
-### Dependencies
-
-- https://github.com/trentm/python-markdown2 for doing the hard work of rendering the markdown
+- https://github.com/adamchainz/django-browser-reload for development server live reloads
+- https://github.com/boxed/django-fastdev to ensure template variables are available
+- https://github.com/trentm/python-markdown2 and https://github.com/lepture/mistune for doing the hard work of rendering the markdown
 - https://www.djangoproject.com for doing the hard work of everything else
 
-### Minimal Django projects
+## 🎉 Other minimal `Django` projects
 
 - https://github.com/wsvincent/django-microframework for the `app.py` idea
 - https://olifante.blogs.com/covil/2010/04/minimal-django.html
 - https://simonwillison.net/2009/May/19/djng/
 - https://stackoverflow.com/questions/1297873/how-do-i-write-a-single-file-django-application
+- https://github.com/pauloxnet/uDjango
+
+## 🧠 Related projects
+
+There are a ton of other static site generators out there. Here are a few other Python static site generators.
+
+- [Pelican](https://getpelican.com/): Pelican is a static site generator that requires no database or server-side logic.
+- [Combine](https://combine.dropseed.dev/): Build a straightforward marketing or documentation website with the power of Jinja. No fancy JavaScript here — this is just like the good old days.
+- [Nikola](https://getnikola.com/): In goes content, out comes a website, ready to deploy.
+- [Lektor](https://www.getlektor.com/): A flexible and powerful static content management system for building complex and beautiful websites out of flat files.
+- [corvid](https://github.com/di/corvid): An opinionated simple static site generator.
+- [jamstack](https://github.com/Abdur-RahmaanJ/jamstack): The easiest way to create jamstack sites, as simple or as complex as you like.
 
 ```{toctree}
 :maxdepth: 2
 :hidden:
 
 self
+installation
+local-development
 ```
 
 ```{toctree}
-:caption: Static Site
+:caption: Features
 :maxdepth: 2
 :hidden:
 
-static/index
-static/installation
-static/cli
-static/hosting
+markdown
+templates
+template-tags
+context
+data
+static-files
+sitemap
+rss
+deployment
 ```
 
 ```{toctree}
-:caption: Standalone Site
+:caption: Misc
 :maxdepth: 2
 :hidden:
 
-standalone/index.md
-standalone/installation
-standalone/serve
+cli
+settings
+env
 ```
 
 ```{toctree}
-:caption: Integrated Site
+:caption: Static Site Generator
 :maxdepth: 2
 :hidden:
 
-integrated/index
-integrated/installation
-integrated/integration
+static-site-generator/build
 ```
 
 ```{toctree}
-:caption: Common
+:caption: Django App
 :maxdepth: 2
 :hidden:
 
-common/markdown
-common/templates
-common/context
-common/data
-common/static-files
-common/sitemap
-common/rss
-common/settings
-common/env
+django-app/installation
+django-app/integration
 ```
 
 ```{toctree}
+:caption: Info
 :maxdepth: 2
 :hidden:
 

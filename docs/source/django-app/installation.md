@@ -1,5 +1,15 @@
 # Installation
 
-1. `poetry add coltrane`
+1. `poetry add coltrane` or `pip install coltrane`
 1. Add `coltrane` to the list of `INSTALLED_APPS` in Django settings file
 1. Add `path("", include("coltrane.urls")),` to the bottom of the `urlpatterns` in the root `urls.py` (i.e. the `urls.py` specified by `ROOT_URLCONF`)
+
+```python
+# urls.py
+from django.urls import include, path
+
+urlpatterns = [
+    ...
+    path("", include("coltrane.urls")),
+]
+```

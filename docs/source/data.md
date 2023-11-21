@@ -4,7 +4,7 @@
 
 ## JSON data directory
 
-Create a directory named `data` in your project folder (if it doesn't already exist) and create JSON files in that directory. The name of the file (without the `json` extension) will be used as the key in the context data.
+Create a directory named `data` in your project folder (if it doesn't already exist) and add JSON files. The name of the file (without the `json` extension) will be used as the key in the context data.
 
 If there are JSON files in sub-directories, the directory names will be included in the dictionary hierarchy.
 

@@ -10,15 +10,15 @@ The root (i.e. http://localhost:8000/) will attempt to render the `content/index
 
 ## Missing markdown file
 
-If a markdown file cannot be found, the response will be a 404.
+If a `markdown` file cannot be found, `coltrane` will try to find a matching HTML template. If none could be found, the response will be a 404.
 
 ## Frontmatter
 
-Markdown frontmatter (i.e. YAML before the actual markdown content) is supported. It will be added to the context variable that is used to render the HTML. The default `base.html` template will use `lang` (to specify the HTML language; defaults to "en"), and `title` variables if they are specified in the frontmatter.
+`YAML` before the actual `markdown` content is supported. It will be added to the context variable that is used to render the HTML. The default `base.html` template will use `lang` (to specify the HTML language; defaults to "en"), and `title` variables if they are specified in the frontmatter.
 
 ### template
 
-Used to specify a custom template that Django will use to render the markdown.
+Used to specify a custom template that Django will use to render the `markdown`.
 
 **`content/index.md`**
 
@@ -41,7 +41,7 @@ This is sample text
 {{ content }} and it's {{ adjective }}
 ```
 
-**Generated `index.html`**
+**Generated HTML**
 
 ```html
 <title>This is a good title</title>

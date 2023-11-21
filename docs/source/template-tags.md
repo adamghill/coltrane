@@ -1,71 +1,14 @@
-# Templates
-
-`coltrane` comes with two minimal templates that get used by default: `coltrane/base.html` and `coltrane/content.html`. Overriding those templates work just like in Django.
-
-## Override included templates
-
-### `coltrane/base.html`
-
-Create a file named `templates/coltrane/base.html` in your app to override the base template. By default, it needs to include a `content` block.
-
-```html
-{% block content %}{% endblock content %}
-```
-
-### `coltrane/content.html`
-
-Create a file named `templates/coltrane/content.html` in your app to override the content template. By default, it needs to include a `content` block for the base template and `{{ content }}` to render the markdown.
-
-```{note}
-The `content` template variable is already "marked safe" so you do not need to use a `safe` filter.
-```
-
-```html
-{% block content %}{{ content }}{% endblock content %}
-```
-
-## Custom template
-
-Specify a custom template with a `template` variable in the markdown frontmatter.
-
-**`content/index.md`**
-
-```markdown
----
-title: This is good content
-template: sample_app/new-template.html
----
-
-# Heading 1
-
-This will use sample_app/new-template.html to render content.
-```
-
-**`sample_app/new-template.html`**
-
-```html
-<title>{{ title }}</title>
-
-{{ content }}
-```
-
-**Generated `index.html`**
-
-```html
-<title>This is good content</title>
-
-<h1 id="heading-1">Heading 1</h1>
-
-<p>This will use sample_app/new-template.html to render content.</p>
-```
-
-## Template tags
+# Template tags
 
 Template tags are the way for Django templates to use Python code. Django has a [large list of built-in template tags](https://docs.djangoproject.com/en/stable/ref/templates/builtins/) for everything from looping over objects, date formatting, boolean logic with `if`/`else` blocks, or getting the length of an object. By default, all template tags in Django are available in markdown content files.
 
-### Coltrane template tags
+## Humanize template tags
 
-#### `directory_contents`
+`django.contrib.humanize` [includes a useful template tags](https://docs.djangoproject.com/en/stable/ref/contrib/humanize/) to format numbers and dates in human-friendly ways. Normally it needs to be enabled and loaded in templates manually, but `coltrane` enables it by default so it is available to use in markdown content files automatically.
+
+## Coltrane template tags
+
+### `directory_contents`
 
 A list of the content at a particular directory.
 
@@ -203,7 +146,7 @@ If the request url is https://localhost:8000/ and these files are present in the
 </ul>
 ```
 
-#### `include_md`
+### `include_md`
 
 Similar to the [`include`](https://docs.djangoproject.com/en/stable/ref/templates/builtins/#include) template tag, but can be used to include a markdown file and have it render correctly into HTML. It can be used in markdown files or in HTML templates.
 
@@ -219,7 +162,7 @@ Similar to the [`include`](https://docs.djangoproject.com/en/stable/ref/template
 {% include_md '_partial.md' %}
 ```
 
-#### `parent`
+### `parent`
 
 A `filter` that returns the parent directory for a particular path. Can be passed a `request` or a `string`.
 
@@ -232,9 +175,9 @@ A `filter` that returns the parent directory for a particular path. Can be passe
 {{ 'http://localhost/articles/some-article'|parent|parent }} == ''
 ```
 
-#### `to_html`
+### `to_html`
 
-Convert raw markdown text to html. This is probably the most useful in `integrated` mode.
+Convert raw markdown text to html. This is probably the most useful when using `coltrane` as a `Django app`.
 
 `views.py`
 ```python
@@ -262,13 +205,17 @@ Rendered html content
 </main>
 ```
 
-### Humanize template tags
+### `raise_404`
 
-`django.contrib.humanize` [includes a useful template tags](https://docs.djangoproject.com/en/stable/ref/contrib/humanize/) to format numbers and dates in human-friendly ways. Normally it needs to be enabled and loaded in templates manually, but `coltrane` enables it by default so it is available to use in markdown content files automatically.
+Raises a 404 from template. Can be useful when using wildcard HTML templates.
 
-### Custom template tags
+### `last_path`
 
-`coltrane` will automatically include any custom template tags it finds in the `templatetags` directory to be used in markdown content files.
+Gets the last portion the URL path. For example the last path of `/app/user/123` would be `123`.
+
+## Custom template tags
+
+`coltrane` will automatically enable any template tags it finds in the `templatetags` directory to be used in `markdown` or HTML templates.
 
 **`templatetags/custom_tags.py`**
 
