@@ -40,6 +40,8 @@ def get_data() -> Dict:
         )
     except FileNotFoundError:
         logger.debug("Missing data.json file")
+    except json.decoder.JSONDecodeError:
+        logger.error("Invalid json: 'data.json'")
 
     data_directory = get_data_directory()
 
@@ -48,17 +50,21 @@ def get_data() -> Dict:
             directory_without_base_and_file_name = (str(path)).replace(str(data_directory), "").replace(path.name, "")
 
             file_name = path.name.replace(".json", "")
-            new_data = {file_name: json.loads(path.read_bytes())}
 
-            # For each part of the path between BASE_DIR/data and the JSON file,
-            # add a new level (i.e. key) in the data dictionary; for example:
-            # base_dir/data/some/new/test/here.json with {"one": "two"} ==
-            # {"some": {"new": {"test": {"here": {"one": "two"}}}}}
-            for key in reversed(directory_without_base_and_file_name.split("/")):
-                if key:
-                    new_data = {key: new_data}
+            try:
+                new_data = {file_name: json.loads(path.read_bytes())}
 
-            data = dict_merge(data, new_data)
+                # For each part of the path between BASE_DIR/data and the JSON file,
+                # add a new level (i.e. key) in the data dictionary; for example:
+                # base_dir/data/some/new/test/here.json with {"one": "two"} ==
+                # {"some": {"new": {"test": {"here": {"one": "two"}}}}}
+                for key in reversed(directory_without_base_and_file_name.split("/")):
+                    if key:
+                        new_data = {key: new_data}
+
+                data = dict_merge(data, new_data)
+            except json.decoder.JSONDecodeError:
+                logger.error(f"Invalid json: '{file_name}'")
 
     if data_cache.is_enabled:
         data_cache.cache.set(cache_key, data, timeout=data_cache.seconds)
