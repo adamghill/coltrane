@@ -112,7 +112,7 @@ def test_build_command_updates_output_manifest(_call_collectstatic, settings, tm
 
     mtime = markdown_file.stat().st_mtime
     file_hash = md5(markdown_file.read_bytes()).hexdigest()  # noqa: S324
-    expected = '{"test-1.md": {f"mtime": ' + str(mtime) + ', "md5": "' + file_hash + '"}}'
+    expected = '{"test-1.md": {"mtime": ' + str(mtime) + ', "md5": "' + file_hash + '"}}'
     actual = (tmp_path / "output.json").read_text()
 
     assert actual == expected
