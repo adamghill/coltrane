@@ -3,6 +3,17 @@ from pathlib import Path
 from coltrane.retriever import get_data
 
 
+def test_get_data_json_file_invalid_json(settings, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+
+    (tmp_path / "data.json").write_text("")
+
+    expected = {}
+    actual = get_data()
+
+    assert actual == expected
+
+
 def test_get_data_json_file(settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
@@ -26,6 +37,18 @@ def test_get_data_directory(settings, tmp_path: Path):
     assert actual == expected
 
 
+def test_get_data_directory_invalid_json(settings, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+
+    (tmp_path / "data").mkdir()
+    (tmp_path / "data" / "test.json").write_text("")
+
+    expected = {}
+    actual = get_data()
+
+    assert actual == expected
+
+
 def test_get_data_directory_sub_directories(settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
@@ -34,9 +57,7 @@ def test_get_data_directory_sub_directories(settings, tmp_path: Path):
     (tmp_path / "data" / "another").mkdir()
     (tmp_path / "data" / "another" / "great.json").write_text('{"sample2":2}')
     (tmp_path / "data" / "another" / "more").mkdir()
-    (tmp_path / "data" / "another" / "more" / "awesome.json").write_text(
-        '{"sample3":3}'
-    )
+    (tmp_path / "data" / "another" / "more" / "awesome.json").write_text('{"sample3":3}')
 
     expected = {
         "test": {"sample1": 1},
