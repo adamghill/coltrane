@@ -138,6 +138,56 @@ def _merge_installed_apps(django_settings: Dict[str, Any], installed_apps: List[
     return installed_apps
 
 
+def _get_caches(django_settings: Dict[str, Any]) -> Dict:
+    """Gets the configured cache. Defaults to the dummy cache."""
+
+    caches = django_settings.get("CACHES", DEFAULT_CACHES_SETTINGS)
+
+    if "default" not in caches:
+        caches = DEFAULT_CACHES_SETTINGS
+
+    if coltrane_cache := getenv("CACHE"):
+        if coltrane_cache == "dummy":
+            logging.info("Use dummy cache")
+
+            caches["default"] = {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}
+        elif coltrane_cache == "memory":
+            logging.info("Use local memory cache")
+
+            caches["default"] = {
+                "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+                "LOCATION": getenv("CACHE_LOCATION", "unique-snowflake"),
+            }
+        elif coltrane_cache in ["filesystem", "redis", "memcache"]:
+            if cache_locations := _get_from_env("CACHE_LOCATION"):
+                cache_backend = None
+
+                if coltrane_cache == "filesystem":
+                    logging.info("Use filesystem cache")
+
+                    cache_backend = "django.core.cache.backends.filebased.FileBasedCache"
+                    cache_locations = cache_locations[0]
+                elif coltrane_cache == "redis":
+                    logging.info("Use redis cache")
+
+                    cache_backend = "django.core.cache.backends.redis.RedisCache"
+                elif coltrane_cache == "memcache":
+                    logging.info("Use memcache cache")
+
+                    cache_backend = "django.core.cache.backends.memcached.PyMemcacheCache"
+
+                caches["default"] = {
+                    "BACKEND": cache_backend,
+                    "LOCATION": cache_locations,
+                }
+            else:
+                raise Exception(f"Missing CACHE_LOCATION: '{coltrane_cache}'")
+        else:
+            raise Exception(f"Unknown cache backend: '{coltrane_cache}'")
+
+    return caches
+
+
 def _get_from_env(env_name: str) -> List[str]:
     """
     Retrieves environment value that could potentially be a list of strings.
@@ -227,7 +277,7 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         "DEBUG": debug,
         "SECRET_KEY": getenv("SECRET_KEY"),
         "INSTALLED_APPS": _merge_installed_apps(django_settings, installed_apps),
-        "CACHES": DEFAULT_CACHES_SETTINGS,
+        "CACHES": _get_caches(django_settings),
         "MIDDLEWARE": middleware,
         "TEMPLATES": _get_default_template_settings(base_dir),
         "INTERNAL_IPS": _get_from_env("INTERNAL_IPS"),

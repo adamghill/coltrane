@@ -58,6 +58,18 @@ The description of the website. Used when generating `rss.xml`.
 COLTRANE_DESCRIPTION=A simple content site framework that harnesses the power of Django without the hassle.
 ```
 
+### CACHE
+
+The type of cache to use for `coltrane`. Acceptable options are: [`dummy`](https://docs.djangoproject.com/en/stable/topics/cache/#dummy-caching-for-development), [`memory`](https://docs.djangoproject.com/en/stable/topics/cache/#local-memory-caching), [`filesystem`](https://docs.djangoproject.com/en/stable/topics/cache/#filesystem-caching), [`memcache`](https://docs.djangoproject.com/en/stable/topics/cache/#memcached), or [`redis`](https://docs.djangoproject.com/en/stable/topics/cache/#redis). The default is `dummy`.
+
+```{note}
+`filesystem`, `memcache`, and `redis` options require `CACHE_LOCATION` to also be set.
+```
+
+### CACHE_LOCATION
+
+The location of the cache. Required for `filesystem`, `memcache`, and `redis` cache options. The `filesystem` cache requires an absolute path. The `memcache` and `redis` cache options include multiple cache servers in a commma-delimited list.
+
 ### SECRET_KEY
 
 A random string of letters, numbers, and characters. (More information in the [Django documentation](https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-SECRET_KEY). Generated automatically when the `.env` file is created.

@@ -139,7 +139,7 @@ ban-relative-imports = "all"
 
 [tool.ruff.per-file-ignores]
 # Tests can use magic values, assertions, and relative imports
-"tests/**/*" = ["PLR2004", "S101", "TID252"]
+"tests/**/*" = ["PLR2004", "S101", "TID252", "ARG001"]
 
 [tool.pytest.ini_options]
 addopts = "--quiet --failed-first --reuse-db --nomigrations -p no:warnings"
