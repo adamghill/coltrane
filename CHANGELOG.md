@@ -1,3 +1,9 @@
+# 0.26.0
+
+- Ability to [configure cache](env.md#cache).
+- Allow content or data directory to be specified [#48](https://github.com/adamghill/coltrane/issues/48).
+- Fix: Handle invalid JSON data[#48](https://github.com/adamghill/coltrane/issues/48).
+
 # 0.25.0
 
 - If a markdown file with a slug cannot be found, look for a template with the same slug. Special case for `*.html` which can be a fall-back option to render for any slug.
