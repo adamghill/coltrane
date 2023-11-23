@@ -4,6 +4,8 @@ from typing import Iterable
 
 from django.conf import settings
 
+from coltrane.config.settings import get_content_directory as get_content_directory_setting
+from coltrane.config.settings import get_data_directory as get_data_directory_setting
 from coltrane.config.settings import get_extra_file_names
 
 
@@ -31,7 +33,7 @@ def get_data_directory() -> Path:
     Get the path of the JSON `data` directory.
     """
 
-    return get_base_directory() / "data"
+    return get_base_directory() / get_data_directory_setting()
 
 
 def get_content_directory() -> Path:
@@ -39,7 +41,7 @@ def get_content_directory() -> Path:
     Get the path of the markdown `content` directory.
     """
 
-    return get_base_directory() / "content"
+    return get_base_directory() / get_content_directory_setting()
 
 
 def get_templates_directory() -> Path:
@@ -62,12 +64,12 @@ def get_file_path(file_name: str) -> Path:
     Get the path of a file in the content directory.
     """
 
-    return get_base_directory() / "content" / file_name
+    return get_content_directory() / file_name
 
 
 def get_output_directory_name() -> str:
     """
-    Gets the output directory name from settings if it is  set. Defaults to "output".
+    Gets the output directory name from settings if it is set. Defaults to "output".
     """
 
     output_directory_name = "output"

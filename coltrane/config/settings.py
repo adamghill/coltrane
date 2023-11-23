@@ -1,4 +1,5 @@
-from typing import Dict, List, Optional
+from os import getenv
+from typing import Any, Dict, List, Optional
 
 from django.conf import settings
 
@@ -32,6 +33,7 @@ DEFAULT_MISTUNE_PLUGINS = [
     "subscript",
 ]
 
+# Used to look at environment variables to merge into settings
 DEFAULT_COLTRANE_SETTINGS = {
     "TITLE": "",
     "DESCRIPTION": "",
@@ -40,6 +42,8 @@ DEFAULT_COLTRANE_SETTINGS = {
     "MARKDOWN_EXTRAS": DEFAULT_MARKDOWN_EXTRAS,
     "MISTUNE_PLUGINS": DEFAULT_MISTUNE_PLUGINS,
     "EXTRA_FILE_NAMES": [],
+    "CONTENT_DIRECTORY": "content",
+    "DATA_DIRECTORY": "data",
 }
 
 
@@ -108,6 +112,22 @@ def get_description() -> Optional[str]:
     """
 
     return get_coltrane_settings().get("DESCRIPTION")
+
+
+def get_data_directory() -> str:
+    """
+    Get the configured data directory.
+    """
+
+    return get_coltrane_settings().get("DATA_DIRECTORY", DEFAULT_COLTRANE_SETTINGS["DATA_DIRECTORY"])
+
+
+def get_content_directory() -> str:
+    """
+    Get the configured data directory.
+    """
+
+    return get_coltrane_settings().get("CONTENT_DIRECTORY", DEFAULT_COLTRANE_SETTINGS["CONTENT_DIRECTORY"])
 
 
 def get_extra_file_names() -> List[str]:

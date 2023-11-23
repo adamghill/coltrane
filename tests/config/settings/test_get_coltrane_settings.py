@@ -3,6 +3,8 @@ import pytest
 from coltrane.config.settings import (
     DEFAULT_COLTRANE_SETTINGS,
     get_coltrane_settings,
+    get_content_directory,
+    get_data_directory,
     get_description,
     get_extra_file_names,
     get_markdown_renderer,
@@ -41,6 +43,24 @@ def test_get_title(settings):
 def test_get_description(settings):
     settings.COLTRANE = {"DESCRIPTION": "test description"}
     assert get_description() == "test description"
+
+
+def test_get_data_directory(settings):
+    settings.COLTRANE = {"DATA_DIRECTORY": "test-data-directory"}
+    assert get_data_directory() == "test-data-directory"
+
+
+def test_data_directory_default():
+    assert get_data_directory() == "data"
+
+
+def test_content_directory(settings):
+    settings.COLTRANE = {"CONTENT_DIRECTORY": "test-content-directory"}
+    assert get_content_directory() == "test-content-directory"
+
+
+def test_content_directory_default():
+    assert get_content_directory() == "content"
 
 
 def test_get_markdown_renderer(settings):
