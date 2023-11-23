@@ -1,9 +1,13 @@
 # Settings
 
-Settings specified in a `COLTRANE` dictionary.
+Settings for `coltrane` are specified in a `COLTRANE` dictionary in the `settings.py` file. All [env settings](env.md) are available to be set directly. Just remove the leading "COLTRANE_" from the environment name if applicable.
 
 ```python
-# default `coltrane` settings
+# settings.py
+
+...
+
+# Sample `coltrane` settings
 COLTRANE = {
     "MARKDOWN_RENDERER": "markdown2",
     "MARKDOWN_EXTRAS": [
@@ -32,12 +36,13 @@ COLTRANE = {
         "superscript",
         "subscript",
     ],
-    EXTRA_FILE_NAMES=[],
 }
+
+...
 ```
 
 ````{note}
-When `coltrane` is integrated into an existing Django site the `coltrane` settings are used like a normal Django site. However, when `coltrane` is used as a static or standalone site (i.e. if there is an `app.py` file in the project folder), settings can be passed into the `initialize()` method in `app.py` as `kwargs`.
+`coltrane` settings can be passed into the `initialize()` method in `app.py` as `kwargs`.
 
 ```python
 # existing app.py file
@@ -48,6 +53,8 @@ wsgi = initialize(MARKDOWN_EXTRAS=["metadata",], MISTUNE_PLUGINS=["table",])
 ````
 
 ## Keys
+
+The keys below are specific to the `COLTRANE` dictionary `settings.py`. But, all [env settings](env.md) can be used.
 
 ### MARKDOWN_RENDERER
 
@@ -120,27 +127,5 @@ Specifies a name for the cache to use. Defaults to "default".
 COLTRANE = {
     # other settings
     "VIEW_CACHE": {"SECONDS": 60 * 15, "CACHE_NAME": "coltrane-view-cache"},
-}
-```
-
-### SITE_URL
-
-Because RSS requires an absolute URL, `coltrane` needs to know about the current domain for the site.
-
-```python
-COLTRANE = {
-    # other settings
-    "SITE_URL": "https://example.com",
-}
-```
-
-### EXTRA_FILE_NAMES
-
-Any additional non-markdown file names that should be included. The file names will be retrieved from the `content` directory and will be built or served (depending on the mode). This could be used for `robots.txt` or any other file that might need to be included. Defaults to an empty array.
-
-```python
-COLTRANE = {
-    # other settings
-    "EXTRA_FILE_NAMES": [],
 }
 ```

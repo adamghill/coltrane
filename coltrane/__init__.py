@@ -12,7 +12,9 @@ from django.core.handlers.wsgi import WSGIHandler
 from django.template.library import InvalidTemplateLibrary, import_library
 from dotenv import load_dotenv
 
-from coltrane.config.settings import DEFAULT_COLTRANE_SETTINGS
+from coltrane.config.settings import (
+    DEFAULT_COLTRANE_SETTINGS,
+)
 from coltrane.utils import dict_merge
 
 logger = logging.getLogger(__name__)
@@ -237,6 +239,24 @@ def _set_coltrane_setting(settings: Dict, initialize_settings: Dict, setting_nam
     return settings
 
 
+def _get_from_env_or_settings(django_settings: Dict, key: str, default: Any) -> Any:
+    """
+    Get a setting from (in precedence order) the environment or the `COLTRANE` dictionary
+    in settings. Normal `get_coltrane_settings()` method does not work because it requires
+    the Django settings to be configured.
+    """
+
+    val = default
+
+    if setting_value := django_settings.get("COLTRANE", {}).get(key):
+        val = setting_value
+
+    if environment_value := getenv(f"COLTRANE_{key}"):
+        val = environment_value
+
+    return val
+
+
 def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str, Any]:
     """
     Merges the passed-in settings into the default `coltrane` settings.
@@ -267,9 +287,16 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         middleware.append("django_browser_reload.middleware.BrowserReloadMiddleware")
         installed_apps.append("django_browser_reload")
 
-        # Add content and data to "staticfiles" so django-browser-reload will monitor
-        staticfiles_dirs.append(base_dir / "content")
-        staticfiles_dirs.append(base_dir / "data")
+        # Add content and data to "staticfiles" so django-browser-reload can monitor them
+        content_directory = _get_from_env_or_settings(
+            django_settings, "CONTENT_DIRECTORY", DEFAULT_COLTRANE_SETTINGS["CONTENT_DIRECTORY"]
+        )
+        staticfiles_dirs.append(base_dir / content_directory)
+
+        data_directory = _get_from_env_or_settings(
+            django_settings, "DATA_DIRECTORY", DEFAULT_COLTRANE_SETTINGS["DATA_DIRECTORY"]
+        )
+        staticfiles_dirs.append(base_dir / data_directory)
 
     default_settings = {
         "BASE_DIR": base_dir,
