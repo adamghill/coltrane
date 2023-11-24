@@ -2,7 +2,7 @@
 
 - Ability to [configure cache](env.md#cache).
 - Allow content or data directory to be specified [#48](https://github.com/adamghill/coltrane/issues/48).
-- Fix: Handle invalid JSON data[#48](https://github.com/adamghill/coltrane/issues/48).
+- Fix: Handle invalid JSON data [#48](https://github.com/adamghill/coltrane/issues/48).
 
 # 0.25.0
 
