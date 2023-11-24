@@ -144,9 +144,7 @@ def test_url_slug_cache(client, settings, tmp_path: Path):
         "coltrane.views._get_from_cache_if_enabled",
         return_value=("coltrane/content.html", context),
     ) as _get_from_cache_if_enabled:
-        with patch(
-            "coltrane.views._set_in_cache_if_enabled"
-        ) as _set_in_cache_if_enabled:
+        with patch("coltrane.views._set_in_cache_if_enabled") as _set_in_cache_if_enabled:
             response = client.get("/test-this-cache")
             assert response.status_code == 200
             assert response.headers.get("Cache-Control") == "max-age=15"
@@ -158,9 +156,7 @@ def test_url_slug_cache(client, settings, tmp_path: Path):
             assert response.status_code == 200
             assert response.headers.get("Expires") == original_expires
 
-            _get_from_cache_if_enabled.assert_has_calls(
-                calls=[call("test-this-cache"), call("test-this-cache")]
-            )
+            _get_from_cache_if_enabled.assert_has_calls(calls=[call("test-this-cache"), call("test-this-cache")])
             _set_in_cache_if_enabled.assert_not_called()
 
 
@@ -198,7 +194,7 @@ def test_url_slug_direct_template_wildcard(client, settings, tmp_path: Path):
     assert "asterisk" in actual
 
 
-def test_url_slug_direct_template_directory_wildcard(client, settings, tmp_path: Path):
+def test_url_wildcards(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
     # Add a a tmp templates directory
@@ -216,7 +212,7 @@ def test_url_slug_direct_template_directory_wildcard(client, settings, tmp_path:
     assert "directory asterisk" in actual
 
 
-def test_url_slug_direct_template_directory_exists(client, settings, tmp_path: Path):
+def test_url_wildcards_404(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
     # Add a a tmp templates directory
@@ -224,11 +220,45 @@ def test_url_slug_direct_template_directory_exists(client, settings, tmp_path: P
     settings.TEMPLATES[0]["DIRS"].append(str(tmp_path / "templates"))
 
     (tmp_path / "templates").mkdir()
-    (tmp_path / "templates" / "*.html").write_text("root asterisk")
-    (tmp_path / "templates" / "test-this-should-404").mkdir()
+    (tmp_path / "templates" / "*.html").write_text("multiple asterisk")
 
-    response = client.get("/test-this-should-404")
+    response = client.get("/something/test-this-should-404")
     assert response.status_code == 404
 
-    response = client.get("/test-this-should-200")
+
+def test_url_multiple_wildcards(client, settings, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+
+    # Add a a tmp templates directory
+    settings.TEMPLATES = deepcopy(settings.TEMPLATES)
+    settings.TEMPLATES[0]["DIRS"].append(str(tmp_path / "templates"))
+
+    (tmp_path / "templates").mkdir()
+    (tmp_path / "templates" / "*").mkdir()
+    (tmp_path / "templates" / "*" / "*.html").write_text("multiple asterisk")
+
+    response = client.get("/something/test-this-should-200")
     assert response.status_code == 200
+
+    actual = response.content.decode()
+    assert "multiple asterisk" in actual
+
+
+def test_url_multiple_wildcards_and_multiple_subdirectories(client, settings, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+
+    # Add a a tmp templates directory
+    settings.TEMPLATES = deepcopy(settings.TEMPLATES)
+    settings.TEMPLATES[0]["DIRS"].append(str(tmp_path / "templates"))
+
+    (tmp_path / "templates").mkdir()
+    (tmp_path / "templates" / "new").mkdir()
+    (tmp_path / "templates" / "new" / "another").mkdir()
+    (tmp_path / "templates" / "new" / "another" / "*").mkdir()
+    (tmp_path / "templates" / "new" / "another" / "*" / "*.html").write_text("multiple asterisk in subdirectory")
+
+    response = client.get("/new/another/something/test-this-should-200")
+    assert response.status_code == 200
+
+    actual = response.content.decode()
+    assert "multiple asterisk in subdirectory" in actual

@@ -59,6 +59,7 @@ There are a ton of other static site generators out there. Here are a few other 
 self
 installation
 local-development
+content
 ```
 
 ```{toctree}
@@ -66,7 +67,6 @@ local-development
 :maxdepth: 2
 :hidden:
 
-markdown
 templates
 template-tags
 context
