@@ -46,6 +46,7 @@ DEFAULT_INSTALLED_APPS = [
 ]
 
 COLTRANE_SETTINGS_THAT_ARE_ARRAYS = ("EXTRA_FILE_NAMES",)
+COLTRANE_SETTINGS_THAT_ARE_BOOLEANS = ("DISABLE_WILDCARD_TEMPLATES",)
 
 
 def _get_base_dir(base_dir: Optional[Path]) -> Path:
@@ -233,6 +234,13 @@ def _set_coltrane_setting(settings: Dict, initialize_settings: Dict, setting_nam
 
         if setting_name in COLTRANE_SETTINGS_THAT_ARE_ARRAYS:
             settings["COLTRANE"][setting_name] = value.split(",")
+        elif setting_name in COLTRANE_SETTINGS_THAT_ARE_BOOLEANS:
+            settings["COLTRANE"][setting_name] = False
+
+            if isinstance(value, str):
+                settings["COLTRANE"][setting_name] = value.lower() == "true"
+            elif isinstance(value, bool):
+                settings["COLTRANE"][setting_name] = value is True
         else:
             settings["COLTRANE"][setting_name] = value
 

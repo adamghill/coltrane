@@ -1,3 +1,7 @@
+# 0.28.0.dev
+
+- Add `DISABLE_WILDCARD_TEMPLATES` settings
+
 # 0.27.0
 
 - Support directory wildcards.

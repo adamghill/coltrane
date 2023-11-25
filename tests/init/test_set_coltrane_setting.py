@@ -32,3 +32,36 @@ def test_set_coltrane_setting_extra_file_names():
     actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
 
     assert expected == actual
+
+
+def test_set_coltrane_setting_disable_wildcard_templates_true():
+    expected = {"COLTRANE": {"DISABLE_WILDCARD_TEMPLATES": True}}
+
+    settings = {"COLTRANE": {}}
+    initialize_settings = {"COLTRANE_DISABLE_WILDCARD_TEMPLATES": True}
+    setting_name = "DISABLE_WILDCARD_TEMPLATES"
+    actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
+
+    assert expected == actual
+
+
+def test_set_coltrane_setting_disable_wildcard_templates_true_string():
+    expected = {"COLTRANE": {"DISABLE_WILDCARD_TEMPLATES": True}}
+
+    settings = {"COLTRANE": {}}
+    initialize_settings = {"COLTRANE_DISABLE_WILDCARD_TEMPLATES": "true"}
+    setting_name = "DISABLE_WILDCARD_TEMPLATES"
+    actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
+
+    assert expected == actual
+
+
+def test_set_coltrane_setting_disable_wildcard_templates_not_true():
+    expected = {"COLTRANE": {"DISABLE_WILDCARD_TEMPLATES": False}}
+
+    settings = {"COLTRANE": {}}
+    initialize_settings = {"COLTRANE_DISABLE_WILDCARD_TEMPLATES": 1}
+    setting_name = "DISABLE_WILDCARD_TEMPLATES"
+    actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
+
+    assert expected == actual

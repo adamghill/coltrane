@@ -11,6 +11,7 @@ from django.utils.timezone import now
 
 from coltrane.config.cache import ViewCache
 from coltrane.config.paths import get_file_path
+from coltrane.config.settings import get_disable_wildcard_templates
 from coltrane.renderer import MarkdownRenderer
 from coltrane.retriever import get_data
 
@@ -195,7 +196,8 @@ def content(request: HttpRequest, slug: str = "index") -> HttpResponse:
                 f"{slug_with_index}.html",
             ]
 
-            potential_templates.extend(_get_potential_wildcard_templates(slug))
+            if get_disable_wildcard_templates() is False:
+                potential_templates.extend(_get_potential_wildcard_templates(slug))
 
             try:
                 found_template = select_template(potential_templates)

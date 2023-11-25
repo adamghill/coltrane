@@ -44,6 +44,7 @@ DEFAULT_COLTRANE_SETTINGS = {
     "EXTRA_FILE_NAMES": [],
     "CONTENT_DIRECTORY": "content",
     "DATA_DIRECTORY": "data",
+    "DISABLE_WILDCARD_TEMPLATES": False,
 }
 
 
@@ -134,4 +135,11 @@ def get_extra_file_names() -> List[str]:
     return get_coltrane_settings().get(
         "EXTRA_FILE_NAMES",
         [],
+    )
+
+
+def get_disable_wildcard_templates() -> bool:
+    return get_coltrane_settings().get(
+        "DISABLE_WILDCARD_TEMPLATES",
+        False,
     )
