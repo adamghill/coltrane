@@ -1,3 +1,8 @@
+# 0.27.0
+
+- Support directory wildcards.
+- Add `paths` template tag.
+
 # 0.26.0
 
 - Ability to [configure cache](env.md#cache).
