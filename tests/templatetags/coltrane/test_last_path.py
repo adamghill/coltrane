@@ -3,7 +3,7 @@ from coltrane.templatetags.coltrane_tags import last_path
 
 class WSGIRequest:
     def __init__(self, path: str):
-        self.path = path
+        self.path_info = path
 
 
 def test_last_path_root():

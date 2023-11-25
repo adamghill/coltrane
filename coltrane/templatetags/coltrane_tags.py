@@ -214,9 +214,33 @@ def last_path(context: dict) -> str:
     """
 
     request = context["request"]
-    path = request.path
+    path = request.path_info.strip()
 
     if path.endswith("/"):
         path = path[:-1]
 
     return path.split("/")[-1:][0]
+
+
+@register.simple_tag(takes_context=True)
+def paths(context: dict) -> List[str]:
+    """Return all parts of the `HTTPRequest` path.
+
+    For example, if `request.path` is "/something/cool", ["something", "cool"] would be returned.
+    """
+
+    request = context["request"]
+    path = request.path_info.strip()
+
+    if path.startswith("/"):
+        path = path[1:]
+
+    if path.endswith("/"):
+        path = path[:-1]
+
+    _paths = path.split("/")
+
+    if _paths == [""]:
+        _paths = []
+
+    return _paths

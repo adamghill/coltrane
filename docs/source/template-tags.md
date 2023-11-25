@@ -211,7 +211,11 @@ Raises a 404 from template. Can be useful when using wildcard HTML templates.
 
 ### `last_path`
 
-Gets the last portion the URL path. For example the last path of `/app/user/123` would be `123`.
+Gets the last portion the URL path, e.g. the last path of `/app/user/123` would be `"123"`.
+
+### `paths`
+
+Gets all parts of the path as a list of strings, e.g. the paths of `/app/user/123` would be `["app", "user", "123"]`.
 
 ## Custom template tags
 
