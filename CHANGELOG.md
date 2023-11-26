@@ -1,6 +1,7 @@
-# 0.28.0.dev
+# 0.28.0
 
-- Add `DISABLE_WILDCARD_TEMPLATES` settings
+- Add `DISABLE_WILDCARD_TEMPLATES` setting
+- Add `data`, `slug`, `template`, and `now` to direct HTML template for as much parity to `markdown` content as possible
 
 # 0.27.0
 
