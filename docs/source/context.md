@@ -2,7 +2,7 @@
 
 The template context for each `markdown` file includes:
 
-- all variables from the `markdown` frontmatter
+- all key/value pairs in the `markdown` frontmatter
 - rendered `markdown` HTML in `content`
 - JSON data from the `data` directory
 - `now` which provides the current `datetime` (would be the time of HTML rendering for when generating a static site)
