@@ -83,8 +83,8 @@ deployment
 :hidden:
 
 cli
-settings
 env
+settings
 ```
 
 ```{toctree}
