@@ -7,10 +7,12 @@ from django.shortcuts import render
 from django.template import TemplateDoesNotExist
 from django.template.loader import select_template
 from django.utils.cache import patch_response_headers
+from django.utils.timezone import now
 
 from coltrane.config.cache import ViewCache
 from coltrane.config.paths import get_file_path
 from coltrane.renderer import MarkdownRenderer
+from coltrane.retriever import get_data
 
 logger = logging.getLogger(__name__)
 
@@ -200,6 +202,15 @@ def content(request: HttpRequest, slug: str = "index") -> HttpResponse:
                 template = found_template.template.name
             except TemplateDoesNotExist:
                 raise Http404(f"{slug} cannot be found") from None
+
+            context.update(
+                {
+                    "data": get_data(),
+                    "slug": slug,
+                    "template": template,
+                    "now": now(),
+                }
+            )
 
     if set_in_cache:
         _set_in_cache_if_enabled(slug, template, context)
