@@ -5,7 +5,7 @@ dynamic = ["version", "description"]
 
 [tool.poetry]
 name = "coltrane"
-version = "0.28.0"
+version = "0.29.0"
 description = "A Dynamic Site Generator that harnesses the power of Django without the hassle 🎵."
 authors = ["adamghill <adam@adamghill.com>"]
 license = "MIT"
@@ -221,6 +221,14 @@ help = "Sphinx autobuild"
 
 [tool.poe.tasks.sb]
 cmd = "sphinx-build -W docs/source docs/build"
+help = "Build documentation"
+
+[tool.poe.tasks.cc]
+cmd = "cp CHANGELOG.md docs/source/changelog.md"
+help = "Copy changelog"
+
+[tool.poe.tasks.docs]
+sequence = ["cc", "sb"]
 help = "Build documentation"
 
 [tool.poe.tasks.publish]

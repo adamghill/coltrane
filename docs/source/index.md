@@ -109,6 +109,7 @@ django-app/integration
 :maxdepth: 2
 :hidden:
 
+changelog
 GitHub <https://github.com/adamghill/coltrane>
 Sponsor <https://github.com/sponsors/adamghill>
 ```
