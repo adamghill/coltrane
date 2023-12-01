@@ -13,11 +13,13 @@ sitemaps = {"content": ContentSitemap}
 
 urlpatterns = []
 
+# Add browser reload URL if not prod
 if settings.DEBUG:
     urlpatterns += [
         path("__reload__/", include("django_browser_reload.urls")),
     ]
 
+# Add sitemap and RSS URLs
 urlpatterns += [
     path(
         "sitemap.xml",
@@ -27,6 +29,12 @@ urlpatterns += [
     ),
     path("rss.xml", ContentFeed()),
 ]
+
+# Add `django_unicorn` URL if it's installed
+if "django_unicorn" in settings.INSTALLED_APPS:
+    urlpatterns += [
+        path("unicorn/", include("django_unicorn.urls")),
+    ]
 
 # Add file names to serve to url routes (e.g. robots.txt)
 for file_name in get_extra_file_names():

@@ -204,12 +204,30 @@ def _get_from_env(env_name: str) -> List[str]:
     return env_values
 
 
+def _is_module_available(module_name: str) -> bool:
+    """
+    Helper function to check if a module is available.
+
+    Could be an installed package or an available module.
+    """
+
+    return find_spec(module_name) is not None
+
+
 def _is_whitenoise_installed() -> bool:
     """
     Helper function to check if `whitenoise` is installed.
     """
 
-    return find_spec("whitenoise") is not None
+    return _is_module_available("whitenoise")
+
+
+def _is_django_unicorn_installed() -> bool:
+    """
+    Helper function to check if `django_unicorn` is installed.
+    """
+
+    return _is_module_available("django_unicorn")
 
 
 def _set_coltrane_setting(settings: Dict, initialize_settings: Dict, setting_name: str) -> Dict:
@@ -283,6 +301,12 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
 
     middleware = deepcopy(DEFAULT_MIDDLEWARE_SETTINGS)
     installed_apps = deepcopy(DEFAULT_INSTALLED_APPS)
+
+    if _is_django_unicorn_installed():
+        installed_apps.append("django_unicorn")
+
+        if _is_module_available("unicorn"):
+            installed_apps.append("unicorn")
 
     is_whitenoise_installed = _is_whitenoise_installed()
 
