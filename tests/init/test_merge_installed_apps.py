@@ -12,6 +12,11 @@ def test_merge_installed_apps_no_installed_apps_in_settings():
 
 def test_merge_installed_apps_installed_apps_in_settings():
     expected = [*deepcopy(DEFAULT_INSTALLED_APPS), "test"]
-    actual = _merge_installed_apps({"INSTALLED_APPS": ["test"]}, deepcopy(DEFAULT_INSTALLED_APPS))
+
+    django_settings = {"INSTALLED_APPS": ["test"]}
+    actual = _merge_installed_apps(django_settings, deepcopy(DEFAULT_INSTALLED_APPS))
 
     assert actual == expected
+
+    # Make sure that INSTALLED_APPS gets popped out of settings
+    assert "INSTALLED_APPS" not in django_settings

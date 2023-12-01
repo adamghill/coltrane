@@ -138,6 +138,10 @@ def _merge_installed_apps(django_settings: Dict[str, Any], installed_apps: List[
     if "INSTALLED_APPS" in django_settings:
         installed_apps.extend(list(django_settings["INSTALLED_APPS"]))
 
+        # Remove INSTALLED_APPS from django_settings since it overrides the default settings
+        # that gets merged later
+        del django_settings["INSTALLED_APPS"]
+
     return installed_apps
 
 
