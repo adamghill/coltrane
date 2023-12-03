@@ -3,6 +3,7 @@
 ## 0.30.0
 
 - Add `COLTRANE_IS_SECURE` [env variable](env.md#coltrane_is_secure).
+- Add `django.middleware.gzip.GZipMiddleware`, `django.middleware.http.ConditionalGetMiddleware`, `django.middleware.csrf.CsrfViewMiddleware` middlewares.
 
 ## 0.29.0
 
