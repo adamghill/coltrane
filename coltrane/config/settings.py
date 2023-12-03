@@ -45,6 +45,7 @@ DEFAULT_COLTRANE_SETTINGS = {
     "CONTENT_DIRECTORY": "content",
     "DATA_DIRECTORY": "data",
     "DISABLE_WILDCARD_TEMPLATES": False,
+    "IS_SECURE": False,
 }
 
 
@@ -141,5 +142,12 @@ def get_extra_file_names() -> List[str]:
 def get_disable_wildcard_templates() -> bool:
     return get_coltrane_settings().get(
         "DISABLE_WILDCARD_TEMPLATES",
+        False,
+    )
+
+
+def get_is_secure() -> bool:
+    return get_coltrane_settings().get(
+        "IS_SECURE",
         False,
     )

@@ -65,3 +65,36 @@ def test_set_coltrane_setting_disable_wildcard_templates_not_true():
     actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
 
     assert expected == actual
+
+
+def test_set_coltrane_setting_is_secure_true():
+    expected = {"COLTRANE": {"IS_SECURE": True}}
+
+    settings = {"COLTRANE": {}}
+    initialize_settings = {"COLTRANE_IS_SECURE": True}
+    setting_name = "IS_SECURE"
+    actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
+
+    assert expected == actual
+
+
+def test_set_coltrane_setting_is_secure_true_string():
+    expected = {"COLTRANE": {"IS_SECURE": True}}
+
+    settings = {"COLTRANE": {}}
+    initialize_settings = {"COLTRANE_IS_SECURE": "true"}
+    setting_name = "IS_SECURE"
+    actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
+
+    assert expected == actual
+
+
+def test_set_coltrane_setting_is_secure_not_true():
+    expected = {"COLTRANE": {"IS_SECURE": False}}
+
+    settings = {"COLTRANE": {}}
+    initialize_settings = {"COLTRANE_IS_SECURE": 1}
+    setting_name = "IS_SECURE"
+    actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
+
+    assert expected == actual

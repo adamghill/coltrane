@@ -32,24 +32,11 @@ A random string of letters, numbers, and characters. (More information in the [D
 
 ### ALLOWED_HOSTS
 
-The acceptable host or domain names when the site is deployed to production. Must be set when `DEBUG` is set to `False`. Defaults to `""`. If more than one host name is required, separate them by commas.
+The acceptable host or domain names when the site is deployed to production. Required when `DEBUG` is set to `False`. Defaults to `""`. If more than one host name is required, separate them by commas.
 
 ```shell
 ALLOWED_HOSTS=coltrane.com
 ```
-
-### CACHE
-
-The type of cache to use for `coltrane`. Acceptable options are: [`dummy`](https://docs.djangoproject.com/en/stable/topics/cache/#dummy-caching-for-development), [`memory`](https://docs.djangoproject.com/en/stable/topics/cache/#local-memory-caching), [`filesystem`](https://docs.djangoproject.com/en/stable/topics/cache/#filesystem-caching), [`memcache`](https://docs.djangoproject.com/en/stable/topics/cache/#memcached), or [`redis`](https://docs.djangoproject.com/en/stable/topics/cache/#redis). The default is `dummy`.
-
-```{note}
-`filesystem`, `memcache`, and `redis` options require `CACHE_LOCATION` to also be set.
-```
-
-### CACHE_LOCATION
-
-The location of the cache. Required for `filesystem`, `memcache`, and `redis` cache options. The `filesystem` cache requires an absolute path. The `memcache` and `redis` cache options include multiple cache servers in a commma-delimited list.
-
 
 ### COLTRANE_SITE_URL
 
@@ -75,6 +62,10 @@ The description of the website. Required for generating `rss.xml`.
 COLTRANE_DESCRIPTION=A simple content site framework that harnesses the power of Django without the hassle.
 ```
 
+### COLTRANE_IS_SECURE
+
+Informs `coltrane` that it is served securely, i.e. with SSL with an `https` protocol. This needs to be set to `True` if SSL is provided by a proxy server (for example, Cloudflare). If the site is only served by `https` and you see errors like "403 forbidden CSRF origin didn't match" set this to `True`. Defaults to `False`.
+
 ### COLTRANE_CONTENT_DIRECTORY
 
 The directory that should be used for `markdown` content. Relative to the base directory. Defaults to "content".
@@ -86,3 +77,15 @@ The directory that should be used for data. Relative to the base directory. Defa
 ### COLTRANE_DISABLE_WILDCARD_TEMPLATES
 
 To prevent [wildcard templates](content.md#wildcards) from being served, set this to `True`. Defaults to `False`.
+
+### CACHE
+
+The type of cache to use for `coltrane`. Acceptable options are: [`dummy`](https://docs.djangoproject.com/en/stable/topics/cache/#dummy-caching-for-development), [`memory`](https://docs.djangoproject.com/en/stable/topics/cache/#local-memory-caching), [`filesystem`](https://docs.djangoproject.com/en/stable/topics/cache/#filesystem-caching), [`memcache`](https://docs.djangoproject.com/en/stable/topics/cache/#memcached), or [`redis`](https://docs.djangoproject.com/en/stable/topics/cache/#redis). The default is `dummy`.
+
+```{note}
+`filesystem`, `memcache`, and `redis` options require `CACHE_LOCATION` to also be set.
+```
+
+### CACHE_LOCATION
+
+The location of the cache. Required for `filesystem`, `memcache`, and `redis` cache options. The `filesystem` cache requires an absolute path. The `memcache` and `redis` cache options include multiple cache servers in a commma-delimited list.

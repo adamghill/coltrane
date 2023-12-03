@@ -8,7 +8,7 @@ from coltrane import (
     DEFAULT_CACHES_SETTINGS,
     DEFAULT_COLTRANE_SETTINGS,
     DEFAULT_INSTALLED_APPS,
-    DEFAULT_MIDDLEWARE_SETTINGS,
+    DEFAULT_MIDDLEWARE,
     _get_default_template_settings,
     initialize,
 )
@@ -22,7 +22,7 @@ DEFAULT_SETTINGS = {
     "SECRET_KEY": ANY,
     "INSTALLED_APPS": deepcopy(DEFAULT_INSTALLED_APPS),
     "CACHES": deepcopy(DEFAULT_CACHES_SETTINGS),
-    "MIDDLEWARE": deepcopy(DEFAULT_MIDDLEWARE_SETTINGS),
+    "MIDDLEWARE": deepcopy(DEFAULT_MIDDLEWARE),
     "TEMPLATES": deepcopy(_get_default_template_settings(base_dir)),
     "INTERNAL_IPS": [],
     "ALLOWED_HOSTS": [],
@@ -47,13 +47,11 @@ def _get_settings_with_whitenoise():
     settings["INSTALLED_APPS"] = deepcopy(DEFAULT_INSTALLED_APPS)
     settings["INSTALLED_APPS"].insert(0, "whitenoise.runserver_nostatic")
 
-    settings["MIDDLEWARE"] = deepcopy(DEFAULT_MIDDLEWARE_SETTINGS)
+    settings["MIDDLEWARE"] = deepcopy(DEFAULT_MIDDLEWARE)
     settings["MIDDLEWARE"].insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
     settings["INSTALLED_APPS"].append("django_browser_reload")
-    settings["MIDDLEWARE"].append(
-        "django_browser_reload.middleware.BrowserReloadMiddleware"
-    )
+    settings["MIDDLEWARE"].append("django_browser_reload.middleware.BrowserReloadMiddleware")
 
     return settings
 
@@ -93,9 +91,7 @@ def test_initialize_with_base_dir_as_string(_configure_settings):
 
 @patch("coltrane._configure_settings")
 @patch("coltrane._get_template_tag_module_name", return_value="fake.templatetag")
-def test_initialize_with_template_tags(
-    _get_template_tag_module_name, _configure_settings, tmp_path
-):
+def test_initialize_with_template_tags(_get_template_tag_module_name, _configure_settings, tmp_path):
     (tmp_path / "templatetags").mkdir()
     # not actually used, but need the file here
     (tmp_path / "templatetags" / "sample_tag.py").touch()
@@ -112,9 +108,7 @@ def test_initialize_with_template_tags(
 
 @patch("coltrane._configure_settings")
 @patch("coltrane._get_template_tag_module_name", side_effect=InvalidTemplateLibrary)
-def test_initialize_with_invalid_template_tag(
-    _get_template_tag_module_name, _configure_settings, tmp_path
-):
+def test_initialize_with_invalid_template_tag(_get_template_tag_module_name, _configure_settings, tmp_path):
     (tmp_path / "templatetags").mkdir()
     # not actually used, but need the file here
     (tmp_path / "templatetags" / "sample_tag.py").touch()

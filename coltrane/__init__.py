@@ -30,7 +30,8 @@ DEFAULT_CACHES_SETTINGS = {
     }
 }
 
-DEFAULT_MIDDLEWARE_SETTINGS = [
+DEFAULT_MIDDLEWARE = [
+    "coltrane.middleware.IsSecureMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -46,7 +47,10 @@ DEFAULT_INSTALLED_APPS = [
 ]
 
 COLTRANE_SETTINGS_THAT_ARE_ARRAYS = ("EXTRA_FILE_NAMES",)
-COLTRANE_SETTINGS_THAT_ARE_BOOLEANS = ("DISABLE_WILDCARD_TEMPLATES",)
+COLTRANE_SETTINGS_THAT_ARE_BOOLEANS = (
+    "DISABLE_WILDCARD_TEMPLATES",
+    "IS_SECURE",
+)
 
 
 def _get_base_dir(base_dir: Optional[Path]) -> Path:
@@ -303,7 +307,7 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         base_dir / "static",
     ]
 
-    middleware = deepcopy(DEFAULT_MIDDLEWARE_SETTINGS)
+    middleware = deepcopy(DEFAULT_MIDDLEWARE)
     installed_apps = deepcopy(DEFAULT_INSTALLED_APPS)
 
     if _is_django_unicorn_installed():

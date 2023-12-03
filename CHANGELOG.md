@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.30.0.dev
+
+- Add `COLTRANE_IS_SECURE` [env variable](env.md#coltrane-is-secure).
+
 ## 0.29.0
 
 - [`django-unicorn`](https://www.django-unicorn.com) integration.
