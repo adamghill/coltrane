@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.30.0.dev
+## 0.30.0
 
-- Add `COLTRANE_IS_SECURE` [env variable](env.md#coltrane-is-secure).
+- Add `COLTRANE_IS_SECURE` [env variable](env.md#coltrane_is_secure).
 
 ## 0.29.0
 
