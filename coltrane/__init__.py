@@ -33,7 +33,10 @@ DEFAULT_CACHES_SETTINGS = {
 DEFAULT_MIDDLEWARE = [
     "coltrane.middleware.IsSecureMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "django.middleware.gzip.GZipMiddleware",
+    "django.middleware.http.ConditionalGetMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
