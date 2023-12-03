@@ -59,16 +59,16 @@ deploy = ["gunicorn", "whitenoise"]
 docs = ["Sphinx", "linkify-it-py", "myst-parser", "furo", "sphinx-copybutton", "sphinx-autobuild", "toml", "attrs"]
 mistune = ["mistune", "python-frontmatter", "pygments", "minestrone"]
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 poethepoet = "*"
 ruff = "*"
-pytest = "*"
-pytest-django = "*"
-pywatchman = "*"
-django-stubs = "*"
 coverage = {extras = ["toml"], version = "*"}
 pytest-cov = "*"
-pytest-icdiff = "*"
+pytest = "*"
+pytest-django = "*"
+pytest-pretty = "*"
+pywatchman = "*"
+django-stubs = "*"
 types-toml = "*"
 types-dateparser = "*"
 
