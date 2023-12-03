@@ -1,22 +1,32 @@
 # Introduction
 
-`coltrane` is a [**Dynamic Site Generator**](index.md#what-is-a-dynamic-site-generator) that harnesses the power of `Django` without the hassle. It can also be used to build a static HTML site or as a third-party `Django` app.
+`coltrane` is a [**Dynamic Site Generator**](index.md#-what-is-a-dynamic-site-generator) that harnesses the power of `Django` without the hassle. It can also be used to build a static HTML site or as a third-party `Django` app.
 
 ## ⭐ Features
 
 - Render `markdown` files as HTML with automatic URL routing based on the filesystem
+- Local development server with live re-rendering of markdown and data
 - Use JSON files as data sources in content
 - Automatic generation of `sitemap.xml` and `rss.xml` files
-- Can also serve non-markdown files like `robots.txt`
-- Local development server with live re-rendering of markdown and data
+- Can serve non-markdown files like `robots.txt`
 - Deployment best practices with `whitenoise` and `gunicorn` already configured
 - Leverage custom or built-in `Django` template tags and filters
 - Include any third-party [`Django` app](https://djangopackages.org) for additional functionality
 - Optional building of static HTML files
 
-## What is a Dynamic Site Generator?
+## 🙋 What is a Dynamic Site Generator?
 
 `coltrane` is similar to a static site generator -- it takes `markdown` content and renders it as HTML. However, it also provides an opinionated framework for building dynamic websites.
+
+### Examples in the wild
+
+- [GitEgo](https://adamghill.com/gitego): An egocentric view of GitHub
+- [python-utils](https://adamghill.com/python-utils): Interactive Python playground
+- [unsuckjs.com](https://unsuckjs.com): Libraries to progressively enhance HTML with minimal amounts of JavaScript
+
+```{note}
+Please [let me know](https://github.com/adamghill/coltrane/discussions/new?category=show-and-tell) if you use `Coltrane` and would like to add it to this list!
+```
 
 ## 🎵 What's with the name?
 
