@@ -53,10 +53,11 @@ https://twitter.com/willmcgugan/status/1477283879841157123 for the initial inspi
 
 ## 🧠 Related projects
 
-There are a ton of other static site generators out there. Here are a few other Python static site generators.
+[yamdl](https://github.com/andrewgodwin/yamdl) is another approach which lets you store instances of Django models as flat YAML files. It also supports storing markdown.
 
+Here are a few Python static site generators:
 - [Pelican](https://getpelican.com/): Pelican is a static site generator that requires no database or server-side logic.
-- [Combine](https://combine.dropseed.dev/): Build a straightforward marketing or documentation website with the power of Jinja. No fancy JavaScript here — this is just like the good old days.
+- [Combine](https://combine.dropseed.dev/): Build a straightforward marketing or documentation website with the power of Jinja.
 - [Nikola](https://getnikola.com/): In goes content, out comes a website, ready to deploy.
 - [Lektor](https://www.getlektor.com/): A flexible and powerful static content management system for building complex and beautiful websites out of flat files.
 - [corvid](https://github.com/di/corvid): An opinionated simple static site generator.
