@@ -2,20 +2,74 @@
 
 ## Create
 
-`poetry run coltrane create`
+`poetry run coltrane create` sets up a default `coltrane` project.
 
-Will setup a default `coltrane` project with the following files in the current directory:
+### Generated files
 
 ```bash
 .
+├── .env
+├── .gitignore
+├── .watchmanconfig
 ├── __init__.py
 ├── app.py
 ├── content
 │   └── index.md
 ├── data
+├── Dockerfile
+├── gunicorn.conf.py
+├── templates
 ├── poetry.lock
 └── pyproject.toml
 ```
+
+#### `.env`
+
+Example environment variables.
+
+#### `.gitignore`
+
+Prevent committing certain files.
+
+#### `.watchmanconfig`
+
+Prevent `node_modules` directory from triggering excessive restarts of the development server.
+
+#### `__init__.py`
+
+Denote the folder is a Python module.
+
+#### `app.py`
+
+The entry point for `coltrane` apps. Similar to a standard `manage.py` file in `Django`.
+
+#### `content`
+
+Standard directory for `markdown` files.
+
+#### `data`
+
+Standard directory for `JSON` files.
+
+#### `Dockerfile`
+
+Example `Dockerfile` for deployment.
+
+#### `gunicorn.conf.py`
+
+Example `gunicorn.conf.py` for deployment.
+
+#### `templates`
+
+Standard directory for `HTML` template files.
+
+#### `poetry.lock`
+
+Lock file for dependencies.
+
+#### `pyproject.toml`
+
+Lists dependencies. More details in the [Poetry documentation](https://python-poetry.org/docs/pyproject/).
 
 ### Force creation
 

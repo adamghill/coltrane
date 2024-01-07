@@ -413,9 +413,7 @@ def _configure_settings(django_settings: Dict[str, Any]) -> None:
     settings.configure(**django_settings)
 
 
-def initialize(
-    **django_settings: Dict[str, Any],
-) -> WSGIHandler:
+def initialize(**django_settings) -> WSGIHandler:
     """
     Initializes the Django static site.
     """

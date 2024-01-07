@@ -30,6 +30,10 @@ An example command for using `gunicorn` in production: `poetry run gunicorn -b l
 
 ## Hosting
 
+### Docker
+
+A sample `Dockerfile` is created for new `Coltrane` projects. It can be used along with `gunicorn.conf.py` for any hosting platform that supports `Docker`.
+
 ### Heroku
 
 Heroku will run the `collectstatic` management command by default for Django projects, but this should be disabled by setting the `DISABLE_COLLECTSTATIC` environment variable to `1`. Add the nginx buildpack from https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku-community/nginx.tgz.

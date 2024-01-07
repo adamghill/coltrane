@@ -4,4 +4,4 @@
 
 ## Record
 
-The static site is built with the [`record` command](cli.md#record).
+The static site is built with the [`record` command](../cli.md#record).

@@ -25,7 +25,7 @@
 - [unsuckjs.com](https://unsuckjs.com): Libraries to progressively enhance HTML with minimal amounts of JavaScript
 
 ```{note}
-Please [let me know](https://github.com/adamghill/coltrane/discussions/new?category=show-and-tell) if you use `Coltrane` and would like to add it to this list!
+Please [let me know](https://github.com/adamghill/coltrane/discussions/new?category=show-and-tell) if you use `coltrane` and would like to add it to this list!
 ```
 
 ## 🎵 What's with the name?

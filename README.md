@@ -22,11 +22,11 @@
 - Can serve non-markdown files like `robots.txt`
 - Local development server which includes [live re-rendering of markdown and data](https://twitter.com/adamghill/status/1487522925393715205) via https://github.com/adamchainz/django-browser-reload
 - Deployment best practices with `whitenoise` and `gunicorn` already configured
-- Leverage the power of built-in `Django` templates, template tags, and filters inside markdown files
+- Leverage the power of built-in `Django` templates, template tags, and filters inside `markdown` files
 - Any custom template tags and filters are enabled automatically for use in `markdown` or HTML templates
 - Include any third-party [`Django` app](https://djangopackages.org) for additional functionality
-- Optional static site generator to output HTML files
-- Able to be integrated into a regular `Django` project as a third-party `Django` app
+- Optional command to generate static HTML files
+- Able to be integrated into a regular `Django` project as a standard third-party `Django` app
 
 ## ⚡ Quick start
 
@@ -44,11 +44,17 @@
 
 ```bash
 .
+├── .env
+├── .gitignore
+├── .watchmanconfig
 ├── __init__.py
 ├── app.py
 ├── content
 │   └── index.md
 ├── data
+├── Dockerfile
+├── gunicorn.conf.py
+├── templates
 ├── poetry.lock
 └── pyproject.toml
 ```
@@ -66,6 +72,10 @@ HTML will also be served automatically if a `markdown` file can not be found.
 
 - `/app/` would render the HTML from `/templates/app.html` or `/templates/app/index.html`
 - `/app/some-user` would render the HTML from `/templates/app/*.html`
+
+## Deployment
+
+Example `Dockerfile` and `gunicorn.conf.py` files are created when an app is created, and optional dependencies can be installed for efficient `static` serving with `whitenoise`.
 
 # 📖 Documentation
 

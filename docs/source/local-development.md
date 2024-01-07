@@ -4,24 +4,15 @@
 
 ## Create a new site
 
-1. `poetry run coltrane create` to create the folder structure for a new site.
+`poetry run coltrane create` creates the folder structure for a new site.
 
-## Generated `coltrane` file structure
-
-```bash
-.
-├── __init__.py
-├── app.py
-├── content
-│   └── index.md
-├── data
-├── poetry.lock
-└── pyproject.toml
+```{note}
+More details about the `create` options and the files that are generated are in [CLI](cli.md#generated-files).
 ```
 
 ## Development server
 
-`poetry run coltrane play` will serve the content for local development.
+`poetry run coltrane play` serves the content for local development.
 
 ```{warning}
 `poetry run coltrane play` is fine for development, but should never be used in production.

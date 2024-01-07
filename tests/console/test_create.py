@@ -3,7 +3,9 @@ from unittest.mock import patch
 
 from click.testing import CliRunner
 
-from coltrane.console import DEFAULT_APP, DEFAULT_ENV, cli
+from coltrane.console import cli
+
+FILES_PATH = Path(__file__).parent.parent.parent / "coltrane/default-files"
 
 
 def test_create(tmp_path):
@@ -20,11 +22,11 @@ def test_create(tmp_path):
 
             app_file = path_temp_dir / "app.py"
             assert app_file.exists()
-            assert app_file.read_text() == DEFAULT_APP
+            assert app_file.read_text() == (FILES_PATH / "app.py").read_text()
 
             env_file = path_temp_dir / ".env"
             assert env_file.exists()
-            assert env_file.read_text() == DEFAULT_ENV + "this-is-a-test"
+            assert env_file.read_text() == (FILES_PATH / "env").read_text() + "SECRET_KEY=this-is-a-test"
 
             content_dir = path_temp_dir / "content"
             assert content_dir.exists()
@@ -43,8 +45,14 @@ def test_create(tmp_path):
 - Set app.py as executable
 - Create .env
 - Create .watchmanconfig
+- Create .gitignore
+- Create README.md
+- Create gunicorn.conf.py
+- Create Dockerfile
 - Create content directory
 - Create data directory
+- Create static directory
+- Create templates directory
 
 For local development: poetry run coltrane play
 Build static HTML: poetry run coltrane record
