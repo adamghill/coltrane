@@ -10,7 +10,6 @@ _Breaking changes_
 - Remove loading `data.json`. All data should be in JSON files in the `data` directory.
 - The default markdown renderer is now `mistune` instead of `markdown2`. The next version of `coltrane` will remove the option to use `markdown2`.
 
-
 ## 0.30.0
 
 - Add `COLTRANE_IS_SECURE` [env variable](env.md#coltrane_is_secure).
