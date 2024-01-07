@@ -1,3 +1,4 @@
+from importlib.metadata import version
 from pathlib import Path
 from unittest.mock import patch
 
@@ -22,7 +23,9 @@ def test_create(tmp_path):
 
             app_file = path_temp_dir / "app.py"
             assert app_file.exists()
-            assert app_file.read_text() == (FILES_PATH / "app.py").read_text()
+
+            expected_app_py = (FILES_PATH / "app.py").read_text().replace("__version__", version("coltrane"))
+            assert app_file.read_text() == expected_app_py
 
             env_file = path_temp_dir / ".env"
             assert env_file.exists()

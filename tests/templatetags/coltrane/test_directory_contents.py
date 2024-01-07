@@ -166,9 +166,7 @@ def test_directory_contents_exclude_with_slash(settings, tmp_path: Path):
     assert actual == expected
 
 
-def test_directory_contents_exclude_with_comma_delimited_string(
-    settings, tmp_path: Path
-):
+def test_directory_contents_exclude_with_comma_delimited_string(settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
     (tmp_path / "content").mkdir()
     (tmp_path / "content/test.md").write_text("test data")

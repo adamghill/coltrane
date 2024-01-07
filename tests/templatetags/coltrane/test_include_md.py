@@ -27,7 +27,12 @@ def test_include_md(client, settings, tmp_path: Path):
     assert response.status_code == 200
 
     actual = response.content.decode()
-    assert '<h1 id="index">index</h1>\n\n<p><h1 id="partial">partial</h1>' in actual
+
+    assert (
+        """<h1 id="index">index</h1>
+<p><h1 id="partial">partial</h1>"""
+        in actual
+    )
 
 
 def test_include_md_loop(client, settings, tmp_path: Path):
@@ -53,7 +58,14 @@ def test_include_md_loop(client, settings, tmp_path: Path):
 
     actual = response.content.decode()
     assert (
-        '<h1 id="index">index</h1>\n\n<p>\n<h1 id="partial">partial</h1>\n\n\n<h1 id="partial">partial</h1>'
+        """<h1 id="index">index</h1>
+<p>
+<h1 id="partial">partial</h1>
+
+
+<h1 id="partial">partial</h1>
+
+</p>"""
         in actual
     )
 
@@ -89,7 +101,10 @@ variable: this-is-a-string-in-the-template
 
     actual = response.content.decode()
     assert (
-        '<h1 id="index">index</h1>\n\n<p><h2 id="partial">partial</h2>\n\n<p>this-is-a-string-in-the-template'
+        """<h1 id="index">index</h1>
+<p><h2 id="partial">partial</h2>
+<p>this-is-a-string-in-the-template</p>
+</p>"""
         in actual
     )
 
@@ -124,8 +139,12 @@ request: this-is-a-string-in-the-partial
     assert response.status_code == 200
 
     actual = response.content.decode()
+    print(actual)
     assert (
-        '<h1 id="index">index</h1>\n\n<p><h2 id="partial">partial</h2>\n\n<p>this-is-a-string-in-the-partial'
+        """<h1 id="index">index</h1>
+<p><h2 id="partial">partial</h2>
+<p>this-is-a-string-in-the-partial</p>
+</p>"""
         in actual
     )
 

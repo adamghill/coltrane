@@ -176,8 +176,6 @@ class MarkdownRenderer:
         if cls._instance is None:
             markdown_renderer = get_markdown_renderer()
 
-            print("markdown_renderer", markdown_renderer)
-
             if markdown_renderer == "markdown2":
                 cls._instance = Markdown2MarkdownRenderer()
             elif markdown_renderer == "mistune":
@@ -382,9 +380,12 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
         for _ in range(nested_count):
             strings.append("</li></ul>")
 
-        toc_html = "".join(strings)
+        metadata["toc"] = None
 
-        metadata["toc"] = mark_safe(toc_html)
+        if strings:
+            toc_html = "".join(strings)
+            metadata["toc"] = mark_safe(toc_html)
+
         content = str(html)
 
         return (content, metadata)
