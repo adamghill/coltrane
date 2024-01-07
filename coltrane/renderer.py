@@ -12,7 +12,6 @@ from django.template import engines
 from django.utils.html import mark_safe  # type: ignore
 from django.utils.text import slugify
 from django.utils.timezone import now
-from markdown2 import Markdown, markdown
 
 from coltrane.config.paths import get_content_directory
 from coltrane.config.settings import (
@@ -177,6 +176,8 @@ class MarkdownRenderer:
         if cls._instance is None:
             markdown_renderer = get_markdown_renderer()
 
+            print("markdown_renderer", markdown_renderer)
+
             if markdown_renderer == "markdown2":
                 cls._instance = Markdown2MarkdownRenderer()
             elif markdown_renderer == "mistune":
@@ -188,7 +189,7 @@ class MarkdownRenderer:
 
 
 class Markdown2MarkdownRenderer(MarkdownRenderer):
-    def _parse_and_update_metadata(self, content: Markdown) -> dict:
+    def _parse_and_update_metadata(self, content) -> dict:
         """
         Add new, parse and/or cast existing values to metadata.
         """
@@ -212,6 +213,8 @@ class Markdown2MarkdownRenderer(MarkdownRenderer):
         return metadata
 
     def render_markdown_text(self, text: str) -> Tuple[str, Dict]:
+        from markdown2 import markdown
+
         text = self.pre_process_markdown(text)
 
         markdown_extras = get_markdown_extras()
@@ -226,10 +229,7 @@ class Markdown2MarkdownRenderer(MarkdownRenderer):
 
 
 class MistuneMarkdownRenderer(MarkdownRenderer):
-    try:
-        from mistune.renderers.html import HTMLRenderer
-    except ImportError:
-        HTMLRenderer = object
+    from mistune.renderers.html import HTMLRenderer
 
     class CustomHTMLRenderer(HTMLRenderer):
         def _color_with_pygments(self, codeblock, lexer, **formatter_opts):

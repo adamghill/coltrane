@@ -38,7 +38,7 @@ DEFAULT_COLTRANE_SETTINGS = {
     "TITLE": "",
     "DESCRIPTION": "",
     "SITE_URL": "",
-    "MARKDOWN_RENDERER": "markdown2",
+    "MARKDOWN_RENDERER": "mistune",
     "MARKDOWN_EXTRAS": DEFAULT_MARKDOWN_EXTRAS,
     "MISTUNE_PLUGINS": DEFAULT_MISTUNE_PLUGINS,
     "EXTRA_FILE_NAMES": [],
@@ -66,10 +66,10 @@ def get_coltrane_settings() -> Dict:
 
 def get_markdown_renderer() -> str:
     """
-    Get the markdown renderer. Either "markdown2" or "mistune".
+    Get the markdown renderer. Either "markdown2" or "mistune". Defaults to "mistune".
     """
 
-    markdown_renderer = get_coltrane_settings().get("MARKDOWN_RENDERER", "markdown2")
+    markdown_renderer = get_coltrane_settings().get("MARKDOWN_RENDERER", "mistune")
 
     if markdown_renderer not in ["markdown2", "mistune"]:
         raise AssertionError("Invalid markdown renderer")
