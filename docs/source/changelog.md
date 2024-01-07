@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.31.0
+
+- Create example `Dockerfile` and `gunicorn.conf.py` files for easier deployments of `coltrane` apps.
+- [Add the ability](installation.md#json5) to use [JSON5](https://json5.org) for data files.
+
+_Breaking changes_
+
+- Remove loading `data.json`. All data should be in JSON files in the `data` directory.
+- The default markdown renderer is now `mistune` instead of `markdown2`. The next version of `coltrane` will remove the option to use `markdown2`.
+
+
 ## 0.30.0
 
 - Add `COLTRANE_IS_SECURE` [env variable](env.md#coltrane_is_secure).

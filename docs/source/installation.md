@@ -8,13 +8,13 @@
 
 `coltrane` has some additional functionality that is not enabled by default, but can be used if it is installed with extras.
 
-### JSON5 support
+### `json5`
 
 Adds support for using [JSON5](https://json5.org) for [data](data.md) files. This allows trailing commas and comments in JSON, so it can be useful for making JSON a little more readable.
 
 `poetry add coltrane -E json5`
 
-### Deployment
+### `deploy`
 
 Adds support for deploying `coltrane` to a production server with `gunicorn` and `whitenoise` pre-configured. More details at [deployment.md](deployment).
 
