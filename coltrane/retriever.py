@@ -32,16 +32,8 @@ def get_data() -> Dict:
         if data:
             return data
 
-    try:
-        data = json.loads(get_data_json().read_bytes())
-
-        warnings.warn(
-            "Reading data.json will be deprecated in future versions; use the data directory instead.", stacklevel=1
-        )
-    except FileNotFoundError:
-        logger.debug("Missing data.json file")
-    except json.decoder.JSONDecodeError:
-        logger.error("Invalid json: 'data.json'")
+    if get_data_json().exists():
+        warnings.warn("Reading data.json is deprecated; use the data directory instead.", stacklevel=1)
 
     data_directory = get_data_directory()
 
