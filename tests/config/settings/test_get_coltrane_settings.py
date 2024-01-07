@@ -5,6 +5,7 @@ from coltrane.config.settings import (
     get_coltrane_settings,
     get_content_directory,
     get_data_directory,
+    get_data_json_5,
     get_description,
     get_extra_file_names,
     get_markdown_renderer,
@@ -78,3 +79,10 @@ def test_get_markdown_renderer(settings):
 def test_get_extra_file_names(settings):
     settings.COLTRANE = {"EXTRA_FILE_NAMES": ["robots.txt"]}
     assert get_extra_file_names() == ["robots.txt"]
+
+
+def test_get_data_json_5(settings):
+    assert get_data_json_5() is False
+
+    settings.COLTRANE = {"DATA_JSON5": True}
+    assert get_data_json_5() is True

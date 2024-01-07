@@ -94,12 +94,28 @@ def test_url_slug(client, settings, tmp_path: Path):
     assert '\n<h1 id="test-this">test this</h1>\n\n' in actual
 
 
-def test_url_slug_with_data(client, settings, tmp_path: Path):
+def test_url_slug_with_json_data(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
     (tmp_path / "content").mkdir()
     (tmp_path / "content" / "test-this-data.md").write_text("test data {{ data.test }}")
-    (tmp_path / "data.json").write_text('{"test":1}')
+    (tmp_path / "data").mkdir()
+    (tmp_path / "data/test.json").write_text("1")
+
+    response = client.get("/test-this-data")
+    assert response.status_code == 200
+
+    actual = response.content.decode()
+    assert "\n<p>test data 1</p>\n\n" in actual
+
+
+def test_url_slug_with_json5_data(client, settings, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content" / "test-this-data.md").write_text("test data {{ data.test }}")
+    (tmp_path / "data").mkdir()
+    (tmp_path / "data/test.json5").write_text("1")
 
     response = client.get("/test-this-data")
     assert response.status_code == 200

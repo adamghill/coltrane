@@ -43,3 +43,7 @@ If there are JSON files in sub-directories, the directory names will be included
 
 <p>The Hitchhiker's Guide to the Galaxy is the book title.</p>
 ```
+
+## JSON5 support
+
+[JSON5](https://json5.org) data files are supported if the [`json5` extra](installation.md#json5-support) is installed and the [`COLTRANE_JSON5_DATA` environment setting](env.md#coltrane_data_json5) is set to `True`.

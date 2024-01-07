@@ -1,25 +1,30 @@
 from pathlib import Path
+from unittest.mock import patch
 
 from coltrane.retriever import get_data
 
 
-def test_get_data_json_file_invalid_json(settings, tmp_path: Path):
+@patch("warnings.warn")
+def test_get_data_json_file_logs_warning(
+    warn,
+    settings,
+    tmp_path: Path,
+):
     settings.BASE_DIR = tmp_path
 
-    (tmp_path / "data.json").write_text("")
+    (tmp_path / "data.json").write_text("{}")
 
-    expected = {}
-    actual = get_data()
+    get_data()
 
-    assert actual == expected
+    warn.assert_called_once()
 
 
-def test_get_data_json_file(settings, tmp_path: Path):
+def test_get_data_json_file_skip_data(settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
     (tmp_path / "data.json").write_text('{"test":1}')
 
-    expected = {"test": 1}
+    expected = {}
     actual = get_data()
 
     assert actual == expected

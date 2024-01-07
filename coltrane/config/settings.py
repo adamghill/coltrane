@@ -46,6 +46,7 @@ DEFAULT_COLTRANE_SETTINGS = {
     "DATA_DIRECTORY": "data",
     "DISABLE_WILDCARD_TEMPLATES": False,
     "IS_SECURE": False,
+    "DATA_JSON5": False,
 }
 
 
@@ -149,5 +150,12 @@ def get_disable_wildcard_templates() -> bool:
 def get_is_secure() -> bool:
     return get_coltrane_settings().get(
         "IS_SECURE",
+        False,
+    )
+
+
+def get_data_json_5() -> bool:
+    return get_coltrane_settings().get(
+        "DATA_JSON5",
         False,
     )

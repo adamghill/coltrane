@@ -7,12 +7,51 @@ from typing import Dict, Iterable, Optional
 
 from coltrane.config.cache import DataCache
 from coltrane.config.paths import get_content_directory, get_data_directory, get_data_json
+from coltrane.config.settings import get_data_json_5
 from coltrane.utils import dict_merge
 
 logger = logging.getLogger(__name__)
 
 
 MARKDOWN_EXTENSION_LENGTH = 3
+
+
+def _add_data_from_path(data, data_directory, path):
+    if path.is_file():
+        directory_without_base_and_file_name = (str(path)).replace(str(data_directory), "").replace(path.name, "")
+
+        # TODO: Check that .json5/.json is an extension first
+        file_name = path.name.replace(".json5", "").replace(".json", "")
+        value = None
+
+        if get_data_json_5():
+            try:
+                import pyjson5
+
+                try:
+                    value = pyjson5.decode_buffer(path.read_bytes())
+                except pyjson5.Json5DecoderException:
+                    logger.exception(f"Invalid JSON5: '{file_name}'")
+            except ImportError:
+                pass
+        else:
+            try:
+                value = json.loads(path.read_bytes())
+            except json.decoder.JSONDecodeError:
+                logger.exception(f"Invalid JSON: '{file_name}'")
+
+        if value:
+            new_data = {file_name: value}
+
+            # For each part of the path between BASE_DIR/data and the JSON file,
+            # add a new level (i.e. key) in the data dictionary; for example:
+            # base_dir/data/some/new/test/here.json with {"one": "two"} ==
+            # {"some": {"new": {"test": {"here": {"one": "two"}}}}}
+            for key in reversed(directory_without_base_and_file_name.split("/")):
+                if key:
+                    new_data = {key: new_data}
+
+            data = dict_merge(data, new_data)
 
 
 def get_data() -> Dict:
@@ -37,26 +76,11 @@ def get_data() -> Dict:
 
     data_directory = get_data_directory()
 
+    for path in data_directory.rglob("*.json5"):
+        _add_data_from_path(data, data_directory, path)
+
     for path in data_directory.rglob("*.json"):
-        if path.is_file():
-            directory_without_base_and_file_name = (str(path)).replace(str(data_directory), "").replace(path.name, "")
-
-            file_name = path.name.replace(".json", "")
-
-            try:
-                new_data = {file_name: json.loads(path.read_bytes())}
-
-                # For each part of the path between BASE_DIR/data and the JSON file,
-                # add a new level (i.e. key) in the data dictionary; for example:
-                # base_dir/data/some/new/test/here.json with {"one": "two"} ==
-                # {"some": {"new": {"test": {"here": {"one": "two"}}}}}
-                for key in reversed(directory_without_base_and_file_name.split("/")):
-                    if key:
-                        new_data = {key: new_data}
-
-                data = dict_merge(data, new_data)
-            except json.decoder.JSONDecodeError:
-                logger.error(f"Invalid json: '{file_name}'")
+        _add_data_from_path(data, data_directory, path)
 
     if data_cache.is_enabled:
         data_cache.cache.set(cache_key, data, timeout=data_cache.seconds)

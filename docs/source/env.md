@@ -9,7 +9,7 @@ DEBUG=True
 INTERNAL_IPS=127.0.0.1
 ALLOWED_HOSTS=example.com
 COLTRANE_SITE_URL=https://example.com
-SECRET_KEY=this-would-be-lots-of-random-characters
+SECRET_KEY=this-should-be-lots-of-random-characters
 ```
 
 ## Keys
@@ -73,6 +73,10 @@ The directory that should be used for `markdown` content. Relative to the base d
 ### COLTRANE_DATA_DIRECTORY
 
 The directory that should be used for data. Relative to the base directory. Defaults to "data".
+
+### COLTRANE_DATA_JSON5
+
+Whether or not data files should be parsed as [JSON5](https://json5.org). Also requires installing with the `json5` extras (e.g. `poetry add coltrane -E json5` or `pip install coltrane[json5]`). Defaults to `False`.
 
 ### COLTRANE_DISABLE_WILDCARD_TEMPLATES
 
