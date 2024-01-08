@@ -34,7 +34,17 @@ def _copy_file(file_name) -> None:
 
     with (FILES_PATH / default_file_name).open() as f:
         file_text = f.read()
-        file_text = file_text.replace("__version__", version("coltrane"))
+
+        if "__coltrane_version__" in file_text:
+            coltrane_version = version("coltrane")
+            file_text = file_text.replace("__coltrane_version__", coltrane_version)
+
+        if "__app_name__" in file_text:
+            current_directory = getcwd().split("/")
+            app_name = current_directory[len(current_directory) - 1 :][0]
+
+            file_text = file_text.replace("__app_name__", app_name)
+
         Path(file_name).write_text(file_text)
 
 
