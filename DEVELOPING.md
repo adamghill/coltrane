@@ -1,3 +1,5 @@
+1. `poetry lock && poetry install --extras docs --extras deploy --extras json5`
+1. `poe t`
 1. `poetry version major|minor|patch`
 1. Update CHANGELOG.md
 1. `poe docs`

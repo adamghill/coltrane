@@ -67,9 +67,6 @@ def test_content_directory_default():
 def test_get_markdown_renderer(settings):
     assert get_markdown_renderer() == "mistune"
 
-    settings.COLTRANE = {"MARKDOWN_RENDERER": "markdown2"}
-    assert get_markdown_renderer() == "markdown2"
-
     settings.COLTRANE = {"MARKDOWN_RENDERER": "invalid-markdown-renderer"}
 
     with pytest.raises(AssertionError):

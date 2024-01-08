@@ -9,21 +9,6 @@ Settings for `coltrane` are specified in a `COLTRANE` dictionary in the `setting
 
 # Sample `coltrane` settings
 COLTRANE = {
-    "MARKDOWN_RENDERER": "markdown2",
-    "MARKDOWN_EXTRAS": [
-        "fenced-code-blocks",
-        "header-ids",
-        "metadata",
-        "strike",
-        "tables",
-        "task_list",
-        "nofollow",
-        "code-friendly",
-        "footnotes",
-        "numbering",
-        "strike",
-        "toc",
-    ],
     "MISTUNE_PLUGINS": [
         "strikethrough",
         "footnotes",
@@ -55,35 +40,6 @@ wsgi = initialize(MARKDOWN_EXTRAS=["metadata",], MISTUNE_PLUGINS=["table",])
 ## Keys
 
 The keys below are specific to the `COLTRANE` dictionary `settings.py`. But, all [env settings](env.md) can be used.
-
-### MARKDOWN_RENDERER
-
-Which markdown renderer to use. Value can be either "markdown2" or "mistune". The default for 0.22.0 and below is [`markdown2`](https://github.com/trentm/python-markdown2). After that it will be [`mistune`](https://github.com/lepture/mistune).
-
-To enable `mistune` for version 0.22.0:
-1. `poetry install --extras mistune`
-2. Add `COLTRANE["MARKDOWN_RENDERER"] = "mistune"` to settings
-
-### MARKDOWN_EXTRAS
-
-The features that should be enabled when rendering markdown with `markdown2`. A list of all available features: https://github.com/trentm/python-markdown2/wiki/Extras. The default extras are:
-
-```python
-[
-    "fenced-code-blocks",
-    "header-ids",
-    "metadata",
-    "strike",
-    "tables",
-    "task_list",
-    "nofollow",
-    "code-friendly",
-    "footnotes",
-    "numbering",
-    "strike",
-    "toc",
-]
-```
 
 ### MISTUNE_PLUGINS
 

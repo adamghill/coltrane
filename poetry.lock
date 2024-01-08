@@ -660,22 +660,6 @@ rtd = ["attrs", "myst-parser", "pyyaml", "sphinx", "sphinx-copybutton", "sphinx-
 testing = ["coverage", "pytest", "pytest-cov", "pytest-regressions"]
 
 [[package]]
-name = "markdown2"
-version = "2.4.12"
-description = "A fast and complete Python implementation of Markdown"
-optional = true
-python-versions = ">=3.5, <4"
-files = [
-    {file = "markdown2-2.4.12-py2.py3-none-any.whl", hash = "sha256:98f47591006f0ace0644cbece03fed6f3845513286f6c6e9f8bcf6a575174e2c"},
-    {file = "markdown2-2.4.12.tar.gz", hash = "sha256:1bc8692696954d597778e0e25713c14ca56d87992070dedd95c17eddaf709204"},
-]
-
-[package.extras]
-all = ["pygments (>=2.7.3)", "wavedrom"]
-code-syntax-highlighting = ["pygments (>=2.7.3)"]
-wavedrom = ["wavedrom"]
-
-[[package]]
 name = "markupsafe"
 version = "2.1.3"
 description = "Safely add untrusted strings to HTML/XML markup."
@@ -1938,10 +1922,8 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 deploy = ["gunicorn", "whitenoise"]
 docs = ["Sphinx", "attrs", "furo", "linkify-it-py", "myst-parser", "sphinx-autobuild", "sphinx-copybutton", "toml"]
 json5 = ["pyjson5"]
-markdown2 = ["markdown2"]
-mistune = ["minestrone", "mistune", "pygments", "python-frontmatter"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7,<4.0"
-content-hash = "3b390a0e4dea1b435a832175e6433e5e72192038751aa3ba6b8faa38c75b151f"
+content-hash = "71aee18fb91522a1b4cb8ba1842a9127a51c41f5e3729f4a2e1d57bb4e3bf11f"

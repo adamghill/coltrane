@@ -40,7 +40,7 @@ https://twitter.com/willmcgugan/status/1477283879841157123 for the initial inspi
 
 - https://github.com/adamchainz/django-browser-reload for development server live reloads
 - https://github.com/boxed/django-fastdev to ensure template variables are available
-- https://github.com/trentm/python-markdown2 and https://github.com/lepture/mistune for doing the hard work of rendering the markdown
+- https://github.com/lepture/mistune for doing the hard work of rendering the markdown
 - https://www.djangoproject.com for doing the hard work of everything else
 
 ## 🎉 Other minimal `Django` projects

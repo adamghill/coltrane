@@ -45,9 +45,6 @@ whitenoise = { version = "*", optional = true }
 # JSON5 extras
 pyjson5 = { version = "*", optional = true }
 
-# markdown2 extras
-markdown2 = { version = "^2", optional = true }
-
 # docs extras
 Sphinx = { version = "*", optional = true }
 linkify-it-py = { version = "*", optional = true }
@@ -62,8 +59,6 @@ attrs = { version = "*", optional = true }
 deploy = ["gunicorn", "whitenoise"]
 json5 = ["pyjson5"]
 docs = ["Sphinx", "linkify-it-py", "myst-parser", "furo", "sphinx-copybutton", "sphinx-autobuild", "toml", "attrs"]
-#mistune = ["mistune", "python-frontmatter", "pygments", "minestrone"]  # needed to handle old installations
-markdown2 = ["markdown2"]
 
 [tool.poetry.group.development.dependencies]
 poethepoet = "*"
@@ -171,7 +166,6 @@ warn_return_any = true
 warn_unused_configs = true
 
 [[tool.mypy.overrides]]
-module = ["markdown2"]
 ignore_missing_imports = true
 
 [tool.poe.tasks.secret]

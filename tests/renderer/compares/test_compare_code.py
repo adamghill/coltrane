@@ -1,6 +1,6 @@
 import pytest
 
-from coltrane.renderer import Markdown2MarkdownRenderer, MistuneMarkdownRenderer
+from coltrane.renderer import MistuneMarkdownRenderer
 
 markdown_texts = [
     """
@@ -29,15 +29,10 @@ some code here
 ]
 
 
+@pytest.mark.skip("Not needed since there is only one markdown renderer now")
 @pytest.mark.parametrize("text", markdown_texts)
 def test_compare_code(text):
-    markdown2_markdown_renderer = Markdown2MarkdownRenderer()
     mistune_markdown_renderer = MistuneMarkdownRenderer()
-
-    (
-        markdown2_content,
-        _,
-    ) = markdown2_markdown_renderer.render_markdown_text(text)
 
     (
         mistune_content,
@@ -45,7 +40,6 @@ def test_compare_code(text):
     ) = mistune_markdown_renderer.render_markdown_text(text)
 
     # Remove linebreak differences
-    markdown2_content = markdown2_content.replace("\n", "")
     mistune_content = mistune_content.replace("\n", "")
 
-    assert markdown2_content == mistune_content
+    # assert other_content == mistune_content

@@ -6,7 +6,6 @@ from html import unescape
 from typing import Dict, Optional, Tuple, Union
 from urllib.parse import unquote
 
-import dateparser
 from django.http import HttpRequest
 from django.template import engines
 from django.utils.html import mark_safe  # type: ignore
@@ -15,7 +14,6 @@ from django.utils.timezone import now
 
 from coltrane.config.paths import get_content_directory
 from coltrane.config.settings import (
-    get_markdown_extras,
     get_markdown_renderer,
     get_mistune_plugins,
     get_site_url,
@@ -172,13 +170,11 @@ class MarkdownRenderer:
         return (template, context)
 
     @classmethod
-    def instance(cls) -> Union["Markdown2MarkdownRenderer", "MistuneMarkdownRenderer"]:
+    def instance(cls) -> "MistuneMarkdownRenderer":
         if cls._instance is None:
             markdown_renderer = get_markdown_renderer()
 
-            if markdown_renderer == "markdown2":
-                cls._instance = Markdown2MarkdownRenderer()
-            elif markdown_renderer == "mistune":
+            if markdown_renderer == "mistune":
                 cls._instance = MistuneMarkdownRenderer()
             else:
                 raise AssertionError("Invalid markdown renderer")
@@ -186,47 +182,11 @@ class MarkdownRenderer:
         return cls._instance
 
 
-class Markdown2MarkdownRenderer(MarkdownRenderer):
-    def _parse_and_update_metadata(self, content) -> dict:
-        """
-        Add new, parse and/or cast existing values to metadata.
-        """
-
-        metadata = content.metadata or {}
-
-        if "publish_date" in metadata:
-            metadata["publish_date"] = dateparser.parse(metadata["publish_date"])
-
-        if "draft" in metadata:
-            metadata["draft"] = metadata["draft"] == "true"
-
-        metadata["now"] = now()
-
-        if hasattr(content, "toc_html"):
-            metadata["toc"] = None
-
-            if content.toc_html:
-                metadata["toc"] = mark_safe(content.toc_html)
-
-        return metadata
-
-    def render_markdown_text(self, text: str) -> Tuple[str, Dict]:
-        from markdown2 import markdown
-
-        text = self.pre_process_markdown(text)
-
-        markdown_extras = get_markdown_extras()
-        markdown_content = markdown(text=text, extras=markdown_extras)
-
-        content = str(markdown_content)
-        content = self.post_process_html(content)
-
-        metadata = self._parse_and_update_metadata(markdown_content)
-
-        return (content, metadata)
-
-
 class MistuneMarkdownRenderer(MarkdownRenderer):
+    """
+    A markdown renderer for `mistune`.
+    """
+
     from mistune.renderers.html import HTMLRenderer
 
     class CustomHTMLRenderer(HTMLRenderer):
@@ -290,7 +250,7 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
         plugins = [*get_mistune_plugins(), FencedDirective([Admonition()])]
 
         self.mistune_markdown = mistune.create_markdown(
-            renderer=MistuneMarkdownRenderer.CustomHTMLRenderer(),
+            renderer=MistuneMarkdownRenderer.CustomHTMLRenderer(),  # type: ignore
             plugins=plugins,
         )
 
@@ -326,7 +286,7 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
 
         html = HTML(content)
 
-        last_header_int = None
+        last_header_int = 0
         nested_count = 0
         strings = []
 
