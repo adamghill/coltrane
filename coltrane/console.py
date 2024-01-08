@@ -48,6 +48,7 @@ class AliasedGroup(click.Group):
 
 
 @click.group(cls=AliasedGroup, help="Runs commands for coltrane.")
+@click.version_option()
 def cli():
     pass
 
