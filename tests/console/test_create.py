@@ -24,7 +24,7 @@ def test_create(tmp_path):
             app_file = path_temp_dir / "app.py"
             assert app_file.exists()
 
-            expected_app_py = (FILES_PATH / "app.py").read_text().replace("__version__", version("coltrane"))
+            expected_app_py = (FILES_PATH / "app.py").read_text().replace("__coltrane_version__", version("coltrane"))
             assert app_file.read_text() == expected_app_py
 
             env_file = path_temp_dir / ".env"
