@@ -117,3 +117,11 @@ def get_output_static_directory() -> Path:
     """
 
     return Path(settings.STATIC_ROOT)
+
+
+def get_redirects_json() -> Path:
+    """
+    Get the path of of the redirects.json file.
+    """
+
+    return get_base_directory() / "redirects.json"
