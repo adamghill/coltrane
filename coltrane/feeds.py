@@ -1,3 +1,4 @@
+import django.utils.timezone as timezone
 from django.contrib.syndication.views import Feed
 
 from coltrane.config.settings import get_description, get_site_url, get_title
@@ -35,6 +36,10 @@ class ContentFeed(Feed):
         link = f"{site_url}{item.relative_url}"
 
         return link
+
+    def item_pubdate(self, item: ContentItem):
+        if publish_date := item.metadata.get("publish_date"):
+            return timezone.make_aware(publish_date, timezone.get_current_timezone())
 
     def link(self, obj):  # noqa: ARG002
         return self.site_url
