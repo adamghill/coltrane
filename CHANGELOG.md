@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.32.0
+
+- Add `pubdate` to RSS feed [#61](https://github.com/adamghill/coltrane/pull/61) by [Tobi-De](https://github.com/Tobi-De).
+- Support setting a custom `TIME_ZONE`.
+
 ## 0.31.0
 
 - Create example `Dockerfile` and `gunicorn.conf.py` files for easier deployments of `coltrane` apps.
