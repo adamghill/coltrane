@@ -306,6 +306,7 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
     is_build_management_command = len(sys.argv) >= 2 and sys.argv[1] == "build"  # noqa: PLR2004
 
     debug = django_settings.get("DEBUG", getenv("DEBUG", "True") == "True")
+    time_zone = django_settings.get("TIME_ZONE", getenv("TIME_ZONE", "UTC"))
 
     staticfiles_dirs = [
         base_dir / "static",
@@ -356,6 +357,7 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         "STATIC_ROOT": base_dir / "output" / "static",
         "STATIC_URL": "static/",
         "STATICFILES_DIRS": staticfiles_dirs,
+        "TIME_ZONE": time_zone,
         "LOGGING": {
             "version": 1,
             "disable_existing_loggers": False,

@@ -1,5 +1,5 @@
-import django.utils.timezone as timezone
 from django.contrib.syndication.views import Feed
+from django.utils import timezone
 
 from coltrane.config.settings import get_description, get_site_url, get_title
 from coltrane.retriever import ContentItem, get_content_items

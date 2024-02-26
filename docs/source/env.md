@@ -93,3 +93,7 @@ The type of cache to use for `coltrane`. Acceptable options are: [`dummy`](https
 ### CACHE_LOCATION
 
 The location of the cache. Required for `filesystem`, `memcache`, and `redis` cache options. The `filesystem` cache requires an absolute path. The `memcache` and `redis` cache options include multiple cache servers in a commma-delimited list.
+
+### TIME_ZONE
+
+The timezone of the server. Defaults to "UTC".

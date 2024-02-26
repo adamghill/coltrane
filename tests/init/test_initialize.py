@@ -1,4 +1,5 @@
 from copy import deepcopy
+from os import environ
 from pathlib import Path
 from unittest.mock import ANY, patch
 
@@ -29,6 +30,7 @@ DEFAULT_SETTINGS = {
     "STATIC_ROOT": ANY,
     "STATIC_URL": ANY,
     "STATICFILES_DIRS": ANY,
+    "TIME_ZONE": ANY,
     "LOGGING": ANY,
     "COLTRANE": deepcopy(DEFAULT_COLTRANE_SETTINGS),
     "SETTINGS_MODULE": "coltrane",
@@ -56,8 +58,27 @@ def _get_settings_with_whitenoise():
     return settings
 
 
+def _get_settings_with_debug_false():
+    settings = deepcopy(DEFAULT_SETTINGS)
+    settings.update(
+        {
+            "WHITENOISE_MANIFEST_STRICT": False,
+            "STATICFILES_STORAGE": ANY,
+        }
+    )
+
+    settings["INSTALLED_APPS"] = deepcopy(DEFAULT_INSTALLED_APPS)
+    settings["INSTALLED_APPS"].insert(0, "whitenoise.runserver_nostatic")
+
+    settings["MIDDLEWARE"] = deepcopy(DEFAULT_MIDDLEWARE)
+    settings["MIDDLEWARE"].insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
+
+    settings["DEBUG"] = False
+
+    return settings
+
+
 @patch("coltrane._configure_settings")
-# @patch("coltrane._is_whitenoise_installed", return_value=False)
 def test_initialize_no_base_dir(_configure_settings):
     initialize()
 
@@ -67,7 +88,6 @@ def test_initialize_no_base_dir(_configure_settings):
 
 
 @patch("coltrane._configure_settings")
-# @patch("coltrane._is_whitenoise_installed", return_value=False)
 def test_initialize_with_base_dir(_configure_settings):
     initialize(BASE_DIR=Path("test"))
 
@@ -138,5 +158,55 @@ def test_initialize_with_template_tags_in_directory_with_py_extension(
     expected["BASE_DIR"] = ANY
     expected["TEMPLATES"][0]["DIRS"] = ANY
     expected["TEMPLATES"][0]["OPTIONS"]["builtins"].append("fake.templatetag")
+
+    _configure_settings.assert_called_once_with(expected)
+
+
+@patch("coltrane._configure_settings")
+def test_initialize_debug_setting(_configure_settings):
+    initialize(DEBUG=False)
+
+    expected = _get_settings_with_debug_false()
+
+    _configure_settings.assert_called_once_with(expected)
+
+
+@patch.dict(environ, {"DEBUG": "False"})
+@patch("coltrane._configure_settings")
+def test_initialize_debug_env(_configure_settings):
+    initialize()
+
+    expected = _get_settings_with_debug_false()
+
+    _configure_settings.assert_called_once_with(expected)
+
+
+@patch("coltrane._configure_settings")
+def test_initialize_time_zone_default(_configure_settings):
+    initialize()
+
+    expected = _get_settings_with_whitenoise()
+    expected["TIME_ZONE"] = "UTC"
+
+    _configure_settings.assert_called_once_with(expected)
+
+
+@patch("coltrane._configure_settings")
+def test_initialize_time_zone_setting(_configure_settings):
+    initialize(TIME_ZONE="America/New_York")
+
+    expected = _get_settings_with_whitenoise()
+    expected["TIME_ZONE"] = "America/New_York"
+
+    _configure_settings.assert_called_once_with(expected)
+
+
+@patch.dict(environ, {"TIME_ZONE": "America/Chicago"})
+@patch("coltrane._configure_settings")
+def test_initialize_time_zone_env(_configure_settings):
+    initialize()
+
+    expected = _get_settings_with_whitenoise()
+    expected["TIME_ZONE"] = "America/Chicago"
 
     _configure_settings.assert_called_once_with(expected)

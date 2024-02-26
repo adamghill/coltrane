@@ -1,4 +1,7 @@
+from datetime import datetime
 from pathlib import Path
+
+from zoneinfo import ZoneInfo
 
 from coltrane.feeds import ContentFeed
 
@@ -80,3 +83,47 @@ test data
     actual = ContentFeed().item_description(items[0])
 
     assert actual == "a description"
+
+
+def test_item_pubdate(settings, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content/test.md").write_text(
+        """---
+title: test title
+description: a description
+publish_date: 2024-02-25 22:36:00
+---
+
+test data
+"""
+    )
+
+    settings.TIME_ZONE = "UTC"
+
+    items = ContentFeed().items()
+    actual = ContentFeed().item_pubdate(items[0])
+
+    assert actual == datetime(2024, 2, 25, 22, 36, tzinfo=ZoneInfo(key="UTC"))
+
+
+def test_item_pubdate_with_time_zone(settings, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content/test.md").write_text(
+        """---
+title: test title
+description: a description
+publish_date: 2024-02-25 22:36:00
+---
+
+test data
+"""
+    )
+
+    settings.TIME_ZONE = "America/Chicago"
+
+    items = ContentFeed().items()
+    actual = ContentFeed().item_pubdate(items[0])
+
+    assert actual == datetime(2024, 2, 25, 22, 36, tzinfo=ZoneInfo(key="America/Chicago"))
