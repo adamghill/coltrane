@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.32.1
+
+- Parse JSON5 data as UTF-8.
+
 ## 0.32.0
 
 - Add `pubdate` to RSS feed [#61](https://github.com/adamghill/coltrane/pull/61) by [Tobi-De](https://github.com/Tobi-De).
