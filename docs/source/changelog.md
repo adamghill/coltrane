@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.33.0
+
+- Bump `rich-click` dependency and slightly better command aliases support.
+
 ## 0.32.1
 
 - Parse JSON5 data as UTF-8.
