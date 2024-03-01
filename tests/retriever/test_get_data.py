@@ -88,6 +88,57 @@ def test_get_data_directory_sub_directory_with_json(settings, tmp_path: Path):
     assert actual == expected
 
 
+def test_get_data_directory_sub_directory_with_json_utf8(settings, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+
+    (tmp_path / "data").mkdir()
+    (tmp_path / "data" / "test.json").write_text('{"sample1": "spræ"}')
+    (tmp_path / "data" / "another.json").mkdir()
+
+    expected = {
+        "test": {"sample1": "spræ"},
+    }
+    actual = get_data()
+
+    assert actual == expected
+
+
+def test_get_data_directory_sub_directory_with_json5(settings, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+    settings.COLTRANE["DATA_JSON5"] = True
+
+    (tmp_path / "data").mkdir()
+    (tmp_path / "data" / "test.json").write_text('{"sample1":1,}')
+    (tmp_path / "data" / "another.json").mkdir()
+
+    expected = {
+        "test": {"sample1": 1},
+    }
+    actual = get_data()
+
+    assert actual == expected
+
+    del settings.COLTRANE["DATA_JSON5"]
+
+
+def test_get_data_directory_sub_directory_with_json5_utf8(settings, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+    settings.COLTRANE["DATA_JSON5"] = True
+
+    (tmp_path / "data").mkdir()
+    (tmp_path / "data" / "test.json").write_text('{"sample1": "spræ",}')
+    (tmp_path / "data" / "another.json").mkdir()
+
+    expected = {
+        "test": {"sample1": "spræ"},
+    }
+    actual = get_data()
+
+    assert actual == expected
+
+    del settings.COLTRANE["DATA_JSON5"]
+
+
 def test_get_data_directory_with_non_json_file(settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 

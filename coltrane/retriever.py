@@ -29,7 +29,7 @@ def _add_data_from_path(data, data_directory, path):
                 import pyjson5
 
                 try:
-                    value = pyjson5.decode_buffer(path.read_bytes())
+                    value = pyjson5.decode_buffer(path.read_bytes(), wordlength=0)
                 except pyjson5.Json5DecoderException:
                     logger.exception(f"Invalid JSON5: '{file_name}'")
             except ImportError:
