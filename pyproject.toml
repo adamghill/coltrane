@@ -33,10 +33,11 @@ python-frontmatter = "^1"
 pygments = ">=2.7.3"
 minestrone = ">=0.6.2"
 halo = "^0"
-rich-click = "^0"
+rich-click = "^1"
 django-fastdev = "^1"
 django-browser-reload = "^1"
 pywatchman = "*"
+click-aliases = "^1"
 
 # deploy extras
 gunicorn = { version = "*", optional = true }

@@ -8,13 +8,10 @@ from pathlib import Path
 from stat import S_IEXEC
 from subprocess import run as run_process
 
-import click
-import rich_click  # type: ignore
+import rich_click as click
+from click_aliases import ClickAliasedGroup
 from django.core.management.utils import get_random_secret_key
-
-click.Command.format_help = rich_click.rich_format_help  # type: ignore
-click.Group.format_help = rich_click.rich_format_help  # type: ignore
-
+from rich_click.rich_command import RichCommand
 
 FILES_PATH = Path(__file__).parent / "default-files"
 
@@ -48,22 +45,17 @@ def _copy_file(file_name) -> None:
         Path(file_name).write_text(file_text)
 
 
-class AliasedGroup(click.Group):
-    def get_command(self, ctx, cmd_name):
-        try:
-            cmd_name = ALIASES[cmd_name].name
-        except KeyError:
-            pass
-        return super().get_command(ctx, cmd_name)
+class AliasedCommands(ClickAliasedGroup, RichCommand):
+    pass
 
 
-@click.group(cls=AliasedGroup, help="Runs commands for coltrane.")
+@click.group(cls=AliasedCommands, help="Runs commands for coltrane.")
 @click.version_option()
 def cli():
     pass
 
 
-@click.command(help="Create a new coltrane site.")
+@cli.command(help="Create a new coltrane site. Alias: init.", aliases=["init"])
 @click.option("--force/--no-force", default=False, help="Force creating a new site")
 def create(force):
     app_file = Path("app.py")
@@ -122,13 +114,13 @@ def create(force):
     click.secho("poetry run coltrane record")
 
 
-@click.command(help="Start a local development server.")
+@cli.command(help="Start a local development server. Alias: serve.", aliases=["serve"])
 @click.option("--port", default=8000, help="Port to serve localhost from")
 def play(port):
     _run_management_command("runserver", f"0:{port}")
 
 
-@click.command(help="Generates HTML output.")
+@cli.command(help="Generates HTML output. Aliases: rec, build.", aliases=["rec", "build"])
 @click.option("--force/--no-force", default=False, help="Force HTML generation")
 @click.option("--threads", type=int, help="Number of threads to use when generating static files")
 @click.option("--output", help="Output directory")
@@ -151,16 +143,3 @@ def record(force, threads, output, ignore):
         args.append("--ignore")
 
     _run_management_command("build", *args)
-
-
-cli.add_command(create)
-cli.add_command(play)
-cli.add_command(record)
-
-
-ALIASES = {
-    "init": create,
-    "serve": play,
-    "build": record,
-    "rec": record,
-}
