@@ -6,6 +6,7 @@ from html import unescape
 from typing import Dict, Optional, Tuple, Union
 from urllib.parse import unquote
 
+from django.conf import settings
 from django.http import HttpRequest
 from django.template import engines
 from django.utils.html import mark_safe  # type: ignore
@@ -149,7 +150,7 @@ class MarkdownRenderer:
         """
 
         (html, metadata) = self.get_html_and_markdown(slug)
-        context = {}
+        context = {"debug": settings.DEBUG}
 
         # Start with any metadata from the markdown frontmatter
         context.update(metadata)
@@ -164,7 +165,7 @@ class MarkdownRenderer:
         # Add rendered content to the context
         content = self.render_html_with_django(html, context, request)
 
-        context["content"] = mark_safe(content)
+        context["content"] = mark_safe(content)  # noqa: S308
         template = context["template"]
 
         return (template, context)
