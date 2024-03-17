@@ -6,16 +6,12 @@
 
 ## Extras
 
-`coltrane` has some additional functionality that is not enabled by default, but can be used if it is installed with extras.
+`coltrane` has some additional functionality that is not enabled by default. To add an extra to an existing `Poetry` project use square brackets, e.g. `poetry add coltrane[json5]`. To install multiple extras separate them with commas, e.g. `poetry add coltrane[deploy,json5]`
 
 ### `json5`
 
 Adds support for using [JSON5](https://json5.org) for [data](data.md) files. This allows trailing commas and comments in JSON, so it can be useful for making JSON a little more readable.
 
-`poetry add coltrane -E json5`
-
 ### `deploy`
 
 Adds support for deploying `coltrane` to a production server with `gunicorn` and `whitenoise` pre-configured. More details at [deployment.md](deployment).
-
-`poetry add coltrane -E deploy`
