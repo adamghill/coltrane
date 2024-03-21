@@ -59,7 +59,7 @@ COLTRANE_TITLE=Coltrane
 The description of the website. Required for generating `rss.xml`.
 
 ```shell
-COLTRANE_DESCRIPTION=A simple content site framework that harnesses the power of Django without the hassle.
+COLTRANE_DESCRIPTION=A minimal app framework for content sites.
 ```
 
 ### COLTRANE_IS_SECURE
