@@ -23,7 +23,7 @@ documentation = "https://coltrane.readthedocs.io/"
 coltrane = "coltrane.console:cli"
 
 [tool.poetry.dependencies]
-python = ">=3.7,<4.0"
+python = ">=3.8,<4.0"
 Django = ">3.0"
 python-dotenv = ">0.17"
 click = "^8"
@@ -37,6 +37,7 @@ rich-click = "^1"
 django-fastdev = "^1"
 django-browser-reload = "^1"
 pywatchman = "*"
+msgspec = "^0"
 click-aliases = "^1"
 
 # deploy extras

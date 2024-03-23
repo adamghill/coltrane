@@ -1,7 +1,7 @@
 <p align="center">
   <a href="https://coltrane.readthedocs.io"><h1 align="center">coltrane</h1></a>
 </p>
-<p align="center">A Dynamic Site Generator that harnesses the power of Django without the hassle 🎵</p>
+<p align="center">A minimal app framework for content sites 🎵</p>
 
 ![PyPI](https://img.shields.io/pypi/v/coltrane?color=blue&style=flat-square)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/coltrane?color=blue&style=flat-square)

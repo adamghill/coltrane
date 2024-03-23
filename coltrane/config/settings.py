@@ -1,5 +1,4 @@
-from os import getenv
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from django.conf import settings
 

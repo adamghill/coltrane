@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path, re_path
+from django.views.generic.base import RedirectView
 
 from coltrane import views
+from coltrane.config.redirects import get_redirects
 from coltrane.config.settings import get_extra_file_names
 from coltrane.feeds import ContentFeed
 from coltrane.sitemaps import ContentSitemap
@@ -12,6 +14,12 @@ app_name = "coltrane"
 sitemaps = {"content": ContentSitemap}
 
 urlpatterns = []
+
+
+for redirect in get_redirects():
+    urlpatterns += [
+        path(redirect.from_url, RedirectView.as_view(url=redirect.to_url, permanent=redirect.permanent)),
+    ]
 
 # Add browser reload URL if not prod
 if settings.DEBUG:
