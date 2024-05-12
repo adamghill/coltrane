@@ -150,7 +150,7 @@ class MarkdownRenderer:
         """
 
         (html, metadata) = self.get_html_and_markdown(slug)
-        context = {"debug": settings.DEBUG}
+        context = {"debug": settings.DEBUG, "coltrane": settings.COLTRANE}
 
         # Start with any metadata from the markdown frontmatter
         context.update(metadata)

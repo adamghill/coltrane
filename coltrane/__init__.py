@@ -137,6 +137,7 @@ def _get_default_template_settings(base_dir: Path) -> List:
                     "django.template.context_processors.request",
                     "django.template.context_processors.debug",
                     "django.template.context_processors.static",
+                    "coltrane.context_processors.coltrane",
                 ],
             },
         }
