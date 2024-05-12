@@ -1,7 +1,6 @@
 import logging
 import sys
 from copy import deepcopy
-from importlib.util import find_spec
 from os import getenv
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -14,6 +13,12 @@ from dotenv import load_dotenv
 
 from coltrane.config.settings import (
     DEFAULT_COLTRANE_SETTINGS,
+)
+from coltrane.module_finder import (
+    is_django_compressor_installed,
+    is_django_unicorn_installed,
+    is_unicorn_module_available,
+    is_whitenoise_installed,
 )
 from coltrane.utils import dict_merge
 
@@ -216,32 +221,6 @@ def _get_from_env(env_name: str) -> List[str]:
     return env_values
 
 
-def _is_module_available(module_name: str) -> bool:
-    """
-    Helper function to check if a module is available.
-
-    Could be an installed package or an available module.
-    """
-
-    return find_spec(module_name) is not None
-
-
-def _is_whitenoise_installed() -> bool:
-    """
-    Helper function to check if `whitenoise` is installed.
-    """
-
-    return _is_module_available("whitenoise")
-
-
-def _is_django_unicorn_installed() -> bool:
-    """
-    Helper function to check if `django_unicorn` is installed.
-    """
-
-    return _is_module_available("django_unicorn")
-
-
 def _set_coltrane_setting(settings: Dict, initialize_settings: Dict, setting_name: str) -> Dict:
     """
     Sets a setting on the `COLTRANE` dictionary that is in the environment or passed
@@ -315,15 +294,13 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
     middleware = deepcopy(DEFAULT_MIDDLEWARE)
     installed_apps = deepcopy(DEFAULT_INSTALLED_APPS)
 
-    if _is_django_unicorn_installed():
+    if is_django_unicorn_installed():
         installed_apps.append("django_unicorn")
 
-        if _is_module_available("unicorn"):
+        if is_unicorn_module_available():
             installed_apps.append("unicorn")
 
-    is_whitenoise_installed = _is_whitenoise_installed()
-
-    if is_whitenoise_installed:
+    if is_whitenoise_installed():
         middleware.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
         installed_apps.insert(0, "whitenoise.runserver_nostatic")
 
@@ -381,7 +358,7 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
     for setting_name in DEFAULT_COLTRANE_SETTINGS.keys():
         default_settings = _set_coltrane_setting(default_settings, django_settings, setting_name)
 
-    if is_whitenoise_installed:
+    if is_whitenoise_installed():
         default_settings["WHITENOISE_MANIFEST_STRICT"] = False
         default_settings["STATICFILES_STORAGE"] = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 

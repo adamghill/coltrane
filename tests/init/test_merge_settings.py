@@ -1,24 +1,19 @@
 from copy import deepcopy
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import ANY, patch
 
 from coltrane import _merge_settings
 from tests.init.test_initialize import (  # type: ignore
     DEFAULT_SETTINGS,
-    _get_settings_with_whitenoise,
+    _get_settings,
 )
 
 
-@patch("coltrane._is_whitenoise_installed", return_value=True)
-def test_merge_settings_with_whitenoise(_is_whitenoise_installed):
-    expected = deepcopy(_get_settings_with_whitenoise())
-    actual = _merge_settings(Path("."), {})
-
-    assert actual == expected
-
-
-@patch("coltrane._is_whitenoise_installed", return_value=False)
-def test_merge_settings_no_whitenoise(_is_whitenoise_installed):
+@patch("coltrane.is_whitenoise_installed", return_value=False)
+@patch("coltrane.is_django_compressor_installed", return_value=False)
+@patch("coltrane.is_django_unicorn_installed", return_value=False)
+@patch("coltrane.is_unicorn_module_available", return_value=False)
+def test_merge_settings_no_extras_with_args(*args):
     expected = deepcopy(DEFAULT_SETTINGS)
     expected["INSTALLED_APPS"].append("django_browser_reload")
     expected["MIDDLEWARE"].append("django_browser_reload.middleware.BrowserReloadMiddleware")
@@ -28,8 +23,34 @@ def test_merge_settings_no_whitenoise(_is_whitenoise_installed):
     assert actual == expected
 
 
-@patch("coltrane._is_django_unicorn_installed", return_value=True)
-def test_merge_settings_with_django_unicorn(_is_django_unicorn_installed):
+@patch("coltrane.is_whitenoise_installed", return_value=True)
+@patch("coltrane.is_django_compressor_installed", return_value=False)
+@patch("coltrane.is_django_unicorn_installed", return_value=False)
+@patch("coltrane.is_unicorn_module_available", return_value=False)
+def test_merge_settings_with_whitenoise(*args):
+    expected = _get_settings()
+    del expected["ENV"]
+
+    expected.update(
+        {
+            "WHITENOISE_MANIFEST_STRICT": False,
+            "STATICFILES_STORAGE": ANY,
+        }
+    )
+
+    expected["INSTALLED_APPS"].insert(0, "whitenoise.runserver_nostatic")
+    expected["MIDDLEWARE"].insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
+
+    actual = _merge_settings(Path("."), {})
+
+    assert actual == expected
+
+
+@patch("coltrane.is_whitenoise_installed", return_value=False)
+@patch("coltrane.is_django_compressor_installed", return_value=False)
+@patch("coltrane.is_django_unicorn_installed", return_value=True)
+@patch("coltrane.is_unicorn_module_available", return_value=False)
+def test_merge_settings_with_django_unicorn(*args):
     actual = _merge_settings(Path("."), {})
     installed_apps = actual["INSTALLED_APPS"]
 
@@ -37,16 +58,11 @@ def test_merge_settings_with_django_unicorn(_is_django_unicorn_installed):
     assert "unicorn" not in installed_apps
 
 
-def _is_unicorn_module_available(value):
-    if value == "unicorn":
-        return True
-
-    return False
-
-
-@patch("coltrane._is_django_unicorn_installed", return_value=True)
-@patch("coltrane._is_module_available", side_effect=_is_unicorn_module_available)
-def test_merge_settings_with_django_unicorn_and_unicorn(_is_django_unicorn_installed, _is_module_available):
+@patch("coltrane.is_whitenoise_installed", return_value=False)
+@patch("coltrane.is_django_compressor_installed", return_value=False)
+@patch("coltrane.is_django_unicorn_installed", return_value=True)
+@patch("coltrane.is_unicorn_module_available", return_value=True)
+def test_merge_settings_with_django_unicorn_and_unicorn(*args):
     actual = _merge_settings(Path("."), {})
     installed_apps = actual["INSTALLED_APPS"]
 
@@ -54,8 +70,11 @@ def test_merge_settings_with_django_unicorn_and_unicorn(_is_django_unicorn_insta
     assert "unicorn" in installed_apps
 
 
-@patch("coltrane._is_django_unicorn_installed", return_value=False)
-def test_merge_settings_no_django_unicorn(_is_django_unicorn_installed):
+@patch("coltrane.is_whitenoise_installed", return_value=False)
+@patch("coltrane.is_django_compressor_installed", return_value=False)
+@patch("coltrane.is_django_unicorn_installed", return_value=False)
+@patch("coltrane.is_unicorn_module_available", return_value=False)
+def test_merge_settings_no_django_unicorn(*args):
     actual = _merge_settings(Path("."), {})
     installed_apps = actual["INSTALLED_APPS"]
 
