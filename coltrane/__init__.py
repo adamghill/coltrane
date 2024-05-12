@@ -378,12 +378,6 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
     if "BASE_DIR" in django_settings and isinstance(django_settings["BASE_DIR"], str):
         django_settings["BASE_DIR"] = Path(django_settings["BASE_DIR"])
 
-    # Override STATIC_ROOT if the output directory name is manually set
-    try:
-        django_settings["STATIC_ROOT"] = base_dir / django_settings["COLTRANE"]["OUTPUT"]["PATH"] / "static"
-    except KeyError:
-        pass
-
     # Override STATIC_ROOT if the output directory is manually set
     try:
         django_settings["STATIC_ROOT"] = Path(django_settings["COLTRANE"]["OUTPUT"]["DIRECTORY"]) / "static"
