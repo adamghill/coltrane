@@ -1,7 +1,7 @@
 import logging
 import sys
 import time
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
 from io import StringIO
 from multiprocessing import cpu_count
 from pathlib import Path
@@ -25,6 +25,7 @@ from coltrane.config.paths import (
 )
 from coltrane.feeds import ContentFeed
 from coltrane.manifest import Manifest, ManifestItem
+from coltrane.module_finder import is_django_compressor_installed
 from coltrane.renderer import StaticRequest
 from coltrane.retriever import get_content_paths
 from coltrane.urls import sitemaps
@@ -34,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = "Build all static HTML files and put them into a directory named output."  # noqa: A003
+    help = "Build all static HTML files and put them into a directory named output."
 
     is_force = False
     threads_count = 2
@@ -120,6 +121,31 @@ class Command(BaseCommand):
 
         return collectstatic_stdout
 
+    @threadpool
+    def _call_compress(self) -> str:
+        stdout = StringIO()
+        stderr = StringIO()
+
+        # Force DEBUG to always be `False` so that
+        settings.DEBUG = False
+        settings.COMPRESS_OFFLINE = True
+
+        # this doesn't actually get the stdout because https://github.com/django-compressor/django-compressor/blob/develop/compressor/management/commands/compress.py#L385
+        management.call_command(
+            "compress",
+            verbosity=0,
+            stdout=stdout,
+            stderr=stderr,
+        )
+
+        stderr.seek(0)
+
+        # TODO: Get output from standard out
+        stdout.seek(0)
+        compress_stdout = "JavaScript and CSS compressed"  # stdout.read()
+
+        return compress_stdout
+
     def _output_markdown_file(self, markdown_file: Path) -> None:
         if not self.manifest:
             raise AssertionError("Manifest must be loaded first")
@@ -156,7 +182,7 @@ class Command(BaseCommand):
         self.stdout.write(text, ending=ending)
 
     def _set_output_directory(self, options: Dict) -> None:
-        if "output" in options and options["output"]:
+        if options.get("output"):
             if not hasattr(settings, "COLTRANE"):
                 settings.COLTRANE = {}
 
@@ -196,6 +222,11 @@ class Command(BaseCommand):
 
         collectstatic_future = self._call_collectstatic()
 
+        compress_future = None
+
+        if is_django_compressor_installed():
+            compress_future = self._call_compress()
+
         self.output_directory = get_output_directory()
         self._success("Use output directory of ", ending="")
         self.stdout.write(self.style.WARNING(str(self.output_directory)))
@@ -214,6 +245,11 @@ class Command(BaseCommand):
         collectstatic_stdout = collectstatic_future.result()
         spinner.succeed(collectstatic_stdout)
 
+        if compress_future:
+            spinner.start("Compress files")
+            compress_stdout = compress_future.result()
+            spinner.succeed(compress_stdout)
+
         spinner.start("Copy extra files")
         extra_file_count = 0
         for extra_file_path in get_extra_file_paths():
@@ -228,7 +264,7 @@ class Command(BaseCommand):
             self.is_force = True
             self._success("Force update because static file(s) updated")
 
-        if "threads" in options and options["threads"]:
+        if options.get("threads"):
             try:
                 self.threads_count = int(options["threads"])
             except ValueError:
@@ -291,7 +327,7 @@ class Command(BaseCommand):
         for error_message in self.errors:
             spinner.fail(error_message)
 
-        self.stdout.write()
+        self.stdout.write("")
 
         if self.errors:
             self.stderr.write(self.style.ERROR(f"Static site output completed with errors in {elapsed_time:.4f}s\n"))
