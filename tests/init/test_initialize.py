@@ -39,7 +39,6 @@ DEFAULT_SETTINGS = {
 
 def _get_settings():
     settings = deepcopy(DEFAULT_SETTINGS)
-    settings["ENV"] = ANY
 
     settings["INSTALLED_APPS"].append("django_browser_reload")
     settings["MIDDLEWARE"].append("django_browser_reload.middleware.BrowserReloadMiddleware")
@@ -50,7 +49,6 @@ def _get_settings():
 def _get_settings_with_debug_false():
     settings = deepcopy(DEFAULT_SETTINGS)
     settings["DEBUG"] = False
-    settings["ENV"] = ANY
 
     return settings
 

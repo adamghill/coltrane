@@ -29,7 +29,6 @@ def test_merge_settings_no_extras_with_args(*args):
 @patch("coltrane.is_unicorn_module_available", return_value=False)
 def test_merge_settings_with_whitenoise(*args):
     expected = _get_settings()
-    del expected["ENV"]
 
     expected.update(
         {
