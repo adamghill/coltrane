@@ -80,3 +80,17 @@ def test_merge_settings_no_django_unicorn(*args):
 
     assert "django_unicorn" not in installed_apps
     assert "unicorn" not in installed_apps
+
+
+@patch("coltrane.is_whitenoise_installed", return_value=False)
+@patch("coltrane.is_django_compressor_installed", return_value=True)
+@patch("coltrane.is_django_unicorn_installed", return_value=False)
+@patch("coltrane.is_unicorn_module_available", return_value=False)
+def test_merge_settings_with_django_compressor(*args):
+    actual = _merge_settings(Path("."), {})
+
+    assert "compressor" in actual["INSTALLED_APPS"]
+    assert "COMPRESS_ENABLED" in actual
+    assert actual["COMPRESS_ENABLED"]
+    assert "STATICFILES_FINDERS" in actual
+    assert "compressor.finders.CompressorFinder" in actual["STATICFILES_FINDERS"]

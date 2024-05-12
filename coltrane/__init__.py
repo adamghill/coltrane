@@ -304,6 +304,9 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         middleware.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
         installed_apps.insert(0, "whitenoise.runserver_nostatic")
 
+    if is_django_compressor_installed():
+        installed_apps.append("compressor")
+
     if debug and not is_build_management_command:
         # Add settings required for django-browser-reload when appropriate
         middleware.append("django_browser_reload.middleware.BrowserReloadMiddleware")
@@ -361,6 +364,15 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
     if is_whitenoise_installed():
         default_settings["WHITENOISE_MANIFEST_STRICT"] = False
         default_settings["STATICFILES_STORAGE"] = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+    if is_django_compressor_installed():
+        default_settings["COMPRESS_ENABLED"] = True
+
+        default_settings["STATICFILES_FINDERS"] = (
+            "django.contrib.staticfiles.finders.FileSystemFinder",
+            "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+            "compressor.finders.CompressorFinder",
+        )
 
     # Make sure BASE_DIR is a `Path` if it got passed in
     if "BASE_DIR" in django_settings and isinstance(django_settings["BASE_DIR"], str):

@@ -44,6 +44,9 @@ click-aliases = "^1"
 gunicorn = { version = "*", optional = true }
 whitenoise = { version = "*", optional = true }
 
+# django-compressor extras
+django-compressor = { version = "^4", optional = true }
+
 # JSON5 extras
 pyjson5 = { version = "*", optional = true }
 
@@ -60,6 +63,7 @@ attrs = { version = "*", optional = true }
 [tool.poetry.extras]
 deploy = ["gunicorn", "whitenoise"]
 json5 = ["pyjson5"]
+compressor = ["django-compressor"]
 docs = ["Sphinx", "linkify-it-py", "myst-parser", "furo", "sphinx-copybutton", "sphinx-autobuild", "toml", "attrs"]
 
 [tool.poetry.group.development.dependencies]
