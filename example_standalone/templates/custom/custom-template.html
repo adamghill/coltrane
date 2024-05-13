@@ -1,7 +1,11 @@
+{% load compress %}
+
 <!DOCTYPE html>
 
 <head>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% compress css %}
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
+    {% endcompress %}
 </head>
 
 <body>

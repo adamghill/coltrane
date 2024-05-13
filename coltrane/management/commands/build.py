@@ -2,6 +2,7 @@ import logging
 import sys
 import time
 from concurrent.futures import Future, ThreadPoolExecutor
+from contextlib import redirect_stdout
 from io import StringIO
 from multiprocessing import cpu_count
 from pathlib import Path
@@ -130,19 +131,19 @@ class Command(BaseCommand):
         settings.DEBUG = False
         settings.COMPRESS_OFFLINE = True
 
-        # this doesn't actually get the stdout because https://github.com/django-compressor/django-compressor/blob/develop/compressor/management/commands/compress.py#L385
-        management.call_command(
-            "compress",
-            verbosity=0,
-            stdout=stdout,
-            stderr=stderr,
+        # redirect_stdout is required
+        # https://github.com/django-compressor/django-compressor/blob/develop/compressor/management/commands/compress.py#L385
+        with redirect_stdout(stdout):
+            management.call_command(
+                "compress",
+                verbosity=1,
+                stdout=None,
+                stderr=stderr,
+            )
+
+        compress_stdout = (
+            stdout.getvalue().replace("Compressing... done\n", "").replace("Compressed ", "Compress ")[:-2]
         )
-
-        stderr.seek(0)
-
-        # TODO: Get output from standard out
-        stdout.seek(0)
-        compress_stdout = "JavaScript and CSS compressed"  # stdout.read()
 
         return compress_stdout
 
