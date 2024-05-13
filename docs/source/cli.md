@@ -71,6 +71,10 @@ Lock file for dependencies.
 
 Lists dependencies. More details in the [Poetry documentation](https://python-poetry.org/docs/pyproject/).
 
+#### `redirects.json`
+
+[Redirects](redirects.md) for the site.
+
 ### Force creation
 
 `poetry run coltrane create --force`

@@ -9,6 +9,7 @@
 - Use JSON files as a data source
 - Automatic generation of `sitemap.xml` and `rss.xml`
 - Can also serve non-markdown files, e.g. `robots.txt`
+- Site-wide redirects
 - Deployment best practices with `Docker`, `whitenoise`, and `gunicorn` already pre-configured
 - Leverage built-in or custom `Django` template tags and filters
 - Include any third-party [`Django` app](https://djangopackages.org) for additional functionality

@@ -21,6 +21,7 @@
 - Automatic generation of `sitemap.xml` and `rss.xml` files
 - Can serve non-markdown files like `robots.txt`
 - Local development server which includes [live re-rendering of markdown and data](https://twitter.com/adamghill/status/1487522925393715205) via https://github.com/adamchainz/django-browser-reload
+- Site-wide redirects
 - Deployment best practices with `whitenoise` and `gunicorn` already configured
 - Leverage the power of built-in `Django` templates, template tags, and filters inside `markdown` files
 - Any custom template tags and filters are enabled automatically for use in `markdown` or HTML templates
@@ -57,6 +58,7 @@
 ├── templates
 ├── poetry.lock
 └── pyproject.toml
+└── redirects.json
 ```
 
 ## 📝 Content
