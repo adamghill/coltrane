@@ -2,7 +2,7 @@ import json
 from hashlib import md5
 from io import StringIO
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 from django.core.management import call_command
@@ -31,8 +31,9 @@ def _reset_settings(settings, tmp_path: Path):
 
 
 @pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._call_compress")
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_build_command(_call_collectstatic, settings, tmp_path):
+def test_build_command(_call_collectstatic, _call_compress, settings, tmp_path):
     _reset_settings(settings, tmp_path)
 
     # Create content file
@@ -44,6 +45,7 @@ def test_build_command(_call_collectstatic, settings, tmp_path):
     _call_build_command()
 
     _call_collectstatic.assert_called_once()
+    _call_compress.assert_called_once()
 
     assert (tmp_path / "output").exists()
     assert (tmp_path / "output" / "test-1" / "index.html").exists()
@@ -51,8 +53,9 @@ def test_build_command(_call_collectstatic, settings, tmp_path):
 
 
 @pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._call_compress")
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_build_command_index_md(_call_collectstatic, settings, tmp_path):
+def test_build_command_index_md(_call_collectstatic, _call_compress, settings, tmp_path):
     _reset_settings(settings, tmp_path)
 
     # Create content file
@@ -64,6 +67,7 @@ def test_build_command_index_md(_call_collectstatic, settings, tmp_path):
     _call_build_command()
 
     _call_collectstatic.assert_called_once()
+    _call_compress.assert_called_once()
 
     assert (tmp_path / "output").exists()
     assert (tmp_path / "output" / "index.html").exists()
@@ -71,8 +75,9 @@ def test_build_command_index_md(_call_collectstatic, settings, tmp_path):
 
 
 @pytest.mark.slow
+@patch("coltrane.management.commands.build.Command._call_compress")
 @patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_build_command_directory_index_md(_call_collectstatic, settings, tmp_path):
+def test_build_command_directory_index_md(_call_collectstatic, _call_compress, settings, tmp_path):
     _reset_settings(settings, tmp_path)
 
     # Create content file
@@ -85,6 +90,7 @@ def test_build_command_directory_index_md(_call_collectstatic, settings, tmp_pat
     _call_build_command()
 
     _call_collectstatic.assert_called_once()
+    _call_compress.assert_called_once()
 
     assert (tmp_path / "output").exists()
     assert (tmp_path / "output/dir").exists()
@@ -93,8 +99,9 @@ def test_build_command_directory_index_md(_call_collectstatic, settings, tmp_pat
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_build_command_updates_output_manifest(_call_collectstatic, settings, tmp_path):
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+def test_build_command_updates_output_manifest(settings, tmp_path):
     _reset_settings(settings, tmp_path)
 
     # Create output.json
@@ -119,8 +126,9 @@ def test_build_command_updates_output_manifest(_call_collectstatic, settings, tm
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_build_command_force(_call_collectstatic, settings, tmp_path):
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+def test_build_command_force(settings, tmp_path):
     _reset_settings(settings, tmp_path)
 
     # Create content directory
@@ -132,8 +140,9 @@ def test_build_command_force(_call_collectstatic, settings, tmp_path):
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_build_command_staticfiles_force(_call_collectstatic, settings, tmp_path):
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+def test_build_command_staticfiles_force(settings, tmp_path):
     _reset_settings(settings, tmp_path)
 
     # Create content directory

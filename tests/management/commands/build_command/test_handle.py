@@ -1,6 +1,6 @@
 import json
 from hashlib import md5
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -30,8 +30,9 @@ def create_markdown_file(tmp_path):
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_force_false(_call_collectstatic, settings, tmp_path, build_command):
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
+def test_handle_force_false(settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     # Create content directory
@@ -43,8 +44,9 @@ def test_handle_force_false(_call_collectstatic, settings, tmp_path, build_comma
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_force_true(_call_collectstatic, settings, tmp_path, build_command):
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
+def test_handle_force_true(settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     # Create content directory
@@ -57,8 +59,9 @@ def test_handle_force_true(_call_collectstatic, settings, tmp_path, build_comman
 
 @pytest.mark.slow
 @patch("coltrane.management.commands.build.Command._load_manifest", spec=Manifest)
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_static_files_changed_is_force(_call_collectstatic, _load_manifest, settings, tmp_path, build_command):
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
+def test_handle_static_files_changed_is_force(_load_manifest, settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     # Create content directory
@@ -72,8 +75,9 @@ def test_handle_static_files_changed_is_force(_call_collectstatic, _load_manifes
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_create(_call_collectstatic, settings, tmp_path, build_command):
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
+def test_handle_create(settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     create_markdown_file(tmp_path)
@@ -86,8 +90,9 @@ def test_handle_create(_call_collectstatic, settings, tmp_path, build_command):
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_update(_call_collectstatic, settings, tmp_path, build_command):
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
+def test_handle_update(settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     create_markdown_file(tmp_path)
@@ -103,8 +108,9 @@ def test_handle_update(_call_collectstatic, settings, tmp_path, build_command):
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_skip_because_mtime(_call_collectstatic, settings, tmp_path, build_command):
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
+def test_handle_skip_because_mtime(settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     markdown_file = create_markdown_file(tmp_path)
@@ -124,8 +130,9 @@ def test_handle_skip_because_mtime(_call_collectstatic, settings, tmp_path, buil
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_skip_because_md5(_call_collectstatic, settings, tmp_path, build_command):
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
+def test_handle_skip_because_md5(settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     markdown_file = create_markdown_file(tmp_path)
@@ -145,8 +152,9 @@ def test_handle_skip_because_md5(_call_collectstatic, settings, tmp_path, build_
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_threads(_call_collectstatic, settings, tmp_path, build_command):
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
+def test_handle_threads(settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     # Create content directory
@@ -158,8 +166,9 @@ def test_handle_threads(_call_collectstatic, settings, tmp_path, build_command):
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_invalid_threads_count(_call_collectstatic, settings, tmp_path, build_command):
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
+def test_handle_invalid_threads_count(settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     # Create content directory
@@ -171,9 +180,10 @@ def test_handle_invalid_threads_count(_call_collectstatic, settings, tmp_path, b
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
 @patch("coltrane.management.commands.build.cpu_count")
-def test_handle_cpu_count_exception(cpu_count, _call_collectstatic, settings, tmp_path, build_command):
+def test_handle_cpu_count_exception(cpu_count, settings, tmp_path, build_command):
     cpu_count.side_effect = Exception()
     _reset_settings(settings, tmp_path)
 
@@ -186,8 +196,9 @@ def test_handle_cpu_count_exception(cpu_count, _call_collectstatic, settings, tm
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_template_error_exit_with_1(_call_collectstatic, settings, tmp_path, build_command):
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
+def test_handle_template_error_exit_with_1(settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     # Force debug to be true to surface template error
@@ -205,8 +216,9 @@ def test_handle_template_error_exit_with_1(_call_collectstatic, settings, tmp_pa
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_template_error_formatted(_call_collectstatic, settings, tmp_path, build_command):
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
+def test_handle_template_error_formatted(settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     # Force debug to be true to surface template error
@@ -224,8 +236,9 @@ def test_handle_template_error_formatted(_call_collectstatic, settings, tmp_path
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
-def test_handle_ignore_template_error(_call_collectstatic, settings, tmp_path, build_command):
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
+def test_handle_ignore_template_error(settings, tmp_path, build_command):
     _reset_settings(settings, tmp_path)
 
     # Force debug to be true to surface template error
@@ -240,10 +253,10 @@ def test_handle_ignore_template_error(_call_collectstatic, settings, tmp_path, b
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
 @patch("coltrane.management.commands.build.Command._generate_sitemap")
 def test_handle_generate_sitemap(
-    _call_collectstatic,
     _generate_sitemap,
     settings,
     tmp_path,
@@ -259,10 +272,10 @@ def test_handle_generate_sitemap(
 
 
 @pytest.mark.slow
-@patch("coltrane.management.commands.build.Command._call_collectstatic")
+@patch("coltrane.management.commands.build.Command._call_collectstatic", Mock())
+@patch("coltrane.management.commands.build.Command._call_compress", Mock())
 @patch("coltrane.management.commands.build.Command._generate_rss")
 def test_handle_generate_rss(
-    _call_collectstatic,
     _generate_rss,
     settings,
     tmp_path,
