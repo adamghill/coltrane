@@ -5,6 +5,7 @@ The template context for each `markdown` file includes:
 - all key/value pairs in the `markdown` frontmatter
 - rendered `markdown` HTML in `content`
 - JSON data from the `data` directory
+- `coltrane` which includes a dictionary of the [`coltrane` settings](settings.md)
 - `now` which provides the current `datetime` (would be the time of HTML rendering for when generating a static site)
 - `request` which provides the current request
 - `debug` which contains the `DEBUG` setting (or if `INTERNAL_IPS` has the current request's IP)

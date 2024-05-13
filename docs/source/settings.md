@@ -1,6 +1,6 @@
 # Settings
 
-Settings for `coltrane` are specified in a `COLTRANE` dictionary in the `settings.py` file. All [env settings](env.md) are available to be set directly. Just remove the leading "COLTRANE_" from the environment name if applicable.
+Settings for `coltrane` are specified in a `COLTRANE` dictionary in the `settings.py` file. All [env settings](env.md) are available in the `COLTRANE` dictionary sans the leading "COLTRANE_", e.g. `COLTRANE_TITLE` in the `.env` file would be `COLTRANE.TITLE` in `settings.COLTRANE`.
 
 ```python
 # settings.py
