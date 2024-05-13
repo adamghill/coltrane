@@ -375,6 +375,8 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
             "compressor.finders.CompressorFinder",
         )
 
+        default_settings["TEMPLATES"][0]["OPTIONS"]["builtins"].append("compressor.templatetags.compress")
+
     # Make sure BASE_DIR is a `Path` if it got passed in
     if "BASE_DIR" in django_settings and isinstance(django_settings["BASE_DIR"], str):
         django_settings["BASE_DIR"] = Path(django_settings["BASE_DIR"])
