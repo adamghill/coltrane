@@ -86,6 +86,7 @@ context
 data
 static-files
 sitemap
+redirects
 rss
 deployment
 ```

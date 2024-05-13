@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.34.0
+
+- Add `coltrane` context template variable to expose the `coltrane` settings.
+- Add support for [`django-compressor`](installation.md#django-compressor).
+- Add support for [redirects](redirects.md).
+
 ## 0.33.0
 
 - Bump `rich-click` dependency and slightly better command aliases support.
