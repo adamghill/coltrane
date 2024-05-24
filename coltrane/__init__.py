@@ -68,7 +68,10 @@ def _get_base_dir(base_dir: Optional[Path]) -> Path:
     """
 
     if base_dir is None:
-        base_dir = Path(".")
+        base_dir = Path("site")
+
+        if not base_dir.exists():
+            base_dir = Path(".")
     elif isinstance(base_dir, str):
         base_dir = Path(base_dir)
 

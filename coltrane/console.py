@@ -14,11 +14,18 @@ from django.core.management.utils import get_random_secret_key
 from rich_click.rich_command import RichCommand
 
 FILES_PATH = Path(__file__).parent / "default-files"
+APP_DIR = "site"
 
 
 def _run_management_command(command_name, *args):
     current_directory = getcwd()
     file_path = Path(current_directory) / "app.py"
+
+    if not file_path.exists():
+        file_path = Path(current_directory) / APP_DIR / "app.py"
+
+    if not file_path.exists():
+        raise Exception("app.py could not be found.")
 
     run_process([file_path, command_name, *list(args)])  # noqa: S603, PLW1510
 
