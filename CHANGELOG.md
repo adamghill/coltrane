@@ -4,6 +4,7 @@
 
 - Include variables from `.env` file in `settings.ENV`.
 - Rewrite all docs to remove any perceived dependency on `poetry`.
+- Create nested folder structure for new sites.
 
 ## 0.34.0
 
