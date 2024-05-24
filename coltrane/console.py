@@ -30,7 +30,7 @@ def _run_management_command(command_name, *args):
     run_process([file_path, command_name, *list(args)])  # noqa: S603, PLW1510
 
 
-def _copy_file(file_name) -> None:
+def _copy_file(file_name, in_app_dir=False) -> None:
     default_file_name = file_name
 
     if file_name.startswith("."):
@@ -49,7 +49,12 @@ def _copy_file(file_name) -> None:
 
             file_text = file_text.replace("__app_name__", app_name)
 
-        Path(file_name).write_text(file_text)
+        path = Path(file_name)
+
+        if in_app_dir:
+            path = APP_DIR / path
+
+        path.write_text(file_text)
 
 
 class AliasedCommands(ClickAliasedGroup, RichCommand):
@@ -67,58 +72,65 @@ def cli():
 def create(force):
     app_file = Path("app.py")
 
+    if not app_file.exists():
+        app_file = APP_DIR / Path("app.py")
+
     if app_file.exists() and not force:
         click.secho("Skip project creation because app.py already exists.", fg="red")
     else:
         click.secho("Start creating files...\n", fg="yellow")
-        Path("__init__.py").touch()
-
-        click.secho("- Create app.py")
-        _copy_file("app.py")
-
-        click.secho("- Set app.py as executable")
-        app_file.chmod(app_file.stat().st_mode | S_IEXEC)
-
-        click.secho("- Create .env")
-        _copy_file(".env")
-
-        # Add randomly generated secret key
-        with Path(".env").open("a") as f:
-            f.write(f"SECRET_KEY={get_random_secret_key()}")
-
-        click.secho("- Create .watchmanconfig")
-        _copy_file(".watchmanconfig")
+        Path(APP_DIR).mkdir(exist_ok=True)
+        (APP_DIR / Path("__init__.py")).touch()
 
         click.secho("- Create .gitignore")
         _copy_file(".gitignore")
 
-        click.secho("- Create README.md")
-        _copy_file("README.md")
-
-        click.secho("- Create gunicorn.conf.py")
-        _copy_file("gunicorn.conf.py")
-
         click.secho("- Create Dockerfile")
         _copy_file("Dockerfile")
 
-        click.secho("- Create content directory")
-        Path("content").mkdir(exist_ok=True)
-        (Path("content") / "index.md").write_text("# index.md")
+        click.secho("- Create pyproject.toml")
+        _copy_file("pyproject.toml")
 
-        click.secho("- Create data directory")
-        Path("data").mkdir(exist_ok=True)
+        click.secho("- Create README.md")
+        _copy_file("README.md")
 
-        click.secho("- Create static directory")
-        Path("static").mkdir(exist_ok=True)
+        click.secho(f"- Create {APP_DIR}/.env")
+        _copy_file(".env", in_app_dir=True)
 
-        click.secho("- Create templates directory")
-        Path("templates").mkdir(exist_ok=True)
+        # Add randomly generated secret key
+        with (APP_DIR / Path(".env")).open("a") as f:
+            f.write(f"SECRET_KEY={get_random_secret_key()}")
+
+        click.secho(f"- Create {APP_DIR}/.watchmanconfig")
+        _copy_file(".watchmanconfig", in_app_dir=True)
+
+        click.secho(f"- Create {APP_DIR}/app.py")
+        _copy_file("app.py", in_app_dir=True)
+
+        click.secho(f"- Set {APP_DIR}/app.py as executable")
+        app_file.chmod(app_file.stat().st_mode | S_IEXEC)
+
+        click.secho(f"- Create {APP_DIR}/gunicorn.conf.py")
+        _copy_file("gunicorn.conf.py", in_app_dir=True)
+
+        click.secho("- Create site/content directory")
+        (APP_DIR / Path("content")).mkdir(exist_ok=True)
+        (APP_DIR / Path("content") / "index.md").write_text("# index.md")
+
+        click.secho("- Create site/data directory")
+        (APP_DIR / Path("data")).mkdir(exist_ok=True)
+
+        click.secho("- Create site/static directory")
+        (APP_DIR / Path("static")).mkdir(exist_ok=True)
+
+        click.secho("- Create site/templates directory")
+        (APP_DIR / Path("templates")).mkdir(exist_ok=True)
 
     click.secho()
     click.secho("For local development: ", nl=False, fg="green")
-    click.secho("poetry run coltrane play")
+    click.secho("coltrane play")
     click.secho("Build static HTML: ", nl=False, fg="green")
-    click.secho("poetry run coltrane record")
+    click.secho("coltrane record")
 
 
 @cli.command(help="Start a local development server. Alias: serve.", aliases=["serve"])

@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from click.testing import CliRunner
 
-from coltrane.console import cli
+from coltrane.console import APP_DIR, cli
 
 FILES_PATH = Path(__file__).parent.parent.parent / "coltrane/default-files"
 
@@ -19,7 +19,7 @@ def test_create(tmp_path):
             result = runner.invoke(cli, ["create"])
             assert result.exit_code == 0
 
-            path_temp_dir = Path(temp_dir)
+            path_temp_dir = Path(temp_dir) / APP_DIR
 
             app_file = path_temp_dir / "app.py"
             assert app_file.exists()
@@ -44,21 +44,22 @@ def test_create(tmp_path):
                 result.stdout
                 == """Start creating files...
 
-- Create app.py
-- Set app.py as executable
-- Create .env
-- Create .watchmanconfig
 - Create .gitignore
-- Create README.md
-- Create gunicorn.conf.py
 - Create Dockerfile
-- Create content directory
-- Create data directory
-- Create static directory
-- Create templates directory
+- Create pyproject.toml
+- Create README.md
+- Create site/.env
+- Create site/.watchmanconfig
+- Create site/app.py
+- Set site/app.py as executable
+- Create site/gunicorn.conf.py
+- Create site/content directory
+- Create site/data directory
+- Create site/static directory
+- Create site/templates directory
 
-For local development: poetry run coltrane play
-Build static HTML: poetry run coltrane record
+For local development: coltrane play
+Build static HTML: coltrane record
 """
             )
 
@@ -81,8 +82,8 @@ def test_create_existing_project(tmp_path):
                 result.stdout
                 == """Skip project creation because app.py already exists.
 
-For local development: poetry run coltrane play
-Build static HTML: poetry run coltrane record
+For local development: coltrane play
+Build static HTML: coltrane record
 """
             )
 
