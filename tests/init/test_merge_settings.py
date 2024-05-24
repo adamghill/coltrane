@@ -20,6 +20,9 @@ def test_merge_settings_no_extras_with_args():
 
     actual = _merge_settings(Path("."), {})
 
+    # Remove the ENV key because it won't be set for this code path
+    del expected["ENV"]
+
     assert actual == expected
 
 
@@ -39,6 +42,9 @@ def test_merge_settings_with_whitenoise():
 
     expected["INSTALLED_APPS"].insert(0, "whitenoise.runserver_nostatic")
     expected["MIDDLEWARE"].insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
+
+    # Remove the ENV key because it won't be set for this code path
+    del expected["ENV"]
 
     actual = _merge_settings(Path("."), {})
 

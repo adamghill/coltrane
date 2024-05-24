@@ -34,6 +34,7 @@ DEFAULT_SETTINGS = {
     "LOGGING": ANY,
     "COLTRANE": deepcopy(DEFAULT_COLTRANE_SETTINGS),
     "SETTINGS_MODULE": "coltrane",
+    "ENV": ANY,
 }
 
 

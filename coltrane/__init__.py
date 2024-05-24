@@ -9,7 +9,7 @@ from django import setup as django_setup
 from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
 from django.template.library import InvalidTemplateLibrary, import_library
-from dotenv import load_dotenv
+from dotenv.main import DotEnv
 
 from coltrane.config.settings import (
     DEFAULT_COLTRANE_SETTINGS,
@@ -401,14 +401,23 @@ def _configure_settings(django_settings: Dict[str, Any]) -> None:
     settings.configure(**django_settings)
 
 
+def _load_environment_variables(base_dir: Path, django_settings: Dict[str, Any]) -> None:
+    dot_env = DotEnv(base_dir / ".env")
+    dot_env.set_as_environment_variables()
+
+    if "ENV" not in django_settings:
+        django_settings["ENV"] = {}
+
+    django_settings["ENV"].update(dot_env.dict())
+
+
 def initialize(**django_settings) -> WSGIHandler:
     """
     Initializes the Django static site.
     """
 
     base_dir = _get_base_dir(django_settings.get("BASE_DIR"))
-
-    load_dotenv(base_dir / ".env")
+    _load_environment_variables(base_dir=base_dir, django_settings=django_settings)
 
     django_settings = _merge_settings(base_dir, django_settings)
     _configure_settings(django_settings)
