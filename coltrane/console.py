@@ -30,7 +30,7 @@ def _run_management_command(command_name, *args):
     run_process([file_path, command_name, *list(args)])  # noqa: S603, PLW1510
 
 
-def _copy_file(file_name, in_app_dir=False) -> None:
+def _copy_file(file_name, in_app_dir=False) -> Path:
     default_file_name = file_name
 
     if file_name.startswith("."):
@@ -55,6 +55,8 @@ def _copy_file(file_name, in_app_dir=False) -> None:
             path = APP_DIR / path
 
         path.write_text(file_text)
+
+        return path
 
 
 class AliasedCommands(ClickAliasedGroup, RichCommand):
@@ -95,17 +97,17 @@ def create(force):
         _copy_file("README.md")
 
         click.secho(f"- Create {APP_DIR}/.env")
-        _copy_file(".env", in_app_dir=True)
+        env_file = _copy_file(".env", in_app_dir=True)
 
         # Add randomly generated secret key
-        with (APP_DIR / Path(".env")).open("a") as f:
+        with env_file.open("a") as f:
             f.write(f"SECRET_KEY={get_random_secret_key()}")
 
         click.secho(f"- Create {APP_DIR}/.watchmanconfig")
         _copy_file(".watchmanconfig", in_app_dir=True)
 
         click.secho(f"- Create {APP_DIR}/app.py")
-        _copy_file("app.py", in_app_dir=True)
+        app_file = _copy_file("app.py", in_app_dir=True)
 
         click.secho(f"- Set {APP_DIR}/app.py as executable")
         app_file.chmod(app_file.stat().st_mode | S_IEXEC)
