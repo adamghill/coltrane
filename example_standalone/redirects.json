@@ -1,0 +1,4 @@
+{
+    "/test-1": { "url": "/", "permanent": false },
+    "/test-2": "/"
+}
