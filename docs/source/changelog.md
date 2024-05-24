@@ -1,9 +1,14 @@
 # Changelog
 
+## 0.35.0
+
+- Include variables from `.env` file in `settings.ENV`.
+- Rewrite all docs to remove any perceived dependency on `poetry`.
+
 ## 0.34.0
 
 - Add `coltrane` context template variable to expose the `coltrane` settings.
-- Add support for [`django-compressor`](installation.md#django-compressor).
+- Add support for [`django-compressor`](installation.md#extras).
 - Add support for [redirects](redirects.md).
 
 ## 0.33.0
@@ -22,7 +27,7 @@
 ## 0.31.0
 
 - Create example `Dockerfile` and `gunicorn.conf.py` files for easier deployments of `coltrane` apps.
-- [Add the ability](installation.md#json5) to use [JSON5](https://json5.org) for data files.
+- [Add the ability](installation.md#extras) to use [JSON5](https://json5.org) for data files.
 
 _Breaking changes_
 

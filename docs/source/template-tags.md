@@ -221,6 +221,7 @@ Gets all parts of the path as a list of strings, e.g. the paths of `/app/user/12
 
 `coltrane` will automatically enable any template tags it finds in the `templatetags` directory to be used in `markdown` or HTML templates.
 
+
 **`templatetags/custom_tags.py`**
 
 ```python
@@ -244,3 +245,15 @@ def test(value, arg):
 ```html
 This is a test
 ```
+
+````{note}
+For `integrated` mode, custom template tags can be loaded like normal in the markdown file.
+
+**`content/index.md`**
+
+```markdown
+{% load custom_tags %}
+
+{{ "This"|some_custom_filter }}
+```
+````

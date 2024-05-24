@@ -27,38 +27,38 @@
 - Any custom template tags and filters are enabled automatically for use in `markdown` or HTML templates
 - Include any third-party [`Django` app](https://djangopackages.org) for additional functionality
 - Optional command to generate static HTML files
-- Able to be integrated into a regular `Django` project as a standard third-party `Django` app
+- Can be integrated into a regular `Django` project as a standard third-party `Django` app to render markdown content
 
 ## ⚡ Quick start
 
 1. `mkdir new-site && cd new-site` to create a new folder
-1. `poetry init --no-interaction --dependency 'coltrane:<1' && poetry install` to create a new virtual environment and install the `coltrane` package
-1. Optional: `brew install watchman` on MacOS for less resource-intensive local development server
-1. `poetry run coltrane create` to create the folder structure for a new site
-1. `poetry run coltrane play` to start local development server
+1. `python3 -m venv .venv && source .venv/bin/activate && pip install coltrane` to install the `coltrane` package
+1. `coltrane create` to create the folder structure for a new site
+1. `coltrane play` to start local development server
 1. Go to http://localhost:8000 to see the original markdown rendered into HTML
 1. Update `content/index.md`
-1. Go to http://localhost:8000 to see the updated markdown rendered into HTML
-1. Optional: run `poetry run coltrane record` to build static HTML files
+1. Refresh http://localhost:8000 to see the updated markdown rendered into HTML
+1. Optional: run `coltrane record` to build static HTML files
 
 ### Generated `coltrane` file structure
 
 ```bash
 .
-├── .env
 ├── .gitignore
-├── .watchmanconfig
-├── __init__.py
-├── app.py
-├── content
-│   └── index.md
-├── data
 ├── Dockerfile
-├── gunicorn.conf.py
-├── templates
-├── poetry.lock
-└── pyproject.toml
-└── redirects.json
+├── README.md
+├── pyproject.toml
+└── site
+    ├── .env
+    ├── .watchmanconfig
+    ├── __init__.py
+    ├── app.py
+    ├── content
+    │   └── index.md
+    ├── data
+    ├── gunicorn.conf.py
+    ├── static
+    └── templates
 ```
 
 ## 📝 Content

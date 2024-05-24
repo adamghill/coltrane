@@ -1,6 +1,6 @@
 # Introduction
 
-`coltrane` is a [**Dynamic Site Generator**](index.md#-what-is-a-dynamic-site-generator). It can be used as a self-contained app for content sites, as a third-party app in a `Django` project to render `markdown` files, or to build a static HTML website.
+`coltrane` can be used as a self-contained app framework for content sites, as a third-party app in a `Django` project to render `markdown` files, or as a static site builder. 🎵
 
 ## ⭐ Features
 
@@ -15,11 +15,7 @@
 - Include any third-party [`Django` app](https://djangopackages.org) for additional functionality
 - Optional building of static HTML files
 
-## 🙋 What is a Dynamic Site Generator?
-
-`coltrane` is similar to a static site generator -- it takes `markdown` content and renders it as HTML. However, it also provides an opinionated framework for building dynamic websites.
-
-### Examples in the wild
+### 👀 Examples in the wild
 
 - [GitEgo](https://adamghill.com/gitego): An egocentric view of GitHub (uses the GitHub GraphQL endpoints)
 - [python-utils](https://adamghill.com/python-utils): Interactive Python playground (uses `django-unicorn` component library)

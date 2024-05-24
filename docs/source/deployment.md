@@ -1,11 +1,9 @@
 # Deployment
 
-`coltrane` can be installed with deployment features for production by installing the `deploy` extras.
+`coltrane` can be installed with deployment features for production by [installing the `deploy` extras](installation.md#extras).
 
-`poetry add coltrane -E deploy`
-
-```{note}
-If using `pip` you can do something like: `pip install coltrane[deploy]`.
+```
+coltrane[deploy]
 ```
 
 ## Required settings
@@ -22,7 +20,11 @@ ALLOWED_HOSTS=coltrane.com,www.coltrane.com
 
 [`gunicorn`](https://gunicorn.org) is a production `WSGI` server and is perfect for serving `coltrane` apps.
 
-An example command for using `gunicorn` in production: `poetry run gunicorn -b localhost:8000 app:wsgi`.
+The following example shows how to run `gunicorn` in production.
+
+```
+gunicorn -b localhost:8000 app:wsgi
+```
 
 ## Whitenoise
 
@@ -64,6 +66,6 @@ web: python app.py collectstatic --noinput && bin/start-nginx gunicorn -c gunico
 
 ![Render.com Python version](render-python-version.png)
 
-- Go to `settings` and use `pip install poetry && poetry install && poetry run coltrane build` for the `Build Command`
+- Go to `settings` and use `pip install uv && uv install -r pyproject.toml --system && uv run coltrane build` for the `Build Command`
 
 ![Render.com build command](render-build-command.png)

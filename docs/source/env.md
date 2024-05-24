@@ -76,7 +76,7 @@ The directory that should be used for data. Relative to the base directory. Defa
 
 ### COLTRANE_DATA_JSON5
 
-Whether or not data files should be parsed as [JSON5](https://json5.org). Also requires installing with the `json5` extras (e.g. `poetry add coltrane -E json5` or `pip install coltrane[json5]`). Defaults to `False`.
+Whether or not data files should be parsed as [JSON5](https://json5.org). Also requires installing the `json5` [extras](installation.md#extras). Defaults to `False`.
 
 ### COLTRANE_DISABLE_WILDCARD_TEMPLATES
 
