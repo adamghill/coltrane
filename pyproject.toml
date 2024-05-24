@@ -183,6 +183,10 @@ print_result = true
 cmd = "example_standalone/app.py runserver 0:8045"
 help = "Start dev server for example_standalone"
 
+[tool.poe.tasks.ri]
+cmd = "example_standalone/app.py runserver 0:8046"
+help = "Start dev server for example_integrated"
+
 [tool.poe.tasks.record]
 cmd = "coltrane record"
 cwd = "example_standalone"
