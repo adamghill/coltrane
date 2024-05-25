@@ -103,3 +103,15 @@ def test_merge_settings_with_django_compressor():
 
     assert "compressor.finders.CompressorFinder" in actual["STATICFILES_FINDERS"]
     assert "compressor.templatetags.compress" in actual["TEMPLATES"][0]["OPTIONS"]["builtins"]
+
+
+@patch("coltrane.is_whitenoise_installed", Mock(return_value=False))
+@patch("coltrane.is_django_compressor_installed", Mock(return_value=True))
+@patch("coltrane.is_django_unicorn_installed", Mock(return_value=False))
+@patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
+@patch("sys.argv", ["app.py", "compress"])
+def test_merge_settings_with_django_compressor_compress_offline():
+    actual = _merge_settings(Path("."), {})
+
+    assert "COMPRESS_OFFLINE" in actual
+    assert actual["COMPRESS_OFFLINE"] is True

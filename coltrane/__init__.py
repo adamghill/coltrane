@@ -380,6 +380,9 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
 
         default_settings["TEMPLATES"][0]["OPTIONS"]["builtins"].append("compressor.templatetags.compress")
 
+        if len(sys.argv) > 1 and sys.argv[1] == "compress":
+            default_settings["COMPRESS_OFFLINE"] = True
+
     # Make sure BASE_DIR is a `Path` if it got passed in
     if "BASE_DIR" in django_settings and isinstance(django_settings["BASE_DIR"], str):
         django_settings["BASE_DIR"] = Path(django_settings["BASE_DIR"])
