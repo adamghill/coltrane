@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.35.1
+
+- Update default `Dockerfile` to fix some deployment problems.
+
 ## 0.35.0
 
 - Include variables from `.env` file in `settings.ENV`.

@@ -1,9 +1,14 @@
 # Changelog
 
+## 0.35.1
+
+- Update default `Dockerfile` to fix some deployment problems.
+
 ## 0.35.0
 
 - Include variables from `.env` file in `settings.ENV`.
 - Rewrite all docs to remove any perceived dependency on `poetry`.
+- Create nested folder structure for new sites.
 
 ## 0.34.0
 
