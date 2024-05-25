@@ -1,7 +1,7 @@
 import logging
 import sys
 from copy import deepcopy
-from os import getenv
+from os import environ, getenv
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -9,7 +9,7 @@ from django import setup as django_setup
 from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
 from django.template.library import InvalidTemplateLibrary, import_library
-from dotenv.main import DotEnv
+from dotenv import load_dotenv
 
 from coltrane.config.settings import (
     DEFAULT_COLTRANE_SETTINGS,
@@ -405,13 +405,12 @@ def _configure_settings(django_settings: Dict[str, Any]) -> None:
 
 
 def _load_environment_variables(base_dir: Path, django_settings: Dict[str, Any]) -> None:
-    dot_env = DotEnv(base_dir / ".env")
-    dot_env.set_as_environment_variables()
+    load_dotenv(base_dir / ".env")
 
     if "ENV" not in django_settings:
         django_settings["ENV"] = {}
 
-    django_settings["ENV"].update(dot_env.dict())
+    django_settings["ENV"].update(dict(environ.items()))
 
 
 def initialize(**django_settings) -> WSGIHandler:
