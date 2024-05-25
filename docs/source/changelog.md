@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.35.3
+
+- Set `COMPRESS_OFFLINE=True` when running the `compress` management command.
+
 ## 0.35.2
 
 - Add all environment variables to `settings.ENV`, not just the variables from `.env`.

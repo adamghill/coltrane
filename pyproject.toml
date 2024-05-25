@@ -5,7 +5,7 @@ dynamic = ["version", "description"]
 
 [tool.poetry]
 name = "coltrane"
-version = "0.35.2"
+version = "0.35.3"
 description = "A minimal app framework for content sites 🎵"
 authors = ["adamghill <adam@adamghill.com>"]
 license = "MIT"
