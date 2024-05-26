@@ -1,6 +1,8 @@
 import logging
 import sys
+from contextlib import redirect_stdout
 from copy import deepcopy
+from io import StringIO
 from os import environ, getenv
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -8,6 +10,7 @@ from typing import Any, Dict, List, Optional
 from django import setup as django_setup
 from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
+from django.core.management import execute_from_command_line
 from django.template.library import InvalidTemplateLibrary, import_library
 from dotenv import load_dotenv
 
@@ -26,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 __all__ = [
     "initialize",
+    "run",
 ]
 
 
@@ -60,6 +64,11 @@ COLTRANE_SETTINGS_THAT_ARE_BOOLEANS = (
     "IS_SECURE",
     "DATA_JSON5",
 )
+
+
+def _get_current_command():
+    if len(sys.argv) > 1:
+        return sys.argv[1]
 
 
 def _get_base_dir(base_dir: Optional[Path]) -> Path:
@@ -286,7 +295,7 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
 
     # Assume that `argv[1] == "build"` means that the `build`
     # management command is currently being run
-    is_build_management_command = len(sys.argv) >= 2 and sys.argv[1] == "build"  # noqa: PLR2004
+    is_build_management_command = _get_current_command() == "build"
 
     debug = django_settings.get("DEBUG", getenv("DEBUG", "True") == "True")
     time_zone = django_settings.get("TIME_ZONE", getenv("TIME_ZONE", "UTC"))
@@ -380,7 +389,7 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
 
         default_settings["TEMPLATES"][0]["OPTIONS"]["builtins"].append("compressor.templatetags.compress")
 
-        if len(sys.argv) > 1 and sys.argv[1] == "compress":
+        if _get_current_command() == "compress":
             default_settings["COMPRESS_OFFLINE"] = True
 
     # Make sure BASE_DIR is a `Path` if it got passed in
@@ -430,3 +439,31 @@ def initialize(**django_settings) -> WSGIHandler:
     django_setup()
 
     return WSGIHandler()
+
+
+def run() -> None:
+    """
+    Run the Django management command based on `argv`.
+    """
+
+    if _get_current_command() == "compress":
+        try:
+            from compressor.exceptions import OfflineGenerationError
+        except ImportError:
+            logger.error("django-compressor is not installed.")
+        else:
+            try:
+                stdout = StringIO()
+
+                with redirect_stdout(stdout):
+                    execute_from_command_line()
+
+                compress_stdout = stdout.getvalue().replace("Compressing... done\n", "")
+                print(compress_stdout)  # noqa: T201
+            except OfflineGenerationError as e:
+                if "No 'compress' template tags found in templates." in e.args[0]:
+                    logger.error("No compress blocks found.")
+                else:
+                    raise
+    else:
+        execute_from_command_line()

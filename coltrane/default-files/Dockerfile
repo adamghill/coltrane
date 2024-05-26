@@ -46,5 +46,8 @@ EXPOSE 80
 # Collect static assets
 RUN python app.py collectstatic -v 2 --noinput
 
+# Compress static assets
+RUN python app.py compress
+
 # Run gunicorn
 CMD ["gunicorn", "app:wsgi", "--config=gunicorn.conf.py"]

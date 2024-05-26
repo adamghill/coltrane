@@ -56,7 +56,7 @@ Adds support for using [`django-compressor`](https://django-compressor.readthedo
 coltrane[compressor]
 ```
 
-Then, use the `compress` templatetag like normal.
+Use the `compress` templatetag like normal (no need to `load` it in the template).
 
 ```html
 <head>
@@ -65,6 +65,8 @@ Then, use the `compress` templatetag like normal.
     {% endcompress %}
 </head>
 ```
+
+Requires running `python app.py compress` when deployed.
 
 ### `deploy`
 
