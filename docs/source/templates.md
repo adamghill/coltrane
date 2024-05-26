@@ -58,3 +58,14 @@ This will use sample_app/new-template.html to render content.
 
 <p>This will use sample_app/new-template.html to render content.</p>
 ```
+
+## Error views
+
+Similar to Django's default [error views](https://docs.djangoproject.com/en/stable/ref/views/#error-views) `coltrane` will serve a template if it can find it for certain status codes.
+
+Create any of these HTML files under the `templates` directory and they will be used automatically when `DEBUG=False`.
+
+- 404.html (page not found)
+- 500.html (server error)
+- 403.html (permission denied)
+- 400.html (bad request)
