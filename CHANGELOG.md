@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.35.4
+
+- Prevent missing `compress` templatetag from raising an error when calling the `compress` management command.
+
 ## 0.35.3
 
 - Set `COMPRESS_OFFLINE=True` when running the `compress` management command.
