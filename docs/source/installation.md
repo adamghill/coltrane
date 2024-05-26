@@ -9,35 +9,31 @@
 1. `pipx install uv` to install `uv` globally
 1. `mkdir new-site && cd new-site` to create a new folder
 1. `uv venv` to create a Python virtual environment in `.venv`
-1. `uv pip install "coltrane<1"` to install `coltrane` into the Python virtual environment
+1. `uv pip install "coltrane < 1"` to install `coltrane` into the Python virtual environment
 ```
 
 ```{tab} pip
 1. `mkdir new-site && cd new-site` to create a new folder
 1. `python3 -m venv .venv` to create a Python virtual environment in `.venv`
 1. `source .venv/bin/activate` to activate the Python virtual environment
-1. `pip install "coltrane<1"` to install `coltrane` into the Python virtual environment
+1. `pip install "coltrane < 1"` to install `coltrane` into the Python virtual environment
 ```
 
-```{note}
+```{tip}
 `brew install watchman` on MacOS for a less resource-intensive local development server.
 ```
 
 ## Extras
 
-`coltrane` has some additional functionality that can also be enabled if extra packages are installed.
+`coltrane` has some additional functionality that will be enabled if extra packages are installed.
 
 ```{tab} uv
-1. Add any extras between square brackets in the `coltrane` dependency in `pyproject.toml`, e.g. `coltrane[deploy]<1`
+1. Add any extras between square brackets in the `coltrane` dependency in `pyproject.toml`, e.g. `coltrane[deploy,json5,compressor] < 1`
 1. `uv pip install -r pyproject.toml`
 ```
 
 ```{tab} pip
-1. Create a `requirements.txt` file if necessary
-1. Add `coltrane<1` to `requirements.txt`
-1. Add any extras between square brackets, e.g. `coltrane[deploy]<1`
-1. `source .venv/bin/activate` if the virtual environment is not already activated
-1. `pip install -r requirements.txt`
+1. `pip install "coltrane[deploy,json5,compressor] < 1"`
 ```
 
 ###  json5
@@ -66,7 +62,9 @@ Use the `compress` templatetag like normal (no need to `load` it in the template
 </head>
 ```
 
-Requires running `python app.py compress` when deployed.
+```{warning}
+Make sure to run `python app.py compress` after `collectstatic` when deploying the app so the compressed files get created as expected. See this [Dockerfile](https://github.com/adamghill/coltrane/blob/main/coltrane/default-files/Dockerfile) for an example.
+```
 
 ### `deploy`
 
