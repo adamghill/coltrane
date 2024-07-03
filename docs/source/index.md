@@ -51,15 +51,23 @@ https://twitter.com/willmcgugan/status/1477283879841157123 for the initial inspi
 
 ## 🧠 Related projects
 
-[yamdl](https://github.com/andrewgodwin/yamdl) is another approach which lets you store instances of Django models as flat YAML files. It also supports storing markdown.
+### Django
 
-Here are a few Python static site generators:
+- [django-distill](https://github.com/meeb/django-distill): Minimal configuration static site generator for Django.
+- [django-bakery](https://palewi.re/docs/django-bakery/index.html): A set of helpers for baking your Django site out as flat files.
+- [yamdl](https://github.com/andrewgodwin/yamdl): store instances of Django models as flat YAML files; also supports storing markdown.
+- [django-static-sites](https://django-static-sites.readthedocs.io/en/latest/README/): An easy to use Django app that allow you to create a static sites with the power of Django template system.
+- [django-dynamic-sites](https://django-dynamic-sites.readthedocs.io/en/latest/readme.html): Implements a flexible and generic viewsystem providing a convenient way to handle staticpages, model based pages and much more.
+
+### Python
+
 - [Pelican](https://getpelican.com/): Pelican is a static site generator that requires no database or server-side logic.
 - [Combine](https://combine.dropseed.dev/): Build a straightforward marketing or documentation website with the power of Jinja.
 - [Nikola](https://getnikola.com/): In goes content, out comes a website, ready to deploy.
 - [Lektor](https://www.getlektor.com/): A flexible and powerful static content management system for building complex and beautiful websites out of flat files.
 - [corvid](https://github.com/di/corvid): An opinionated simple static site generator.
 - [jamstack](https://github.com/Abdur-RahmaanJ/jamstack): The easiest way to create jamstack sites, as simple or as complex as you like.
+- [MyST](https://myst-parser.readthedocs.io/en/latest/index.html): A [Sphinx](https://www.sphinx-doc.org/) and [Docutils](https://docutils.sourceforge.io) extension for a rich and extensible flavour of Markdown for authoring technical and scientific documentation.
 
 ```{toctree}
 :maxdepth: 2
