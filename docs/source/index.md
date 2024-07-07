@@ -68,6 +68,7 @@ https://twitter.com/willmcgugan/status/1477283879841157123 for the initial inspi
 - [corvid](https://github.com/di/corvid): An opinionated simple static site generator.
 - [jamstack](https://github.com/Abdur-RahmaanJ/jamstack): The easiest way to create jamstack sites, as simple or as complex as you like.
 - [MyST](https://myst-parser.readthedocs.io/en/latest/index.html): A [Sphinx](https://www.sphinx-doc.org/) and [Docutils](https://docutils.sourceforge.io) extension for a rich and extensible flavour of Markdown for authoring technical and scientific documentation.
+- [Render Engine](https://render-engine.readthedocs.io/): A static site generator built in Python that allows you to generate websites, pages, and collections, with Python classes.
 
 ```{toctree}
 :maxdepth: 2
