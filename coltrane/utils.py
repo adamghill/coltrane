@@ -1,7 +1,11 @@
 import logging
 from concurrent.futures import ThreadPoolExecutor
+from datetime import date, datetime
 from functools import wraps
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
+
+import dateparser
+from django.utils.timezone import get_current_timezone, is_naive, make_aware
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +44,28 @@ def dict_merge(
             source[key] = destination[key]
 
     return source
+
+
+def convert_to_datetime(obj: Union[str, int, datetime, date]) -> datetime:
+    """Convert different objects that could be a datetime into a datetime."""
+
+    dt: datetime
+
+    if isinstance(obj, datetime):
+        dt = obj
+    elif isinstance(obj, date):
+        dt = datetime.combine(obj, datetime.min.time())
+    elif isinstance(obj, str):
+        dt = dateparser.parse(obj)  # type: ignore
+    elif isinstance(obj, int):
+        dt = datetime.fromtimestamp(obj)  # noqa: DTZ006
+    else:
+        raise TypeError(f"Unknown type for obj: {type(obj)!s}")
+
+    if dt and is_naive(dt):
+        dt = make_aware(dt, get_current_timezone())
+
+    return dt
 
 
 def threadpool(func):

@@ -1,5 +1,7 @@
+from datetime import datetime
+from typing import Optional
+
 from django.contrib.syndication.views import Feed
-from django.utils import timezone
 
 from coltrane.config.settings import get_description, get_site_url, get_title
 from coltrane.retriever import ContentItem, get_content_items
@@ -37,9 +39,9 @@ class ContentFeed(Feed):
 
         return link
 
-    def item_pubdate(self, item: ContentItem):
+    def item_pubdate(self, item: ContentItem) -> Optional[datetime]:
         if publish_date := item.metadata.get("publish_date"):
-            return timezone.make_aware(publish_date, timezone.get_current_timezone())
+            return publish_date
 
     def link(self, obj):  # noqa: ARG002
         return self.site_url

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.36.0
+
+- Handle string, date, epoch in `publish_date` and convert them to timezone-aware datetime.
+
 ## 0.35.4
 
 - Prevent missing `compress` templatetag from raising an error when calling the `compress` management command.

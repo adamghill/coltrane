@@ -20,6 +20,7 @@ from coltrane.config.settings import (
     get_site_url,
 )
 from coltrane.retriever import get_data
+from coltrane.utils import convert_to_datetime
 
 logger = logging.getLogger(__name__)
 
@@ -273,6 +274,9 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
                 metadata["draft"] = False
 
         metadata["now"] = now()
+
+        if "publish_date" in metadata:
+            metadata["publish_date"] = convert_to_datetime(metadata["publish_date"])
 
         return metadata
 

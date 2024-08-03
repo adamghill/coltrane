@@ -1,6 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
+from dateparser.timezone_parser import StaticTzInfo
 from zoneinfo import ZoneInfo
 
 from coltrane.feeds import ContentFeed
@@ -85,7 +86,7 @@ test data
     assert actual == "a description"
 
 
-def test_item_pubdate(settings, tmp_path: Path):
+def test_item_publish_date_datetime(settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
     (tmp_path / "content").mkdir()
     (tmp_path / "content/test.md").write_text(
@@ -102,12 +103,79 @@ test data
     settings.TIME_ZONE = "UTC"
 
     items = ContentFeed().items()
-    actual = ContentFeed().item_pubdate(items[0])
+    actual = ContentFeed().item_pubdate(items[0])  # type: ignore
 
     assert actual == datetime(2024, 2, 25, 22, 36, tzinfo=ZoneInfo(key="UTC"))
 
 
-def test_item_pubdate_with_time_zone(settings, tmp_path: Path):
+def test_item_publish_date_datetime_with_tz(settings, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content/test.md").write_text(
+        """---
+title: test title
+description: a description
+publish_date: 2024-04-03 20:22:16 -0500
+---
+
+test data
+"""
+    )
+
+    items = ContentFeed().items()
+    actual = ContentFeed().item_pubdate(items[0])  # type: ignore
+
+    tz = StaticTzInfo("UTC", timedelta(hours=-5))
+    expected = datetime(2024, 4, 3, 20, 22, 16, tzinfo=tz)
+
+    assert actual == expected
+
+
+def test_item_publish_date_int(settings, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content/test.md").write_text(
+        """---
+title: test title
+description: a description
+publish_date: 1722717836
+---
+
+test data
+"""
+    )
+
+    settings.TIME_ZONE = "UTC"
+
+    items = ContentFeed().items()
+    actual = ContentFeed().item_pubdate(items[0])  # type: ignore
+
+    assert actual == datetime(2024, 8, 3, 20, 43, 56, tzinfo=ZoneInfo(key="UTC"))
+
+
+def test_item_publish_date_date(settings, tmp_path: Path):
+    settings.BASE_DIR = tmp_path
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content/test.md").write_text(
+        """---
+title: test title
+description: a description
+publish_date: 2024-02-25
+---
+
+test data
+"""
+    )
+
+    settings.TIME_ZONE = "UTC"
+
+    items = ContentFeed().items()
+    actual = ContentFeed().item_pubdate(items[0])  # type: ignore
+
+    assert actual == datetime(2024, 2, 25, 0, 0, 0, tzinfo=ZoneInfo(key="UTC"))
+
+
+def test_item_publish_date_with_time_zone(settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
     (tmp_path / "content").mkdir()
     (tmp_path / "content/test.md").write_text(
