@@ -29,6 +29,7 @@ DEFAULT_COLTRANE_SETTINGS = {
     "DISABLE_WILDCARD_TEMPLATES": False,
     "IS_SECURE": False,
     "DATA_JSON5": False,
+    "THEME": None,
 }
 
 
@@ -135,3 +136,11 @@ def get_data_json_5() -> bool:
         "DATA_JSON5",
         False,
     )
+
+
+def get_theme() -> Optional[str]:
+    """
+    Get the configured theme.
+    """
+
+    return get_coltrane_settings().get("THEME")
