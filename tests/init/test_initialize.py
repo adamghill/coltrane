@@ -59,7 +59,7 @@ def _get_settings_with_debug_false():
 @patch("coltrane.is_django_unicorn_installed", return_value=False)
 @patch("coltrane.is_unicorn_module_available", return_value=False)
 @patch("coltrane._configure_settings")
-def test_initialize_no_base_dir(_configure_settings, *args):
+def test_no_base_dir(_configure_settings, *args):
     initialize()
 
     expected = _get_settings()
@@ -72,7 +72,7 @@ def test_initialize_no_base_dir(_configure_settings, *args):
 @patch("coltrane.is_django_unicorn_installed", return_value=False)
 @patch("coltrane.is_unicorn_module_available", return_value=False)
 @patch("coltrane._configure_settings")
-def test_initialize_with_base_dir(_configure_settings, *args):
+def test_with_base_dir(_configure_settings, *args):
     initialize(BASE_DIR=Path("test"))
 
     expected = _get_settings()
@@ -87,7 +87,7 @@ def test_initialize_with_base_dir(_configure_settings, *args):
 @patch("coltrane.is_django_unicorn_installed", return_value=False)
 @patch("coltrane.is_unicorn_module_available", return_value=False)
 @patch("coltrane._configure_settings")
-def test_initialize_with_base_dir_as_string(_configure_settings, *args):
+def test_with_base_dir_as_string(_configure_settings, *args):
     initialize(BASE_DIR="test")
 
     expected = _get_settings()
@@ -103,7 +103,7 @@ def test_initialize_with_base_dir_as_string(_configure_settings, *args):
 @patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
 @patch("coltrane._get_template_tag_module_name", Mock(return_value="fake.templatetag"))
 @patch("coltrane._configure_settings")
-def test_initialize_with_template_tags(_configure_settings, tmp_path):
+def test_with_template_tags(_configure_settings, tmp_path):
     (tmp_path / "templatetags").mkdir()
     # not actually used, but need the file here
     (tmp_path / "templatetags" / "sample_tag.py").touch()
@@ -124,7 +124,7 @@ def test_initialize_with_template_tags(_configure_settings, tmp_path):
 @patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
 @patch("coltrane._get_template_tag_module_name", Mock(side_effect=InvalidTemplateLibrary))
 @patch("coltrane._configure_settings")
-def test_initialize_with_invalid_template_tag(_configure_settings, tmp_path):
+def test_with_invalid_template_tag(_configure_settings, tmp_path):
     (tmp_path / "templatetags").mkdir()
     # not actually used, but need the file here
     (tmp_path / "templatetags" / "sample_tag.py").touch()
@@ -144,7 +144,7 @@ def test_initialize_with_invalid_template_tag(_configure_settings, tmp_path):
 @patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
 @patch("coltrane._get_template_tag_module_name", Mock(return_value="fake.templatetag"))
 @patch("coltrane._configure_settings")
-def test_initialize_with_template_tags_in_directory_with_py_extension(_configure_settings, tmp_path):
+def test_with_template_tags_in_directory_with_py_extension(_configure_settings, tmp_path):
     (tmp_path / "templatetags").mkdir()
     (tmp_path / "templatetags" / "sample.py").mkdir()
     # not actually used, but need the file here
@@ -165,7 +165,7 @@ def test_initialize_with_template_tags_in_directory_with_py_extension(_configure
 @patch("coltrane.is_django_unicorn_installed", Mock(return_value=False))
 @patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
 @patch("coltrane._configure_settings")
-def test_initialize_debug_setting(_configure_settings):
+def test_debug_setting(_configure_settings):
     initialize(DEBUG=False)
 
     expected = _get_settings_with_debug_false()
@@ -179,7 +179,7 @@ def test_initialize_debug_setting(_configure_settings):
 @patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
 @patch.dict(environ, {"DEBUG": "False"})
 @patch("coltrane._configure_settings")
-def test_initialize_debug_env(_configure_settings):
+def test_debug_env(_configure_settings):
     initialize()
 
     expected = _get_settings_with_debug_false()
@@ -192,7 +192,7 @@ def test_initialize_debug_env(_configure_settings):
 @patch("coltrane.is_django_unicorn_installed", Mock(return_value=False))
 @patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
 @patch("coltrane._configure_settings")
-def test_initialize_time_zone_default(_configure_settings):
+def test_time_zone_default(_configure_settings):
     initialize()
 
     expected = _get_settings()
@@ -206,7 +206,7 @@ def test_initialize_time_zone_default(_configure_settings):
 @patch("coltrane.is_django_unicorn_installed", Mock(return_value=False))
 @patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
 @patch("coltrane._configure_settings")
-def test_initialize_time_zone_setting(_configure_settings):
+def test_time_zone_setting(_configure_settings):
     initialize(TIME_ZONE="America/New_York")
 
     expected = _get_settings()
@@ -221,10 +221,62 @@ def test_initialize_time_zone_setting(_configure_settings):
 @patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
 @patch.dict(environ, {"TIME_ZONE": "America/Chicago"})
 @patch("coltrane._configure_settings")
-def test_initialize_time_zone_env(_configure_settings):
+def test_time_zone_env(_configure_settings):
     initialize()
 
     expected = _get_settings()
     expected["TIME_ZONE"] = "America/Chicago"
+
+    _configure_settings.assert_called_once_with(expected)
+
+
+@patch("coltrane.is_whitenoise_installed", Mock(return_value=False))
+@patch("coltrane.is_django_compressor_installed", Mock(return_value=False))
+@patch("coltrane.is_django_unicorn_installed", Mock(return_value=False))
+@patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
+@patch("coltrane._configure_settings")
+def test_staticfiles_dirs(_configure_settings):
+    initialize()
+
+    expected = _get_settings()
+    expected["STATICFILES_DIRS"] = [Path("static")]
+
+    _configure_settings.assert_called_once_with(expected)
+
+
+@patch("coltrane.is_whitenoise_installed", Mock(return_value=False))
+@patch("coltrane.is_django_compressor_installed", Mock(return_value=False))
+@patch("coltrane.is_django_unicorn_installed", Mock(return_value=False))
+@patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
+@patch("coltrane._configure_settings")
+def test_staticfiles_dirs_content(_configure_settings, tmp_path: Path):
+    (tmp_path / "content").mkdir()
+    (tmp_path / "content" / "test.txt").write_text("test")
+
+    initialize(BASE_DIR=tmp_path)
+
+    expected = _get_settings()
+    expected["BASE_DIR"] = tmp_path
+    expected["TEMPLATES"] = ANY
+    expected["STATICFILES_DIRS"] = [tmp_path / "static", tmp_path / "content"]
+
+    _configure_settings.assert_called_once_with(expected)
+
+
+@patch("coltrane.is_whitenoise_installed", Mock(return_value=False))
+@patch("coltrane.is_django_compressor_installed", Mock(return_value=False))
+@patch("coltrane.is_django_unicorn_installed", Mock(return_value=False))
+@patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
+@patch("coltrane._configure_settings")
+def test_staticfiles_dirs_data(_configure_settings, tmp_path: Path):
+    (tmp_path / "data").mkdir()
+    (tmp_path / "data" / "test.json").write_text("{}")
+
+    initialize(BASE_DIR=tmp_path)
+
+    expected = _get_settings()
+    expected["BASE_DIR"] = tmp_path
+    expected["TEMPLATES"] = ANY
+    expected["STATICFILES_DIRS"] = [tmp_path / "static", tmp_path / "data"]
 
     _configure_settings.assert_called_once_with(expected)

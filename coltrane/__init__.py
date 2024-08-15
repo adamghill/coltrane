@@ -14,9 +14,7 @@ from django.core.management import execute_from_command_line
 from django.template.library import InvalidTemplateLibrary, import_library
 from dotenv import load_dotenv
 
-from coltrane.config.settings import (
-    DEFAULT_COLTRANE_SETTINGS,
-)
+from coltrane.config.settings import DEFAULT_COLTRANE_SETTINGS
 from coltrane.module_finder import (
     is_django_compressor_installed,
     is_django_unicorn_installed,
@@ -325,16 +323,24 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         middleware.append("django_browser_reload.middleware.BrowserReloadMiddleware")
         installed_apps.append("django_browser_reload")
 
-        # Add content and data to "staticfiles" so django-browser-reload can monitor them
+        # Add content to "staticfiles" so django-browser-reload can monitor it
         content_directory = _get_from_env_or_settings(
             django_settings, "CONTENT_DIRECTORY", DEFAULT_COLTRANE_SETTINGS["CONTENT_DIRECTORY"]
         )
-        staticfiles_dirs.append(base_dir / content_directory)
+        content_directory_absolute = base_dir / content_directory
 
+        if content_directory_absolute.exists():
+            staticfiles_dirs.append(content_directory_absolute)
+
+        # Add data to "staticfiles" so django-browser-reload can monitor it
         data_directory = _get_from_env_or_settings(
             django_settings, "DATA_DIRECTORY", DEFAULT_COLTRANE_SETTINGS["DATA_DIRECTORY"]
         )
-        staticfiles_dirs.append(base_dir / data_directory)
+        data_directory_absolute = base_dir / data_directory
+
+        if data_directory_absolute.exists():
+            staticfiles_dirs.append(data_directory_absolute)
+
 
     default_settings = {
         "BASE_DIR": base_dir,
