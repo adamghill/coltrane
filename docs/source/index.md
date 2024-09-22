@@ -21,6 +21,7 @@
 - [python-utils](https://adamghill.com/python-utils): Interactive Python playground (uses `django-unicorn` component library)
 - [unsuckjs.com](https://unsuckjs.com): Libraries to progressively enhance HTML with minimal amounts of JavaScript (uses GitHub REST API)
 - [djangobrew.com](https://djangobrew.com): Website for the Django Brew podcast (uses the Buzzsprout API)
+- [djangostickers.com](https://djangostickers.com): Quirky, fun stickers for Django
 
 ```{note}
 Please [let me know](https://github.com/adamghill/coltrane/discussions/new?category=show-and-tell) if you use `coltrane` and would like to add it to this list!
