@@ -13,7 +13,7 @@ def test_get_file_path(settings, tmp_path: Path):
     actual = get_file_path("test.txt")
     assert actual.exists()
 
-    assert expected == actual.read_text()
+    assert actual == expected.read_text()
 
 
 def test_get_file_path_not_exists(settings, tmp_path: Path):

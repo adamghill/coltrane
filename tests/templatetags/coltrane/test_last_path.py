@@ -12,7 +12,7 @@ def test_last_path_root():
     context = {"request": WSGIRequest("/")}
     actual = last_path(context=context)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_last_path_empty():
@@ -21,7 +21,7 @@ def test_last_path_empty():
     context = {"request": WSGIRequest("")}
     actual = last_path(context=context)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_last_path_file():
@@ -30,7 +30,7 @@ def test_last_path_file():
     context = {"request": WSGIRequest("/cool")}
     actual = last_path(context=context)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_last_path_subdirectory():
@@ -39,7 +39,7 @@ def test_last_path_subdirectory():
     context = {"request": WSGIRequest("/something/cool")}
     actual = last_path(context=context)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_last_path_subdirectory_with_trailing_slash():
@@ -48,4 +48,4 @@ def test_last_path_subdirectory_with_trailing_slash():
     context = {"request": WSGIRequest("/something/")}
     actual = last_path(context=context)
 
-    assert expected == actual
+    assert actual == expected

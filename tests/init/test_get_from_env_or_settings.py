@@ -10,7 +10,7 @@ def test_get_from_env_or_settings_default():
     settings = {}
     actual = _get_from_env_or_settings(settings, "CONTENT_DIRECTORY", "content1")
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_get_from_env_or_settings_in_settings():
@@ -19,7 +19,7 @@ def test_get_from_env_or_settings_in_settings():
     settings = {"COLTRANE": {"CONTENT_DIRECTORY": "content2"}}
     actual = _get_from_env_or_settings(settings, "CONTENT_DIRECTORY", "content1")
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_get_from_env_or_settings_in_environment(env):
@@ -29,4 +29,4 @@ def test_get_from_env_or_settings_in_environment(env):
     settings = {"COLTRANE": {"CONTENT_DIRECTORY": "content2"}}
     actual = _get_from_env_or_settings(settings, "CONTENT_DIRECTORY", "content1")
 
-    assert expected == actual
+    assert actual == expected

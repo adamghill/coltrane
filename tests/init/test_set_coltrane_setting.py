@@ -9,7 +9,7 @@ def test_set_coltrane_setting_missing_coltrane_in_settings():
     setting_name = "TITLE"
     actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_set_coltrane_setting():
@@ -20,7 +20,7 @@ def test_set_coltrane_setting():
     setting_name = "TITLE"
     actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_set_coltrane_setting_extra_file_names():
@@ -31,7 +31,7 @@ def test_set_coltrane_setting_extra_file_names():
     setting_name = "EXTRA_FILE_NAMES"
     actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_set_coltrane_setting_disable_wildcard_templates_true():
@@ -42,7 +42,7 @@ def test_set_coltrane_setting_disable_wildcard_templates_true():
     setting_name = "DISABLE_WILDCARD_TEMPLATES"
     actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_set_coltrane_setting_disable_wildcard_templates_true_string():
@@ -53,7 +53,7 @@ def test_set_coltrane_setting_disable_wildcard_templates_true_string():
     setting_name = "DISABLE_WILDCARD_TEMPLATES"
     actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_set_coltrane_setting_disable_wildcard_templates_not_true():
@@ -64,7 +64,7 @@ def test_set_coltrane_setting_disable_wildcard_templates_not_true():
     setting_name = "DISABLE_WILDCARD_TEMPLATES"
     actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_set_coltrane_setting_is_secure_true():
@@ -75,7 +75,7 @@ def test_set_coltrane_setting_is_secure_true():
     setting_name = "IS_SECURE"
     actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_set_coltrane_setting_is_secure_true_string():
@@ -86,7 +86,7 @@ def test_set_coltrane_setting_is_secure_true_string():
     setting_name = "IS_SECURE"
     actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_set_coltrane_setting_is_secure_not_true():
@@ -97,4 +97,4 @@ def test_set_coltrane_setting_is_secure_not_true():
     setting_name = "IS_SECURE"
     actual = _set_coltrane_setting(settings, initialize_settings, setting_name)
 
-    assert expected == actual
+    assert actual == expected

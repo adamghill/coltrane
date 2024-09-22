@@ -9,7 +9,7 @@ def test_get_potential_wildcard_templates():
     slug = "test"
     actual = _get_potential_wildcard_templates(slug)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_get_potential_wildcard_templates_sub_directory():
@@ -18,7 +18,7 @@ def test_get_potential_wildcard_templates_sub_directory():
     slug = "test/this"
     actual = _get_potential_wildcard_templates(slug)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_get_potential_wildcard_templates_sub_directories():
@@ -34,7 +34,7 @@ def test_get_potential_wildcard_templates_sub_directories():
     slug = "test/this/now"
     actual = _get_potential_wildcard_templates(slug)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_sort_potential_templates():
@@ -58,4 +58,4 @@ def test_sort_potential_templates():
         ]
     )
 
-    assert expected == actual
+    assert actual == expected

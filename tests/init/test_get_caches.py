@@ -15,21 +15,21 @@ def test_get_caches_default():
     expected = DEFAULT_CACHES_SETTINGS
     actual = _get_caches({})
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_get_caches_override_no_default():
     expected = DEFAULT_CACHES_SETTINGS
     actual = _get_caches({"CACHES": {"test": "no-default"}})
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_get_caches_override_default(caches_settings):
     expected = {"default": {"test": "ok"}}
     actual = _get_caches(caches_settings)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_get_caches_env_dummy(env, caches_settings):
@@ -38,7 +38,7 @@ def test_get_caches_env_dummy(env, caches_settings):
     expected = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
     actual = _get_caches(caches_settings)
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_get_caches_env_invalid(env, caches_settings):
@@ -62,7 +62,7 @@ class TestMemory:
         }
         actual = _get_caches(caches_settings)
 
-        assert expected == actual
+        assert actual == expected
 
     def test_get_caches_location(self, env, caches_settings):
         environ["CACHE"] = "memory"
@@ -76,7 +76,7 @@ class TestMemory:
         }
         actual = _get_caches(caches_settings)
 
-        assert expected == actual
+        assert actual == expected
 
 
 class TestFilesystem:
@@ -92,7 +92,7 @@ class TestFilesystem:
         }
         actual = _get_caches(caches_settings)
 
-        assert expected == actual
+        assert actual == expected
 
     def test_get_caches_missing_location(self, env, caches_settings):
         environ["CACHE"] = "filesystem"
@@ -116,7 +116,7 @@ class TestMemcache:
         }
         actual = _get_caches(caches_settings)
 
-        assert expected == actual
+        assert actual == expected
 
     def test_get_caches_missing_location(self, env, caches_settings):
         environ["CACHE"] = "memcache"
@@ -140,7 +140,7 @@ class TestRedis:
         }
         actual = _get_caches(caches_settings)
 
-        assert expected == actual
+        assert actual == expected
 
     def test_get_caches_missing_location(self, env, caches_settings):
         environ["CACHE"] = "redis"
