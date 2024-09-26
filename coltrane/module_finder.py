@@ -40,4 +40,4 @@ def is_unicorn_module_available() -> bool:
     Helper function to check if there is a `unicorn` app available.
     """
 
-    return is_module_available("django_unicorn")
+    return is_module_available("unicorn")
