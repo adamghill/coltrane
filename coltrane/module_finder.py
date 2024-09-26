@@ -40,4 +40,12 @@ def is_unicorn_module_available() -> bool:
     Helper function to check if there is a `unicorn` app available.
     """
 
-    return is_module_available("django_unicorn")
+    return is_module_available("unicorn")
+
+
+def is_dj_angles_installed() -> bool:
+    """
+    Helper function to check if `dj_angles` is installed.
+    """
+
+    return is_module_available("dj_angles")

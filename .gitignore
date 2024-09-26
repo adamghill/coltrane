@@ -113,5 +113,7 @@ node_modules/
 tags
 staticfiles/
 
+uv.lock
+
 example_standalone/output.json
 example_standalone/output/
