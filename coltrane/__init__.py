@@ -16,6 +16,7 @@ from dotenv import load_dotenv
 
 from coltrane.config.settings import DEFAULT_COLTRANE_SETTINGS
 from coltrane.module_finder import (
+    is_dj_angles_installed,
     is_django_compressor_installed,
     is_django_unicorn_installed,
     is_unicorn_module_available,
@@ -111,7 +112,7 @@ def _get_template_tag_module_name(base_dir: Path, file: Path) -> str:
     return module_name
 
 
-def _get_default_template_settings(base_dir: Path) -> List:
+def _get_default_template_settings(base_dir: Path, debug: bool = True) -> List:
     """
     Gets default template settings, including templates and built-in template tags.
     """
@@ -136,22 +137,43 @@ def _get_default_template_settings(base_dir: Path) -> List:
     ]
     builtins.extend(template_tags)
 
-    return [
-        {
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
-            "APP_DIRS": True,
-            "DIRS": [template_dir],
-            "OPTIONS": {
-                "builtins": builtins,
-                "context_processors": [
-                    "django.template.context_processors.request",
-                    "django.template.context_processors.debug",
-                    "django.template.context_processors.static",
-                    "coltrane.context_processors.coltrane",
-                ],
-            },
-        }
-    ]
+    template = {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "APP_DIRS": True,
+        "DIRS": [template_dir],
+        "OPTIONS": {
+            "builtins": builtins,
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.template.context_processors.debug",
+                "django.template.context_processors.static",
+                "coltrane.context_processors.coltrane",
+            ],
+        },
+    }
+
+    if is_dj_angles_installed():
+        del template["APP_DIRS"]
+
+        if debug:
+            template["OPTIONS"]["loaders"] = [
+                "dj_angles.template_loader.Loader",
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
+            ]
+        else:
+            template["OPTIONS"]["loaders"] = [
+                (
+                    "django.template.loaders.cached.Loader",
+                    [
+                        "dj_angles.template_loader.Loader",
+                        "django.template.loaders.filesystem.Loader",
+                        "django.template.loaders.app_directories.Loader",
+                    ],
+                )
+            ]
+
+    return [template]
 
 
 def _merge_installed_apps(django_settings: Dict[str, Any], installed_apps: List[str]) -> List[str]:
@@ -341,6 +363,7 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         if data_directory_absolute.exists():
             staticfiles_dirs.append(data_directory_absolute)
 
+    templates = _get_default_template_settings(base_dir, debug)
 
     default_settings = {
         "BASE_DIR": base_dir,
@@ -350,7 +373,7 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         "INSTALLED_APPS": _merge_installed_apps(django_settings, installed_apps),
         "CACHES": _get_caches(django_settings),
         "MIDDLEWARE": middleware,
-        "TEMPLATES": _get_default_template_settings(base_dir),
+        "TEMPLATES": templates,
         "INTERNAL_IPS": _get_from_env("INTERNAL_IPS"),
         "ALLOWED_HOSTS": _get_from_env("ALLOWED_HOSTS"),
         "STATIC_ROOT": base_dir / "output" / "static",
