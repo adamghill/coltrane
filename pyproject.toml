@@ -37,9 +37,9 @@ dependencies = [
   "rich-click < 2",
   "django-fastdev < 2",
   "django-browser-reload < 2",
-  "pywatchman",
+  "pywatchman > 1",
   "msgspec < 1",
-  "click-aliases < 2"
+  "click-aliases < 2",
 ]
 
 [project.urls]
@@ -54,43 +54,43 @@ coltrane = "coltrane.console:cli"
 
 [project.optional-dependencies]
 deploy = [
-  "gunicorn",
-  "whitenoise"
+  "gunicorn > 21",
+  "whitenoise > 6"
 ]
 compressor = [
   "django-compressor < 5"
 ]
 json5 = [
-  "pyjson5"
+  "pyjson5 > 0"
 ]
 angles = [
-  "dj-angles"
+  "dj-angles > 0"
 ]
 unicorn = [
-  "django-unicorn"
+  "django-unicorn > 0"
 ]
 docs = [
-  "Sphinx",
-  "linkify-it-py",
-  "myst-parser",
-  "furo",
-  "sphinx-copybutton",
-  "sphinx-autobuild",
-  "toml",
-  "attrs",
-  "sphinx-inline-tabs"
+  "Sphinx > 0",
+  "linkify-it-py > 0",
+  "myst-parser > 0",
+  "furo > 0",
+  "sphinx-copybutton > 0",
+  "sphinx-autobuild > 0",
+  "toml > 0",
+  "attrs > 0",
+  "sphinx-inline-tabs > 0"
 ]
 
 [tool.uv]
 dev-dependencies = [
-  "coverage[toml]",
-  "pytest-cov",
-  "pytest",
-  "pytest-django",
-  "pytest-pretty",
-  "django-stubs",
-  "types-toml",
-  "types-dateparser"
+  "coverage[toml] >= 7",
+  "pytest-cov >= 4",
+  "pytest >= 7",
+  "pytest-django >= 4",
+  "pytest-pretty >= 1",
+  "django-stubs >= 5",
+  "types-toml > 0",
+  "types-dateparser > 1",
 ]
 
 [tool.ruff]
