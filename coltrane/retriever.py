@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Dict, Iterable, Optional
 
 from coltrane.config.cache import DataCache
-from coltrane.config.paths import get_content_directory, get_data_directory, get_data_json
+from coltrane.config.paths import get_content_directory, get_data_directory
 from coltrane.config.settings import get_data_json_5
 from coltrane.utils import dict_merge
 
@@ -56,8 +56,7 @@ def _add_data_from_path(data, data_directory, path):
 
 def get_data() -> Dict:
     """
-    Get and merge data from `data.json` and any JSON files recursively found in the
-    `data` directory.
+    Get and merge data from any JSON files recursively found in the `data` directory.
     """
 
     data = {}
@@ -70,9 +69,6 @@ def get_data() -> Dict:
 
         if data:
             return data
-
-    if get_data_json().exists():
-        warnings.warn("Reading data.json is deprecated; use the data directory instead.", stacklevel=1)
 
     data_directory = get_data_directory()
 

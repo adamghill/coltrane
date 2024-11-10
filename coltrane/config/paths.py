@@ -20,16 +20,6 @@ def get_base_directory() -> Path:
     return Path(getcwd())
 
 
-def get_data_json() -> Path:
-    """
-    Get the path of the `data.json` file.
-    """
-
-    # TODO: Mark as deprecated
-
-    return get_base_directory() / "data.json"
-
-
 def get_data_directory() -> Path:
     """
     Get the path of the JSON `data` directory.

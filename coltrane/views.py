@@ -168,7 +168,7 @@ def _get_potential_wildcard_templates(slug: str) -> List[str]:
 def content(request: HttpRequest, slug: str = "index") -> HttpResponse:
     """
     Renders the markdown file stored in `content` or HTML template based on the slug from the URL.
-    Adds data into the context from `data.json` and JSON files in the `data` directory.
+    Adds data into the context from JSON files in the `data` directory.
 
     Will cache the rendered content if enabled.
     """
