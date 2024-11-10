@@ -3,7 +3,7 @@
 ## 0.37.0
 
 - Automatically enable `dj-angles` if the library is installed.
-- Experimental support for sub-domains.
+- Experimental support for multiple domains.
 
 **Breaking changes**
 
