@@ -3,11 +3,11 @@ name = "coltrane"
 authors = [
   {name = "Adam Hill", email = "adam@adamghill.com"}
 ]
-version = "0.36.0"
+version = "0.37.0"
 description = "A minimal app framework for content sites 🎵"
 readme = "README.md"
 license = {file = "LICENSE"}
-requires-python = ">=3.8,<4.0"
+requires-python = ">=3.9,<4.0"
 keywords = [
   "django",
   "python",
@@ -70,7 +70,7 @@ unicorn = [
   "django-unicorn > 0"
 ]
 docs = [
-  "Sphinx > 0",
+  "Sphinx > 7",
   "linkify-it-py > 0",
   "myst-parser > 0",
   "furo > 0",

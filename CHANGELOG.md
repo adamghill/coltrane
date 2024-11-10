@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.37.0
+
+- Automatically enable `dj-angles` if the library is installed.
+- Experimental support for sub-domains.
+
+**Breaking changes**
+
+- Drop support for Python 3.8.
+- Remove loading deprecated `data.json` file.
+
 ## 0.36.0
 
 - Handle string, date, epoch in `publish_date` and convert them to timezone-aware datetime.
@@ -50,7 +60,7 @@
 - Create example `Dockerfile` and `gunicorn.conf.py` files for easier deployments of `coltrane` apps.
 - [Add the ability](installation.md#extras) to use [JSON5](https://json5.org) for data files.
 
-_Breaking changes_
+**Breaking changes**
 
 - Remove loading `data.json`. All data should be in JSON files in the `data` directory.
 - The default markdown renderer is now `mistune` instead of `markdown2`. The next version of `coltrane` will remove the option to use `markdown2`.
@@ -153,7 +163,7 @@ _Breaking changes_
 - Serving of `/sitemap.xml` for standalone
 - Automatic creation of `sitemap.xml` during `record` command
 
-_Breaking changes_
+**Breaking changes**
 
 - `COLTRANE_SITE` is required in .env file
 

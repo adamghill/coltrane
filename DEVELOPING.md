@@ -10,7 +10,7 @@
 
 1. `just install` to install the package and all extras
 1. `just test` to run tests
-1. `just build-docs` to build documentation
+1. `just docs-build` to build documentation
 1. Update version in `pyproject.toml`
 1. Update CHANGELOG.md
 1. Commit changes
