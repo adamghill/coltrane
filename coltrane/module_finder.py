@@ -27,6 +27,14 @@ def is_django_compressor_installed() -> bool:
     return is_module_available("compressor")
 
 
+def is_dj_angles_installed() -> bool:
+    """
+    Helper function to check if `dj_angles` is installed.
+    """
+
+    return is_module_available("dj_angles")
+
+
 def is_django_unicorn_installed() -> bool:
     """
     Helper function to check if `django_unicorn` is installed.
@@ -41,11 +49,3 @@ def is_unicorn_module_available() -> bool:
     """
 
     return is_module_available("unicorn")
-
-
-def is_dj_angles_installed() -> bool:
-    """
-    Helper function to check if `dj_angles` is installed.
-    """
-
-    return is_module_available("dj_angles")

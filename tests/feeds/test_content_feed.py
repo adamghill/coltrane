@@ -26,6 +26,7 @@ def test_items(settings, tmp_path: Path):
 
 def test_item_link(settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
+
     (tmp_path / "content").mkdir()
     (tmp_path / "content/test.md").write_text("test data")
 

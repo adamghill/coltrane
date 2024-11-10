@@ -164,11 +164,13 @@ def test_with_template_tags_in_directory_with_py_extension(_configure_settings, 
 @patch("coltrane.is_django_compressor_installed", Mock(return_value=False))
 @patch("coltrane.is_django_unicorn_installed", Mock(return_value=False))
 @patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
+@patch("coltrane.is_dj_angles_installed", Mock(return_value=False))
 @patch("coltrane._configure_settings")
 def test_debug_setting(_configure_settings):
     initialize(DEBUG=False)
 
     expected = _get_settings_with_debug_false()
+    expected["TEMPLATES"] = ANY
 
     _configure_settings.assert_called_once_with(expected)
 
@@ -177,12 +179,14 @@ def test_debug_setting(_configure_settings):
 @patch("coltrane.is_django_compressor_installed", Mock(return_value=False))
 @patch("coltrane.is_django_unicorn_installed", Mock(return_value=False))
 @patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
+@patch("coltrane.is_dj_angles_installed", Mock(return_value=False))
 @patch.dict(environ, {"DEBUG": "False"})
 @patch("coltrane._configure_settings")
 def test_debug_env(_configure_settings):
     initialize()
 
     expected = _get_settings_with_debug_false()
+    expected["TEMPLATES"] = ANY
 
     _configure_settings.assert_called_once_with(expected)
 
