@@ -423,12 +423,11 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         if _get_current_command() == "compress":
             default_settings["COMPRESS_OFFLINE"] = True
 
-    print(1, default_settings["TEMPLATES"])
-    if theme := _get_from_env_or_settings(django_settings, "THEME", None):
-        print("theme", theme)
-        default_settings["TEMPLATES"][0]["DIRS"].insert(0, base_dir / "themes" / theme)
+        if theme := _get_from_env_or_settings(django_settings, "THEME", None):
+            default_settings["TEMPLATES"][0]["DIRS"].insert(0, base_dir / "themes" / theme)
 
-    print(2, default_settings["TEMPLATES"])
+    if theme := _get_from_env_or_settings(django_settings, "THEME", None):
+        default_settings["TEMPLATES"][0]["DIRS"].insert(0, base_dir / "themes" / theme)
 
     # Make sure BASE_DIR is a `Path` if it got passed in
     if "BASE_DIR" in django_settings and isinstance(django_settings["BASE_DIR"], str):
