@@ -11,7 +11,7 @@ from django.utils.timezone import now
 
 from coltrane.config.cache import ViewCache
 from coltrane.config.paths import get_file_path
-from coltrane.config.settings import get_disable_wildcard_templates
+from coltrane.config.settings import get_disable_wildcard_templates, get_sites
 from coltrane.renderer import MarkdownRenderer
 from coltrane.retriever import get_data
 
@@ -173,6 +173,12 @@ def content(request: HttpRequest, slug: str = "index") -> HttpResponse:
     Will cache the rendered content if enabled.
     """
 
+    # Handle site sud-domains by prepending the site folder to the slug, e.g. base-dir/content/site/slug.html
+    site = get_sites().get_site(request)
+
+    if site and site.folder:
+        slug = f"{site.folder}/{slug}"
+
     template: str = ""
     context: Dict = {}
     slug = _normalize_slug(slug)
@@ -216,6 +222,8 @@ def content(request: HttpRequest, slug: str = "index") -> HttpResponse:
 
     if set_in_cache:
         _set_in_cache_if_enabled(slug, template, context)
+
+    context["site"] = str(site) if site else None
 
     response = render(
         request,

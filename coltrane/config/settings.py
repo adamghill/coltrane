@@ -2,6 +2,8 @@ from typing import Dict, List, Optional
 
 from django.conf import settings
 
+from coltrane.config.sites import Sites
+
 # List of available `mistune` plugins: https://mistune.lepture.com/en/latest/plugins.html
 DEFAULT_MISTUNE_PLUGINS = [
     "strikethrough",
@@ -29,6 +31,7 @@ DEFAULT_COLTRANE_SETTINGS = {
     "DISABLE_WILDCARD_TEMPLATES": False,
     "IS_SECURE": False,
     "DATA_JSON5": False,
+    "SITES": {},
 }
 
 
@@ -110,28 +113,22 @@ def get_content_directory() -> str:
 
 
 def get_extra_file_names() -> List[str]:
-    return get_coltrane_settings().get(
-        "EXTRA_FILE_NAMES",
-        [],
-    )
+    return get_coltrane_settings().get("EXTRA_FILE_NAMES", [])
 
 
 def get_disable_wildcard_templates() -> bool:
-    return get_coltrane_settings().get(
-        "DISABLE_WILDCARD_TEMPLATES",
-        False,
-    )
+    return get_coltrane_settings().get("DISABLE_WILDCARD_TEMPLATES", False)
 
 
 def get_is_secure() -> bool:
-    return get_coltrane_settings().get(
-        "IS_SECURE",
-        False,
-    )
+    return get_coltrane_settings().get("IS_SECURE", False)
 
 
 def get_data_json_5() -> bool:
-    return get_coltrane_settings().get(
-        "DATA_JSON5",
-        False,
-    )
+    return get_coltrane_settings().get("DATA_JSON5", False)
+
+
+def get_sites() -> Sites:
+    sites = get_coltrane_settings().get("SITES", {})
+
+    return Sites(sites)
