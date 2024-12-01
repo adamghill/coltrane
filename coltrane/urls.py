@@ -16,19 +16,21 @@ sitemaps = {"content": ContentSitemap}
 urlpatterns = []
 
 
-for redirect in get_redirects():
-    urlpatterns += [
-        path(redirect.from_url, RedirectView.as_view(url=redirect.to_url, permanent=redirect.permanent)),
-    ]
-
 # Add browser reload URL if not prod
 if settings.DEBUG:
     urlpatterns += [
         path("__reload__/", include("django_browser_reload.urls")),
     ]
 
+# Add redirects
+for redirect in get_redirects():
+    urlpatterns += [
+        path(redirect.from_url, RedirectView.as_view(url=redirect.to_url, permanent=redirect.permanent)),
+    ]
+
 # Add sitemap and RSS URLs
 urlpatterns += [
+    path("healthcheck", views.healthcheck, name="healthcheck"),
     path(
         "sitemap.xml",
         sitemap,

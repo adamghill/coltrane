@@ -2,7 +2,7 @@ import logging
 from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
-from django.http import FileResponse, Http404, HttpRequest, HttpResponse
+from django.http import FileResponse, Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template import TemplateDoesNotExist
 from django.template.loader import select_template
@@ -255,3 +255,7 @@ def file(request, file_name: str) -> FileResponse:  # noqa: ARG001
     file = file_path.open("rb")
 
     return FileResponse(file)
+
+
+def healthcheck(request) -> JsonResponse:  # noqa: ARG001
+    return JsonResponse({"status": "ok"})
