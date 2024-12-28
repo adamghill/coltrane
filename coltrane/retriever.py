@@ -1,13 +1,15 @@
 import json
 import logging
-import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, Optional
 
+from django.http import HttpRequest
+
 from coltrane.config.cache import DataCache
+from coltrane.config.coltrane import Site
 from coltrane.config.paths import get_content_directory, get_data_directory
-from coltrane.config.settings import get_data_json_5
+from coltrane.config.settings import get_config, get_data_json_5
 from coltrane.utils import dict_merge
 
 logger = logging.getLogger(__name__)
@@ -54,7 +56,7 @@ def _add_data_from_path(data, data_directory, path):
             data = dict_merge(data, new_data)
 
 
-def get_data() -> Dict:
+def get_data(site: Site) -> Dict:
     """
     Get and merge data from any JSON files recursively found in the `data` directory.
     """
@@ -70,7 +72,8 @@ def get_data() -> Dict:
         if data:
             return data
 
-    data_directory = get_data_directory()
+    data_directory = get_data_directory(site=site)
+    # print("data_directory", data_directory)
 
     for path in data_directory.rglob("*.json5"):
         _add_data_from_path(data, data_directory, path)
@@ -84,12 +87,17 @@ def get_data() -> Dict:
     return data
 
 
-def get_content_paths(slug: Optional[str] = None) -> Iterable[Path]:
+def get_content_paths(
+    request: Optional[HttpRequest] = None, slug: Optional[str] = None, site: Optional[Site] = None
+) -> Iterable[Path]:
     """
     Yield `Path`s for all markdown content in the content directory.
     """
 
-    directory = get_content_directory()
+    if not site and request:
+        site = get_config().get_site(request)
+
+    directory = get_content_directory(site=site)
 
     if slug:
         directory = directory / slug
@@ -112,13 +120,13 @@ class ContentItem:
     html: str
 
 
-def get_content_items(skip_draft: bool = True) -> Iterable[ContentItem]:  # noqa: FBT001, FBT002
+def get_content_items(site: Optional[Site] = None, skip_draft: bool = True) -> Iterable[ContentItem]:  # noqa: FBT001, FBT002
     from coltrane.renderer import MarkdownRenderer
 
-    paths = get_content_paths()
+    paths = get_content_paths(site=site)
     _items = []
 
-    content_directory = get_content_directory()
+    content_directory = get_content_directory(site=site)
     content_directory_path_length = len(str(content_directory))
 
     for path in paths:

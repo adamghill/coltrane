@@ -4,12 +4,15 @@ from pathlib import Path
 import pytest
 from django.template import TemplateSyntaxError
 
-from coltrane import _get_default_template_settings
+# from coltrane import _get_default_template_settings
+from coltrane.config.settings import get_config
 
 
 def test_include_md(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
-    settings.TEMPLATES = deepcopy(_get_default_template_settings(tmp_path))
+    # settings.TEMPLATES = deepcopy(_get_default_template_settings(tmp_path))
+    coltrane = get_config(base_dir=tmp_path)
+    settings.TEMPLATES = deepcopy(coltrane.get_templates_settings())
 
     (tmp_path / "templates").mkdir()
     (tmp_path / "templates/_partial.md").write_text("# partial")
@@ -37,7 +40,9 @@ def test_include_md(client, settings, tmp_path: Path):
 
 def test_include_md_loop(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
-    settings.TEMPLATES = deepcopy(_get_default_template_settings(tmp_path))
+    # settings.TEMPLATES = deepcopy(_get_default_template_settings(tmp_path))
+    coltrane = get_config(base_dir=tmp_path)
+    settings.TEMPLATES = deepcopy(coltrane.get_templates_settings())
 
     (tmp_path / "templates").mkdir()
     (tmp_path / "templates/_partial.md").write_text("# partial")
@@ -72,7 +77,9 @@ def test_include_md_loop(client, settings, tmp_path: Path):
 
 def test_include_md_metadata_in_template(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
-    settings.TEMPLATES = deepcopy(_get_default_template_settings(tmp_path))
+    # settings.TEMPLATES = deepcopy(_get_default_template_settings(tmp_path))
+    coltrane = get_config(base_dir=tmp_path)
+    settings.TEMPLATES = deepcopy(coltrane.get_templates_settings())
 
     (tmp_path / "templates").mkdir()
     (tmp_path / "templates/_partial.md").write_text(
@@ -111,7 +118,12 @@ variable: this-is-a-string-in-the-template
 
 def test_include_md_metadata_in_partial(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
-    settings.TEMPLATES = deepcopy(_get_default_template_settings(tmp_path))
+    # settings.TEMPLATES = deepcopy(_get_default_template_settings(tmp_path))
+    coltrane = get_config(base_dir=tmp_path)
+    settings.TEMPLATES = deepcopy(coltrane.get_templates_settings())
+
+    print("tmp_path", tmp_path)
+    print("settings.TEMPLATES", settings.TEMPLATES)
 
     (tmp_path / "templates").mkdir()
     (tmp_path / "templates/_partial.md").write_text(
@@ -151,7 +163,9 @@ request: this-is-a-string-in-the-partial
 
 def test_include_md_no_template(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
-    settings.TEMPLATES = deepcopy(_get_default_template_settings(tmp_path))
+    # settings.TEMPLATES = deepcopy(_get_default_template_settings(tmp_path))
+    coltrane = get_config(base_dir=tmp_path)
+    settings.TEMPLATES = deepcopy(coltrane.get_templates_settings())
 
     (tmp_path / "content").mkdir()
     (tmp_path / "content/index.md").write_text("{% include_md %}")

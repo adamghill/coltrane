@@ -1,0 +1,27 @@
+[[sites]]
+folder = "adamghill"
+hosts = [
+  "0.0.0.0:80",
+  "0.0.0.0:8020",
+  "localhost:8020",
+  "adamghill.localhost",
+  "adamghill.com"
+]
+
+[[sites]]
+folder = "alldjango"
+hosts = [
+  "0.0.0.0:8021",
+  "localhost:8021",
+  "alldjango.localhost",
+  "alldjango.com"
+]
+
+[[redirects]]
+from_url = "/test-1" 
+to_url = "/"
+permanent = false
+
+[[redirects]]
+from_url = "/test-2"
+to_url = "/"

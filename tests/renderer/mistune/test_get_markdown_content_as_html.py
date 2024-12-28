@@ -3,7 +3,9 @@ from unittest.mock import ANY
 
 import pytest
 
+from coltrane.config.coltrane import Site
 from coltrane.renderer import MistuneMarkdownRenderer
+from tests.fixtures import default_site  # noqa: F401
 
 
 @pytest.fixture
@@ -11,9 +13,7 @@ def markdown_renderer():
     return MistuneMarkdownRenderer()
 
 
-def test_get_markdown_content_as_html_with_frontmatter(
-    markdown_renderer, settings, tmp_path: Path
-):
+def test_get_markdown_content_as_html_with_frontmatter(markdown_renderer, settings, tmp_path: Path, default_site: Site):
     settings.BASE_DIR = tmp_path
 
     (tmp_path / "content").mkdir()
@@ -29,12 +29,12 @@ test data
     rendered_html = "<p>test data</p>\n"
     context = {"template": "test-template.html", "toc": ANY, "now": ANY}
     expected = (rendered_html, context)
-    actual = markdown_renderer._get_markdown_content_as_html("test-1")
+    actual = markdown_renderer._get_markdown_content_as_html("test-1", site=default_site)
 
     assert actual == expected
 
 
-def test_get_markdown_content_toc(markdown_renderer, settings, tmp_path: Path):
+def test_get_markdown_content_toc(markdown_renderer, settings, tmp_path: Path, default_site: Site):
     settings.BASE_DIR = tmp_path
 
     (tmp_path / "content").mkdir()
@@ -57,6 +57,6 @@ def test_get_markdown_content_toc(markdown_renderer, settings, tmp_path: Path):
         "toc": expected_toc,
     }
     expected = (expected_content, expected_metadata)
-    actual = markdown_renderer._get_markdown_content_as_html("test-1")
+    actual = markdown_renderer._get_markdown_content_as_html("test-1", site=default_site)
 
     assert actual == expected

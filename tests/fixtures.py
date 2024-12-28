@@ -2,6 +2,8 @@ from os import environ
 
 import pytest
 
+from coltrane.config.coltrane import Config, Site
+
 
 @pytest.fixture
 def env():
@@ -17,3 +19,10 @@ def env():
         # Set the environment back to the original
         environ.clear()
         environ.update(_original_environ)
+
+
+@pytest.fixture
+def default_site() -> Site:
+    config = Config()
+
+    return config.sites[0]

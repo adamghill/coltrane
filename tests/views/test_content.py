@@ -2,6 +2,18 @@ from copy import deepcopy
 from pathlib import Path
 from unittest.mock import call, patch
 
+from coltrane.config.settings import get_config
+
+
+def _setup_settings(settings, tmp_path: Path) -> None:
+    settings.BASE_DIR = tmp_path
+
+    config = get_config()
+    assert config.has_custom_sites is False
+
+    # Set Django templates settings
+    settings.TEMPLATES = deepcopy(config.get_templates_settings())
+
 
 def test_404(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
@@ -56,8 +68,7 @@ def test_index_without_slash(client, settings, tmp_path: Path):
 def test_directory_index_with_slash(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
-    (tmp_path / "content").mkdir()
-    (tmp_path / "content/dir").mkdir()
+    (tmp_path / "content/dir").mkdir(parents=True)
     (tmp_path / "content/dir/index.md").write_text("# dir")
 
     response = client.get("/dir/")
@@ -70,8 +81,7 @@ def test_directory_index_with_slash(client, settings, tmp_path: Path):
 def test_directory_index_without_slash(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
 
-    (tmp_path / "content").mkdir()
-    (tmp_path / "content/dir").mkdir()
+    (tmp_path / "content/dir").mkdir(parents=True)
     (tmp_path / "content/dir/index.md").write_text("# dir")
 
     response = client.get("/dir")
@@ -177,13 +187,9 @@ def test_url_slug_cache(client, settings, tmp_path: Path):
 
 
 def test_url_slug_direct_template(client, settings, tmp_path: Path):
-    settings.BASE_DIR = tmp_path
+    _setup_settings(settings, tmp_path)
 
-    # Add a a tmp templates directory
-    settings.TEMPLATES = deepcopy(settings.TEMPLATES)
-    settings.TEMPLATES[0]["DIRS"].append(str(tmp_path / "templates"))
-
-    (tmp_path / "templates").mkdir()
+    (tmp_path / "templates").mkdir(parents=True)
     (tmp_path / "templates" / "test-this.html").write_text("test this")
 
     response = client.get("/test-this")
@@ -194,13 +200,9 @@ def test_url_slug_direct_template(client, settings, tmp_path: Path):
 
 
 def test_url_slug_direct_template_wildcard(client, settings, tmp_path: Path):
-    settings.BASE_DIR = tmp_path
+    _setup_settings(settings, tmp_path)
 
-    # Add a a tmp templates directory
-    settings.TEMPLATES = deepcopy(settings.TEMPLATES)
-    settings.TEMPLATES[0]["DIRS"].append(str(tmp_path / "templates"))
-
-    (tmp_path / "templates").mkdir()
+    (tmp_path / "templates").mkdir(parents=True)
     (tmp_path / "templates" / "*.html").write_text("asterisk")
 
     response = client.get("/test-this-missing-thing")
@@ -211,14 +213,9 @@ def test_url_slug_direct_template_wildcard(client, settings, tmp_path: Path):
 
 
 def test_url_wildcards(client, settings, tmp_path: Path):
-    settings.BASE_DIR = tmp_path
+    _setup_settings(settings, tmp_path)
 
-    # Add a a tmp templates directory
-    settings.TEMPLATES = deepcopy(settings.TEMPLATES)
-    settings.TEMPLATES[0]["DIRS"].append(str(tmp_path / "templates"))
-
-    (tmp_path / "templates").mkdir()
-    (tmp_path / "templates" / "test-this").mkdir()
+    (tmp_path / "templates" / "test-this").mkdir(parents=True)
     (tmp_path / "templates" / "test-this" / "*.html").write_text("directory asterisk")
 
     response = client.get("/test-this/missing-thing")
@@ -229,13 +226,9 @@ def test_url_wildcards(client, settings, tmp_path: Path):
 
 
 def test_url_wildcards_404(client, settings, tmp_path: Path):
-    settings.BASE_DIR = tmp_path
+    _setup_settings(settings, tmp_path)
 
-    # Add a a tmp templates directory
-    settings.TEMPLATES = deepcopy(settings.TEMPLATES)
-    settings.TEMPLATES[0]["DIRS"].append(str(tmp_path / "templates"))
-
-    (tmp_path / "templates").mkdir()
+    (tmp_path / "templates").mkdir(parents=True)
     (tmp_path / "templates" / "*.html").write_text("multiple asterisk")
 
     response = client.get("/something/test-this-should-404")
@@ -243,14 +236,9 @@ def test_url_wildcards_404(client, settings, tmp_path: Path):
 
 
 def test_url_multiple_wildcards(client, settings, tmp_path: Path):
-    settings.BASE_DIR = tmp_path
+    _setup_settings(settings, tmp_path)
 
-    # Add a a tmp templates directory
-    settings.TEMPLATES = deepcopy(settings.TEMPLATES)
-    settings.TEMPLATES[0]["DIRS"].append(str(tmp_path / "templates"))
-
-    (tmp_path / "templates").mkdir()
-    (tmp_path / "templates" / "*").mkdir()
+    (tmp_path / "templates" / "*").mkdir(parents=True)
     (tmp_path / "templates" / "*" / "*.html").write_text("multiple asterisk")
 
     response = client.get("/something/test-this-should-200")
@@ -261,16 +249,9 @@ def test_url_multiple_wildcards(client, settings, tmp_path: Path):
 
 
 def test_url_multiple_wildcards_and_multiple_subdirectories(client, settings, tmp_path: Path):
-    settings.BASE_DIR = tmp_path
+    _setup_settings(settings, tmp_path)
 
-    # Add a a tmp templates directory
-    settings.TEMPLATES = deepcopy(settings.TEMPLATES)
-    settings.TEMPLATES[0]["DIRS"].append(str(tmp_path / "templates"))
-
-    (tmp_path / "templates").mkdir()
-    (tmp_path / "templates" / "new").mkdir()
-    (tmp_path / "templates" / "new" / "another").mkdir()
-    (tmp_path / "templates" / "new" / "another" / "*").mkdir()
+    (tmp_path / "templates" / "new" / "another" / "*").mkdir(parents=True)
     (tmp_path / "templates" / "new" / "another" / "*" / "*.html").write_text("multiple asterisk in subdirectory")
 
     response = client.get("/new/another/something/test-this-should-200")
@@ -278,3 +259,41 @@ def test_url_multiple_wildcards_and_multiple_subdirectories(client, settings, tm
 
     actual = response.content.decode()
     assert "multiple asterisk in subdirectory" in actual
+
+
+def test_include(client, settings, tmp_path: Path):
+    _setup_settings(settings, tmp_path)
+
+    (settings.BASE_DIR / "templates").mkdir(parents=True)
+    (settings.BASE_DIR / "templates/_partial.html").write_text("""
+This is a partial
+""")
+    (settings.BASE_DIR / "templates/include-1.html").write_text("""
+template 1
+
+{% include '_partial.html' %}
+""")
+
+    response = client.get("/include-1")
+
+    assert response.status_code == 200
+
+    actual = response.content.decode()
+    assert "This is a partial" in actual
+
+
+def test_static(client, settings, tmp_path: Path):
+    _setup_settings(settings, tmp_path)
+
+    text = """
+static 1
+
+<img src="{% static 'img/example.png' %}" />
+"""
+    (settings.BASE_DIR / "templates").mkdir(parents=True)
+    (settings.BASE_DIR / "templates/static-1.html").write_text(text)
+
+    actual = client.get("/static-1")
+
+    assert 200 == actual.status_code
+    assert '<img src="static/img/example.png" />' in actual.content.decode()

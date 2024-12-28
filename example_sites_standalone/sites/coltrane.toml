@@ -1,0 +1,17 @@
+[coltrane]
+
+[[sites]]
+folder = "example"
+hosts = [
+  "0.0.0.0:8047",
+  "localhost:8047",
+]
+
+[[redirects]]
+from_url = "/test-1" 
+to_url = "/"
+permanent = false
+
+[[redirects]]
+from_url = "/test-2"
+to_url = "/"

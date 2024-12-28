@@ -3,6 +3,7 @@ import logging
 import re
 from dataclasses import dataclass, field
 from html import unescape
+from pathlib import Path
 from typing import Dict, Optional, Tuple, Union
 from urllib.parse import unquote
 
@@ -13,8 +14,10 @@ from django.utils.html import mark_safe  # type: ignore
 from django.utils.text import slugify
 from django.utils.timezone import now
 
+from coltrane.config.coltrane import Site
 from coltrane.config.paths import get_content_directory
 from coltrane.config.settings import (
+    get_config,
     get_markdown_renderer,
     get_mistune_plugins,
     get_site_url,
@@ -69,12 +72,14 @@ class StaticRequest(HttpRequest):
 class MarkdownRenderer:
     _instance = None
 
-    def _get_markdown_content_as_html(self, slug: str) -> Tuple[str, Optional[Dict]]:
+    def _get_markdown_content_as_html(self, slug: str, site: Site) -> Tuple[str, Optional[Dict]]:
         """
         Converts markdown file based on the slug into HTML.
         """
 
-        path = get_content_directory() / f"{slug}.md"
+        path = get_content_directory(site) / f"{slug}.md"
+
+        # print("test---path", path)
 
         return self.render_markdown_path(path)
 
@@ -121,8 +126,8 @@ class MarkdownRenderer:
 
         return str(template.render(context=context, request=request))
 
-    def get_html_and_markdown(self, slug: str) -> Tuple[str, Dict]:
-        (html, metadata) = self._get_markdown_content_as_html(slug)
+    def get_html_and_markdown(self, slug: str, site: Site) -> Tuple[str, Dict]:
+        (html, metadata) = self._get_markdown_content_as_html(slug, site)
 
         if metadata is None:
             metadata = {}
@@ -150,14 +155,19 @@ class MarkdownRenderer:
             dictionary.
         """
 
-        (html, metadata) = self.get_html_and_markdown(slug)
+        site = get_config(base_dir=Path(".")).get_site(request)
+        # print("testtt-site", site)
+        # print("GOT SITE WHEN RENDER", site)
+        assert site, "Missing site"
+
+        (html, metadata) = self.get_html_and_markdown(slug, site)
         context = {"debug": settings.DEBUG, "coltrane": settings.COLTRANE}
 
         # Start with any metadata from the markdown frontmatter
         context.update(metadata)
 
         # Add JSON data to the context
-        data = get_data()
+        data = get_data(site=site)
         context["data"] = data
 
         if request:

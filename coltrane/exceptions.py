@@ -1,0 +1,2 @@
+class ColtraneConfigParseError(Exception):
+    pass

@@ -3,7 +3,7 @@ A little wrapper CLI over a few Django management commands.
 """
 
 from importlib.metadata import version
-from os import getcwd
+from os import environ, getcwd
 from pathlib import Path
 from stat import S_IEXEC
 from subprocess import run as run_process
@@ -23,6 +23,9 @@ def _run_management_command(command_name, *args):
 
     if not file_path.exists():
         file_path = Path(current_directory) / APP_DIR / "app.py"
+
+    if not file_path.exists():
+        file_path = Path(current_directory) / "sites" / "app.py"
 
     if not file_path.exists():
         raise Exception("app.py could not be found.")
@@ -136,8 +139,10 @@ def create(force):
 
 
 @cli.command(help="Start a local development server. Alias: serve.", aliases=["serve"])
+@click.option("--config", default="coltrane.toml", help="Config file name")
 @click.option("--port", default=8000, help="Port to serve localhost from")
-def play(port):
+def play(config, port):
+    environ.setdefault("COLTRANE_CONFIG_FILE", config)
     _run_management_command("runserver", f"0:{port}")
 
 

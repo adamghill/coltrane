@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path, re_path
 from django.views.generic.base import RedirectView
 
@@ -27,14 +26,16 @@ if settings.DEBUG:
         path("__reload__/", include("django_browser_reload.urls")),
     ]
 
-# Add sitemap and RSS URLs
+# Add redirects
+for redirect in get_redirects():
+    urlpatterns += [
+        path(redirect.from_url, RedirectView.as_view(url=redirect.to_url, permanent=redirect.permanent)),
+    ]
+
+# Add healthcheck, sitemap, and RSS URLs
 urlpatterns += [
-    path(
-        "sitemap.xml",
-        sitemap,
-        {"sitemaps": sitemaps},
-        name="django.contrib.sitemaps.views.sitemap",
-    ),
+    path("healthcheck", views.healthcheck, name="healthcheck"),
+    path("sitemap.xml", views.sitemap, name="sitemap"),
     path("rss.xml", ContentFeed()),
 ]
 

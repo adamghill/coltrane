@@ -3,20 +3,18 @@ import sys
 from contextlib import redirect_stdout
 from copy import deepcopy
 from io import StringIO
-from os import environ, getenv
+from os import environ, getcwd, getenv
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from django import setup as django_setup
 from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
 from django.core.management import execute_from_command_line
-from django.template.library import InvalidTemplateLibrary, import_library
 from dotenv import load_dotenv
 
-from coltrane.config.settings import DEFAULT_COLTRANE_SETTINGS
+from coltrane.config.settings import DEFAULT_COLTRANE_SETTINGS, get_config
 from coltrane.module_finder import (
-    is_dj_angles_installed,
     is_django_compressor_installed,
     is_django_unicorn_installed,
     is_unicorn_module_available,
@@ -70,110 +68,26 @@ def _get_current_command():
         return sys.argv[1]
 
 
-def _get_base_dir(base_dir: Optional[Path]) -> Path:
+def _get_base_dir(base_dir: Optional[Union[str, Path]]) -> Path:
     """
     Gets the base directory.
     """
 
     if base_dir is None:
-        base_dir = Path("site")
+        cwd = getcwd()
+
+        base_dir = cwd / Path("sites")
 
         if not base_dir.exists():
-            base_dir = Path(".")
-    elif isinstance(base_dir, str):
+            base_dir = cwd / Path("site")
+
+            if not base_dir.exists():
+                base_dir = Path(".")
+
+    if isinstance(base_dir, str):
         base_dir = Path(base_dir)
 
     return base_dir
-
-
-def _get_template_tag_module_name(base_dir: Path, file: Path) -> str:
-    """
-    Get a dot notation module name if a particular file path is a template tag.
-    """
-
-    # TODO: Cleaner way to convert a string path to a module dot notation?
-    module_name = str(file)
-
-    if str(base_dir) != ".":
-        module_name = module_name.replace(str(base_dir), "")
-
-    module_name = module_name.replace("/", ".")
-
-    if module_name.startswith("."):
-        module_name = module_name[1:]
-
-    if module_name.endswith(".py"):
-        module_name = module_name[:-3]
-    else:
-        raise InvalidTemplateLibrary()
-
-    import_library(module_name)
-
-    return module_name
-
-
-def _get_default_template_settings(base_dir: Path, debug: bool = True) -> List:
-    """
-    Gets default template settings, including templates and built-in template tags.
-    """
-
-    template_dir = base_dir / "templates"
-    templatetags_dir = base_dir / "templatetags"
-    template_tags = []
-
-    if templatetags_dir.exists():
-        for template_tag_path in templatetags_dir.rglob("*.py"):
-            if template_tag_path.is_file():
-                try:
-                    module_name = _get_template_tag_module_name(base_dir, template_tag_path)
-                    template_tags.append(module_name)
-                except InvalidTemplateLibrary as e:
-                    logger.debug(e)
-
-    builtins = [
-        "django.contrib.humanize.templatetags.humanize",
-        "django.templatetags.static",
-        "coltrane.templatetags.coltrane_tags",
-    ]
-    builtins.extend(template_tags)
-
-    template = {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "APP_DIRS": True,
-        "DIRS": [template_dir],
-        "OPTIONS": {
-            "builtins": builtins,
-            "context_processors": [
-                "django.template.context_processors.request",
-                "django.template.context_processors.debug",
-                "django.template.context_processors.static",
-                "coltrane.context_processors.coltrane",
-            ],
-        },
-    }
-
-    if is_dj_angles_installed():
-        del template["APP_DIRS"]
-
-        if debug:
-            template["OPTIONS"]["loaders"] = [
-                "dj_angles.template_loader.Loader",
-                "django.template.loaders.filesystem.Loader",
-                "django.template.loaders.app_directories.Loader",
-            ]
-        else:
-            template["OPTIONS"]["loaders"] = [
-                (
-                    "django.template.loaders.cached.Loader",
-                    [
-                        "dj_angles.template_loader.Loader",
-                        "django.template.loaders.filesystem.Loader",
-                        "django.template.loaders.app_directories.Loader",
-                    ],
-                )
-            ]
-
-    return [template]
 
 
 def _merge_installed_apps(django_settings: Dict[str, Any], installed_apps: List[str]) -> List[str]:
@@ -292,7 +206,7 @@ def _set_coltrane_setting(settings: Dict, initialize_settings: Dict, setting_nam
 def _get_from_env_or_settings(django_settings: Dict, key: str, default: Any) -> Any:
     """
     Get a setting from (in precedence order) the environment or the `COLTRANE` dictionary
-    in settings. Normal `get_coltrane_settings()` method does not work because it requires
+    in settings. Normal `get_config_settings()` method does not work because it requires
     the Django settings to be configured.
     """
 
@@ -320,9 +234,43 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
     debug = django_settings.get("DEBUG", getenv("DEBUG", "True") == "True")
     time_zone = django_settings.get("TIME_ZONE", getenv("TIME_ZONE", "UTC"))
 
-    staticfiles_dirs = [
-        base_dir / "static",
-    ]
+    # django_settings.get("SITES")
+    # sites = django_settings.get("COLTRANE_SITES", {})
+
+    # for key in environ.keys():
+    #     if key.startswith("COLTRANE_SITE_"):
+
+    # if not sites:
+    #     sites = {"": "*"}
+
+    # if isinstance(sites, dict):
+    #     sites = Sites(sites)
+
+    # sites = Sites(django_settings.get("COLTRANE_SITES", {"": "*"}))
+
+    # sites = Sites(directory=Path("sites"))
+
+    config = get_config(base_dir)
+
+    # staticfiles_dirs = [
+    #     base_dir / "static",
+    # ]
+
+    staticfiles_dirs = []
+
+    # TODO: if sites
+    # print("add base_dir to staticfiles", base_dir)
+    staticfiles_dirs.append(base_dir)
+
+    # staticfiles_dirs.append(base_dir / "adamghill" / "static")
+    # print("add to staticfiles_dirs", staticfiles_dirs)
+
+    # if not sites.has_only_default:
+    # for site in coltrane.sites:
+    #     static_path = base_dir / "sites" / site.folder / "static"
+
+    #     if static_path.exists():
+    #         staticfiles_dirs.append(base_dir / "sites" / site.folder / "static")
 
     middleware = deepcopy(DEFAULT_MIDDLEWARE)
     installed_apps = deepcopy(DEFAULT_INSTALLED_APPS)
@@ -349,21 +297,35 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         content_directory = _get_from_env_or_settings(
             django_settings, "CONTENT_DIRECTORY", DEFAULT_COLTRANE_SETTINGS["CONTENT_DIRECTORY"]
         )
-        content_directory_absolute = base_dir / content_directory
+        # content_directory_absolute = base_dir / content_directory
 
-        if content_directory_absolute.exists():
-            staticfiles_dirs.append(content_directory_absolute)
+        # if content_directory_absolute.exists():
+        #     staticfiles_dirs.append(content_directory_absolute)
 
         # Add data to "staticfiles" so django-browser-reload can monitor it
         data_directory = _get_from_env_or_settings(
             django_settings, "DATA_DIRECTORY", DEFAULT_COLTRANE_SETTINGS["DATA_DIRECTORY"]
         )
-        data_directory_absolute = base_dir / data_directory
+        # data_directory_absolute = base_dir / data_directory
 
-        if data_directory_absolute.exists():
-            staticfiles_dirs.append(data_directory_absolute)
+        # if data_directory_absolute.exists():
+        #     staticfiles_dirs.append(data_directory_absolute)
 
-    templates = _get_default_template_settings(base_dir, debug)
+        # if not sites.has_only_default:
+        for site in config.sites:
+            site_content_directory = base_dir / "sites" / site.folder / content_directory
+
+            if site_content_directory.exists():
+                staticfiles_dirs.append(site_content_directory)
+
+            site_data_directory = base_dir / "sites" / site.folder / data_directory
+
+            if site_data_directory.exists():
+                staticfiles_dirs.append(site_data_directory)
+
+        # staticfiles_dirs.append("config.toml")
+
+    templates = deepcopy(config.get_templates_settings())
 
     default_settings = {
         "BASE_DIR": base_dir,
@@ -445,8 +407,8 @@ def _configure_settings(django_settings: Dict[str, Any]) -> None:
     settings.configure(**django_settings)
 
 
-def _load_environment_variables(base_dir: Path, django_settings: Dict[str, Any]) -> None:
-    load_dotenv(base_dir / ".env")
+def _load_environment_variables(django_settings: Dict[str, Any]) -> None:
+    load_dotenv(".env")
 
     if "ENV" not in django_settings:
         django_settings["ENV"] = {}
@@ -460,7 +422,9 @@ def initialize(**django_settings) -> WSGIHandler:
     """
 
     base_dir = _get_base_dir(django_settings.get("BASE_DIR"))
-    _load_environment_variables(base_dir=base_dir, django_settings=django_settings)
+    _load_environment_variables(django_settings=django_settings)
+
+    # coltrane_sites = django_settings.get("COLTRANE_SITES", {})
 
     django_settings = _merge_settings(base_dir, django_settings)
     _configure_settings(django_settings)
