@@ -13,6 +13,7 @@
 - Deployment best practices with `Docker`, `whitenoise`, and `gunicorn` already pre-configured
 - Leverage built-in or custom `Django` template tags and filters
 - Include any third-party [`Django` app](https://djangopackages.org) for additional functionality
+- Serve multiple domains with custom sites
 - Optional building of static HTML files
 
 ### 👀 Examples in the wild
@@ -94,17 +95,8 @@ static-files
 sitemap
 redirects
 rss
+custom-sites
 deployment
-```
-
-```{toctree}
-:caption: Misc
-:maxdepth: 2
-:hidden:
-
-cli
-env
-settings
 ```
 
 ```{toctree}
@@ -122,6 +114,16 @@ static-site-generator/build
 
 django-app/installation
 django-app/integration
+```
+
+```{toctree}
+:caption: Misc
+:maxdepth: 2
+:hidden:
+
+cli
+env
+settings
 ```
 
 ```{toctree}

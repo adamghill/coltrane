@@ -26,6 +26,7 @@
 - Leverage the power of built-in `Django` templates, template tags, and filters inside `markdown` files
 - Any custom template tags and filters are enabled automatically for use in `markdown` or HTML templates
 - Include any third-party [`Django` app](https://djangopackages.org) for additional functionality
+- Serve multiple domains with custom sites
 - Optional command to generate static HTML files
 - Can be integrated into a regular `Django` project as a standard third-party `Django` app to render markdown content
 
