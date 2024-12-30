@@ -5,7 +5,7 @@ from copy import deepcopy
 from io import StringIO
 from os import environ, getcwd, getenv
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from django import setup as django_setup
 from django.conf import settings
@@ -68,7 +68,7 @@ def _get_current_command():
         return sys.argv[1]
 
 
-def _get_base_dir(base_dir: Optional[Union[str, Path]]) -> Path:
+def _get_base_dir(base_dir: str | Path | None) -> Path:
     """
     Gets the base directory.
     """
@@ -90,7 +90,7 @@ def _get_base_dir(base_dir: Optional[Union[str, Path]]) -> Path:
     return base_dir
 
 
-def _merge_installed_apps(django_settings: Dict[str, Any], installed_apps: List[str]) -> List[str]:
+def _merge_installed_apps(django_settings: dict[str, Any], installed_apps: list[str]) -> list[str]:
     """
     Gets the installed apps from the passed-in settings and adds `coltrane` to it.
     """
@@ -105,7 +105,7 @@ def _merge_installed_apps(django_settings: Dict[str, Any], installed_apps: List[
     return installed_apps
 
 
-def _get_caches(django_settings: Dict[str, Any]) -> Dict:
+def _get_caches(django_settings: dict[str, Any]) -> dict:
     """Gets the configured cache. Defaults to the dummy cache."""
 
     caches = django_settings.get("CACHES", DEFAULT_CACHES_SETTINGS)
@@ -155,7 +155,7 @@ def _get_caches(django_settings: Dict[str, Any]) -> Dict:
     return caches
 
 
-def _get_from_env(env_name: str) -> List[str]:
+def _get_from_env(env_name: str) -> list[str]:
     """
     Retrieves environment value that could potentially be a list of strings.
     """
@@ -168,7 +168,7 @@ def _get_from_env(env_name: str) -> List[str]:
     return env_values
 
 
-def _set_coltrane_setting(settings: Dict, initialize_settings: Dict, setting_name: str) -> Dict:
+def _set_coltrane_setting(settings: dict, initialize_settings: dict, setting_name: str) -> dict:
     """
     Sets a setting on the `COLTRANE` dictionary that is in the environment or passed
     in to `initialize`. Environment takes precedence.
@@ -203,7 +203,7 @@ def _set_coltrane_setting(settings: Dict, initialize_settings: Dict, setting_nam
     return settings
 
 
-def _get_from_env_or_settings(django_settings: Dict, key: str, default: Any) -> Any:
+def _get_from_env_or_settings(django_settings: dict, key: str, default: Any) -> Any:
     """
     Get a setting from (in precedence order) the environment or the `COLTRANE` dictionary
     in settings. Normal `get_config_settings()` method does not work because it requires
@@ -221,7 +221,7 @@ def _get_from_env_or_settings(django_settings: Dict, key: str, default: Any) -> 
     return val
 
 
-def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str, Any]:
+def _merge_settings(base_dir: Path, django_settings: dict[str, Any]) -> dict[str, Any]:
     """
     Merges the passed-in settings into the default `coltrane` settings.
     Passed-in settings will override the defaults.
@@ -234,43 +234,10 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
     debug = django_settings.get("DEBUG", getenv("DEBUG", "True") == "True")
     time_zone = django_settings.get("TIME_ZONE", getenv("TIME_ZONE", "UTC"))
 
-    # django_settings.get("SITES")
-    # sites = django_settings.get("COLTRANE_SITES", {})
-
-    # for key in environ.keys():
-    #     if key.startswith("COLTRANE_SITE_"):
-
-    # if not sites:
-    #     sites = {"": "*"}
-
-    # if isinstance(sites, dict):
-    #     sites = Sites(sites)
-
-    # sites = Sites(django_settings.get("COLTRANE_SITES", {"": "*"}))
-
-    # sites = Sites(directory=Path("sites"))
-
     config = get_config(base_dir)
 
-    # staticfiles_dirs = [
-    #     base_dir / "static",
-    # ]
-
-    staticfiles_dirs = []
-
-    # TODO: if sites
-    # print("add base_dir to staticfiles", base_dir)
-    staticfiles_dirs.append(base_dir)
-
-    # staticfiles_dirs.append(base_dir / "adamghill" / "static")
-    # print("add to staticfiles_dirs", staticfiles_dirs)
-
-    # if not sites.has_only_default:
-    # for site in coltrane.sites:
-    #     static_path = base_dir / "sites" / site.folder / "static"
-
-    #     if static_path.exists():
-    #         staticfiles_dirs.append(base_dir / "sites" / site.folder / "static")
+    # Add base directory for static files, the overriden static templatetag will handle the rest
+    staticfiles_dirs = [base_dir]
 
     middleware = deepcopy(DEFAULT_MIDDLEWARE)
     installed_apps = deepcopy(DEFAULT_INSTALLED_APPS)
@@ -297,21 +264,13 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
         content_directory = _get_from_env_or_settings(
             django_settings, "CONTENT_DIRECTORY", DEFAULT_COLTRANE_SETTINGS["CONTENT_DIRECTORY"]
         )
-        # content_directory_absolute = base_dir / content_directory
-
-        # if content_directory_absolute.exists():
-        #     staticfiles_dirs.append(content_directory_absolute)
 
         # Add data to "staticfiles" so django-browser-reload can monitor it
         data_directory = _get_from_env_or_settings(
             django_settings, "DATA_DIRECTORY", DEFAULT_COLTRANE_SETTINGS["DATA_DIRECTORY"]
         )
-        # data_directory_absolute = base_dir / data_directory
 
-        # if data_directory_absolute.exists():
-        #     staticfiles_dirs.append(data_directory_absolute)
-
-        # if not sites.has_only_default:
+        # Add content and data to staticfiles for each site so that they can be monitored by django-browser-reload
         for site in config.sites:
             site_content_directory = base_dir / "sites" / site.folder / content_directory
 
@@ -322,8 +281,6 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
 
             if site_data_directory.exists():
                 staticfiles_dirs.append(site_data_directory)
-
-        # staticfiles_dirs.append("config.toml")
 
     templates = deepcopy(config.get_templates_settings())
 
@@ -399,7 +356,7 @@ def _merge_settings(base_dir: Path, django_settings: Dict[str, Any]) -> Dict[str
     return django_settings
 
 
-def _configure_settings(django_settings: Dict[str, Any]) -> None:
+def _configure_settings(django_settings: dict[str, Any]) -> None:
     """
     Configures the settings in Django.
     """
@@ -407,7 +364,7 @@ def _configure_settings(django_settings: Dict[str, Any]) -> None:
     settings.configure(**django_settings)
 
 
-def _load_environment_variables(django_settings: Dict[str, Any]) -> None:
+def _load_environment_variables(django_settings: dict[str, Any]) -> None:
     load_dotenv(".env")
 
     if "ENV" not in django_settings:

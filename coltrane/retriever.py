@@ -1,8 +1,8 @@
 import json
 import logging
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, Optional
 
 from django.http import HttpRequest
 
@@ -56,7 +56,7 @@ def _add_data_from_path(data, data_directory, path):
             data = dict_merge(data, new_data)
 
 
-def get_data(site: Site) -> Dict:
+def get_data(site: Site) -> dict:
     """
     Get and merge data from any JSON files recursively found in the `data` directory.
     """
@@ -88,7 +88,7 @@ def get_data(site: Site) -> Dict:
 
 
 def get_content_paths(
-    request: Optional[HttpRequest] = None, slug: Optional[str] = None, site: Optional[Site] = None
+    request: HttpRequest | None = None, slug: str | None = None, site: Site | None = None
 ) -> Iterable[Path]:
     """
     Yield `Path`s for all markdown content in the content directory.
@@ -115,12 +115,12 @@ def get_content_paths(
 @dataclass
 class ContentItem:
     path: Path
-    metadata: Dict
+    metadata: dict
     relative_url: str
     html: str
 
 
-def get_content_items(site: Optional[Site] = None, skip_draft: bool = True) -> Iterable[ContentItem]:  # noqa: FBT001, FBT002
+def get_content_items(site: Site | None = None, skip_draft: bool = True) -> Iterable[ContentItem]:  # noqa: FBT001, FBT002
     from coltrane.renderer import MarkdownRenderer
 
     paths = get_content_paths(site=site)

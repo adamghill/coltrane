@@ -1,9 +1,9 @@
 from datetime import date, datetime
 from pathlib import Path
 from unittest.mock import patch
+from zoneinfo import ZoneInfo
 
 import pytest
-from zoneinfo import ZoneInfo
 
 from coltrane.renderer import MistuneMarkdownRenderer
 from tests.fixtures import default_site

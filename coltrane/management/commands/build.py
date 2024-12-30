@@ -8,7 +8,6 @@ from multiprocessing import cpu_count
 from pathlib import Path
 from shutil import copy2
 from types import SimpleNamespace
-from typing import Dict, List, Optional
 
 from django.conf import settings
 from django.contrib.sitemaps.views import sitemap
@@ -183,7 +182,7 @@ class Command(BaseCommand):
         self.stdout.write(LogSymbols.SUCCESS.value, ending=" ")
         self.stdout.write(text, ending=ending)
 
-    def _set_output_directory(self, options: Dict) -> None:
+    def _set_output_directory(self, options: dict) -> None:
         if options.get("output"):
             if not hasattr(settings, "COLTRANE"):
                 settings.COLTRANE = {}
@@ -207,12 +206,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):  # noqa: ARG002
         self.is_force: bool = False
-        self.manifest: Optional[Manifest] = None
+        self.manifest: Manifest | None = None
         self.output_result_counts.create_count = 0
         self.output_result_counts.update_count = 0
         self.output_result_counts.skip_count = 0
-        self.output_directory: Optional[Path] = None
-        self.errors: List[str] = []
+        self.output_directory: Path | None = None
+        self.errors: list[str] = []
 
         start_time = time.time()
 

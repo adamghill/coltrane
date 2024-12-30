@@ -2,7 +2,6 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime
 from functools import wraps
-from typing import Dict, List, Optional, Union
 
 import dateparser
 from django.utils.timezone import get_current_timezone, is_naive, make_aware
@@ -11,11 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 def dict_merge(
-    source: Dict,
-    destination: Dict,
+    source: dict,
+    destination: dict,
     destination_overrides_source=False,  # noqa: FBT002
-    path: Optional[List[str]] = None,
-) -> Dict:
+    path: list[str] | None = None,
+) -> dict:
     """
     Deep merge two dictionaries.
 
@@ -46,7 +45,7 @@ def dict_merge(
     return source
 
 
-def convert_to_datetime(obj: Union[str, int, datetime, date]) -> datetime:
+def convert_to_datetime(obj: str | int | datetime | date) -> datetime:
     """Convert different objects that could be a datetime into a datetime."""
 
     dt: datetime

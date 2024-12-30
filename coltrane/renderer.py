@@ -4,7 +4,6 @@ import re
 from dataclasses import dataclass, field
 from html import unescape
 from pathlib import Path
-from typing import Dict, Optional, Tuple, Union
 from urllib.parse import unquote
 
 from django.conf import settings
@@ -41,8 +40,8 @@ class StaticRequest(HttpRequest):
     """
 
     path: str
-    META: Dict = field(default_factory=dict)
-    GET: Dict = field(default_factory=dict)
+    META: dict = field(default_factory=dict)
+    GET: dict = field(default_factory=dict)
 
     def __init__(self, path: str, meta=None, get=None):
         self.path = path
@@ -72,7 +71,7 @@ class StaticRequest(HttpRequest):
 class MarkdownRenderer:
     _instance = None
 
-    def _get_markdown_content_as_html(self, slug: str, site: Site) -> Tuple[str, Optional[Dict]]:
+    def _get_markdown_content_as_html(self, slug: str, site: Site) -> tuple[str, dict | None]:
         """
         Converts markdown file based on the slug into HTML.
         """
@@ -102,7 +101,7 @@ class MarkdownRenderer:
 
         return html
 
-    def render_markdown_path(self, path) -> Tuple[str, Dict]:
+    def render_markdown_path(self, path) -> tuple[str, dict]:
         """
         Renders the markdown file located at path.
         """
@@ -112,10 +111,10 @@ class MarkdownRenderer:
 
             return self.render_markdown_text(text)
 
-    def render_markdown_text(self, text: str) -> Tuple[str, Dict]:  # noqa: ARG002
+    def render_markdown_text(self, text: str) -> tuple[str, dict]:  # noqa: ARG002
         raise Exception("Missing render_markdown_text")
 
-    def render_html_with_django(self, html: str, context: Dict, request: HttpRequest = None) -> str:
+    def render_html_with_django(self, html: str, context: dict, request: HttpRequest = None) -> str:
         """
         Takes the rendered HTML from the markdown and use Django to fill in any template
         variables from the `context` dictionary.
@@ -126,7 +125,7 @@ class MarkdownRenderer:
 
         return str(template.render(context=context, request=request))
 
-    def get_html_and_markdown(self, slug: str, site: Site) -> Tuple[str, Dict]:
+    def get_html_and_markdown(self, slug: str, site: Site) -> tuple[str, dict]:
         (html, metadata) = self._get_markdown_content_as_html(slug, site)
 
         if metadata is None:
@@ -142,8 +141,8 @@ class MarkdownRenderer:
     def render_markdown(
         self,
         slug: str,
-        request: Union[HttpRequest, StaticRequest],
-    ) -> Tuple[str, Dict]:
+        request: HttpRequest | StaticRequest,
+    ) -> tuple[str, dict]:
         """
         Renders the markdown from the `slug` by:
         1. Rendering the markdown file into HTML
@@ -266,7 +265,7 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
             plugins=plugins,
         )
 
-    def _parse_and_update_metadata(self, post) -> Dict:
+    def _parse_and_update_metadata(self, post) -> dict:
         """
         Add new, parse and/or cast existing values to metadata.
 
@@ -420,7 +419,7 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
 
         return html
 
-    def render_markdown_text(self, text: str) -> Tuple[str, Dict]:
+    def render_markdown_text(self, text: str) -> tuple[str, dict]:
         import frontmatter
 
         frontmatter_post = frontmatter.loads(text)

@@ -2,7 +2,6 @@ import json
 from dataclasses import dataclass
 from hashlib import md5 as md5_hash
 from pathlib import Path
-from typing import Dict, Optional
 
 from django.template.loader import render_to_string
 
@@ -171,7 +170,7 @@ class ManifestItems:
     A store of all the markdown files in the manifest.
     """
 
-    _data: Dict[str, ManifestItem]
+    _data: dict[str, ManifestItem]
 
     def __init__(self):
         self._data = {}
@@ -264,7 +263,7 @@ class Manifest:
 
         return item
 
-    def get(self, markdown_file: Path) -> Optional[ManifestItem]:
+    def get(self, markdown_file: Path) -> ManifestItem | None:
         """
         Gets information about a markdown file from the manifest.
         """

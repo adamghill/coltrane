@@ -1,6 +1,5 @@
 from os import getenv
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import msgspec
 from django.conf import settings
@@ -39,7 +38,7 @@ DEFAULT_COLTRANE_SETTINGS = {
 }
 
 
-def get_coltrane_settings() -> Dict:
+def get_coltrane_settings() -> dict:
     """
     Get the `COLTRANE` settings from the settings file.
     """
@@ -68,7 +67,7 @@ def get_markdown_renderer() -> str:
     return markdown_renderer
 
 
-def get_mistune_plugins() -> List[str]:
+def get_mistune_plugins() -> list[str]:
     """
     Get the `mistune` plugins.
     """
@@ -76,7 +75,7 @@ def get_mistune_plugins() -> List[str]:
     return get_coltrane_settings().get("MISTUNE_PLUGINS", DEFAULT_MISTUNE_PLUGINS)
 
 
-def get_site_url() -> Optional[str]:
+def get_site_url() -> str | None:
     """
     Get the configured site.
     """
@@ -84,7 +83,7 @@ def get_site_url() -> Optional[str]:
     return get_coltrane_settings().get("SITE_URL")
 
 
-def get_title() -> Optional[str]:
+def get_title() -> str | None:
     """
     Get the configured title.
     """
@@ -92,7 +91,7 @@ def get_title() -> Optional[str]:
     return get_coltrane_settings().get("TITLE")
 
 
-def get_description() -> Optional[str]:
+def get_description() -> str | None:
     """
     Get the configured description.
     """
@@ -116,7 +115,7 @@ def get_content_directory() -> str:
     return get_coltrane_settings().get("CONTENT_DIRECTORY", DEFAULT_COLTRANE_SETTINGS["CONTENT_DIRECTORY"])
 
 
-def get_extra_file_names() -> List[str]:
+def get_extra_file_names() -> list[str]:
     return get_coltrane_settings().get("EXTRA_FILE_NAMES", [])
 
 
@@ -133,17 +132,17 @@ def get_data_json_5() -> bool:
 
 
 # Global config object that is cached in the module
-config: Optional[Config] = None
+config: Config | None = None
 
 
 def reset_config_cache():
-    global config
+    global config  # noqa: PLW0603
 
     config = None
 
 
-def get_config(base_dir: Optional[Path] = None) -> Config:
-    global config
+def get_config(base_dir: Path | None = None) -> Config:
+    global config  # noqa: PLW0603
 
     if config is not None:
         return config

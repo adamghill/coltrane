@@ -1,6 +1,6 @@
+from collections.abc import Iterable
 from os import getcwd
 from pathlib import Path
-from typing import Iterable, Optional
 
 from django.conf import settings
 
@@ -10,7 +10,7 @@ from coltrane.config.settings import get_data_directory as get_data_directory_se
 from coltrane.config.settings import get_extra_file_names
 
 
-def get_base_directory(site: Optional[Site] = None) -> Path:
+def get_base_directory(site: Site | None = None) -> Path:
     """
     Get base directory from settings or return the default of the current directory.
     """
@@ -49,7 +49,7 @@ def get_data_directory(site: Site) -> Path:
     return get_site_directory(site=site) / get_data_directory_setting()
 
 
-def get_content_directory(site: Optional[Site] = None) -> Path:
+def get_content_directory(site: Site | None = None) -> Path:
     """
     Get the path of the markdown `content` directory.
     """
@@ -68,7 +68,7 @@ def get_extra_file_paths() -> Iterable[Path]:
             yield file_path
 
 
-def get_file_path(file_name: str, site: Optional[Site] = None) -> Path:
+def get_file_path(file_name: str, site: Site | None = None) -> Path:
     """
     Get the path of a file in the content directory.
     """

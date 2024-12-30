@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from dateparser.timezone_parser import StaticTzInfo
-from zoneinfo import ZoneInfo
 
 from coltrane.feeds import ContentFeed
 
