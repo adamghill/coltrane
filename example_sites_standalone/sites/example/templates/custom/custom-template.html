@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+
+<head>
+    {% compress css %}
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
+    {% endcompress %}
+</head>
+
+<body>
+    <h1>Custom Template!?</h1>
+
+    {% block content %} {{ content }} {% endblock content %}
+</body>
+
+</html>

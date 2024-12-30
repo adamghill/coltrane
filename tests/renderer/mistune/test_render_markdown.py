@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
+from coltrane.config.settings import reset_config_cache
 from coltrane.renderer import MistuneMarkdownRenderer, StaticRequest
 
 
@@ -81,6 +82,8 @@ def test_render_markdown_metadata(
 
 def test_render_markdown_mistune(markdown_renderer, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
+
+    reset_config_cache()
 
     (tmp_path / "content").mkdir()
     (tmp_path / "content" / "test-2.md").write_text(

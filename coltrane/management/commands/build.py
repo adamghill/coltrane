@@ -42,6 +42,7 @@ class Command(BaseCommand):
     threads_count = 2
     manifest = None
     output_result_counts = SimpleNamespace(create_count=0, update_count=0, skip_count=0)
+    request = StaticRequest("/")
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -75,7 +76,7 @@ class Command(BaseCommand):
         if not self.output_directory:
             raise AssertionError("Missing output directory")
 
-        sitemap_response = sitemap(request=StaticRequest(path="/"), sitemaps=sitemaps)
+        sitemap_response = sitemap(request=self.request, sitemaps=sitemaps)
         sitemap_xml = sitemap_response.render().content.decode()
         (self.output_directory / "sitemap.xml").write_text(sitemap_xml)
 
@@ -84,7 +85,7 @@ class Command(BaseCommand):
             raise AssertionError("Missing output directory")
 
         content_feed = ContentFeed()
-        feed = content_feed.get_feed(None, request=StaticRequest(path="/"))  # type: ignore
+        feed = content_feed.get_feed(None, request=self.request)  # type: ignore
         rss_xml = feed.writeString("utf-8")
 
         (self.output_directory / "rss.xml").write_text(rss_xml)
@@ -283,7 +284,7 @@ class Command(BaseCommand):
             pluralized_threads = "s" if self.threads_count > 1 else ""
             spinner.text = f"Create HTML files (use {self.threads_count} thread{pluralized_threads})"
 
-            for path in get_content_paths():
+            for path in get_content_paths(request=self.request):
                 future = executor.submit(self._output_markdown_file, path)
                 exception = future.exception()
 

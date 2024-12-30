@@ -3,13 +3,19 @@ from typing import Optional
 
 from django.contrib.syndication.views import Feed
 
-from coltrane.config.settings import get_description, get_site_url, get_title
+from coltrane.config.settings import get_config, get_description, get_site_url, get_title
 from coltrane.retriever import ContentItem, get_content_items
 
 
 class ContentFeed(Feed):
     title = get_title()
     description = get_description()
+    _request = None
+
+    def get_feed(self, obj, request):
+        self._request = request
+
+        return super().get_feed(obj, request)
 
     @property
     def site_url(self):
@@ -21,7 +27,12 @@ class ContentFeed(Feed):
         return site_url
 
     def items(self):
-        return get_content_items()
+        site = None
+
+        if self._request:
+            site = get_config().get_site(self._request)
+
+        return get_content_items(site=site)
 
     def item_title(self, item: ContentItem):
         return item.metadata.get("title")

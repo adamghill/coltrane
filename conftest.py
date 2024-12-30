@@ -4,8 +4,8 @@ from pathlib import Path
 import pytest
 from django.conf import settings
 
-from coltrane import _get_default_template_settings
-from coltrane.config.settings import DEFAULT_COLTRANE_SETTINGS
+from coltrane.config.coltrane import Config
+from coltrane.config.settings import DEFAULT_COLTRANE_SETTINGS, reset_config_cache
 
 
 def get_coltrane_settings():
@@ -17,7 +17,9 @@ def get_coltrane_settings():
 
 def pytest_configure():
     base_dir = Path(".")
-    templates = deepcopy(_get_default_template_settings(base_dir))
+    config = Config(base_dir=base_dir)
+
+    templates = deepcopy(config.get_templates_settings())
 
     settings.configure(
         BASE_DIR=base_dir,
@@ -44,6 +46,7 @@ def pytest_configure():
 def reset_settings(settings):
     # Set the settings
     settings.COLTRANE = get_coltrane_settings()
+    reset_config_cache()
 
     # Run test
     yield

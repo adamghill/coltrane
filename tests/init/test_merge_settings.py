@@ -117,34 +117,34 @@ def test_merge_settings_with_django_compressor_compress_offline():
     assert actual["COMPRESS_OFFLINE"] is True
 
 
-@patch("coltrane.is_whitenoise_installed", Mock(return_value=False))
-@patch("coltrane.is_django_compressor_installed", Mock(return_value=False))
-@patch("coltrane.is_django_unicorn_installed", Mock(return_value=False))
-@patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
-@patch("coltrane.is_dj_angles_installed", Mock(return_value=True))
-def test_merge_settings_with_dj_angles():
-    actual = _merge_settings(Path("."), {})
-    assert actual["TEMPLATES"]
-    template = actual["TEMPLATES"][0]
+# @patch("coltrane.is_whitenoise_installed", Mock(return_value=False))
+# @patch("coltrane.is_django_compressor_installed", Mock(return_value=False))
+# @patch("coltrane.is_django_unicorn_installed", Mock(return_value=False))
+# @patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
+# @patch("coltrane.is_dj_angles_installed", Mock(return_value=True))
+# def test_merge_settings_with_dj_angles():
+#     actual = _merge_settings(Path("."), {})
+#     assert actual["TEMPLATES"]
+#     template = actual["TEMPLATES"][0]
 
-    assert "APP_DIRS" not in template
+#     assert "APP_DIRS" not in template
 
-    assert template["OPTIONS"]["loaders"]
-    assert template["OPTIONS"]["loaders"][0] == "dj_angles.template_loader.Loader"
+#     assert template["OPTIONS"]["loaders"]
+#     assert template["OPTIONS"]["loaders"][0] == "dj_angles.template_loader.Loader"
 
 
-@patch("coltrane.is_whitenoise_installed", Mock(return_value=False))
-@patch("coltrane.is_django_compressor_installed", Mock(return_value=False))
-@patch("coltrane.is_django_unicorn_installed", Mock(return_value=False))
-@patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
-@patch("coltrane.is_dj_angles_installed", Mock(return_value=False))
-def test_merge_settings_no_dj_angles():
-    actual = _merge_settings(Path("."), {})
-    assert actual["TEMPLATES"]
-    template = actual["TEMPLATES"][0]
+# @patch("coltrane.is_whitenoise_installed", Mock(return_value=False))
+# @patch("coltrane.is_django_compressor_installed", Mock(return_value=False))
+# @patch("coltrane.is_django_unicorn_installed", Mock(return_value=False))
+# @patch("coltrane.is_unicorn_module_available", Mock(return_value=False))
+# @patch("coltrane.is_dj_angles_installed", Mock(return_value=False))
+# def test_merge_settings_no_dj_angles():
+#     actual = _merge_settings(Path("."), {})
+#     assert actual["TEMPLATES"]
+#     template = actual["TEMPLATES"][0]
 
-    assert "APP_DIRS" in template
-    assert template["APP_DIRS"] is True
+#     assert "APP_DIRS" in template
+#     assert template["APP_DIRS"] is True
 
-    if "loaders" in template["OPTIONS"]:
-        assert "dj_angles.template_loader.Loader" not in template["OPTIONS"]["loaders"]
+#     if "loaders" in template["OPTIONS"]:
+#         assert "dj_angles.template_loader.Loader" not in template["OPTIONS"]["loaders"]

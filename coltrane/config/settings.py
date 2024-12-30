@@ -1,8 +1,12 @@
+from os import getenv
+from pathlib import Path
 from typing import Dict, List, Optional
 
+import msgspec
 from django.conf import settings
 
-from coltrane.config.sites import Sites
+from coltrane.config.coltrane import Config
+from coltrane.exceptions import ColtraneConfigParseError
 
 # List of available `mistune` plugins: https://mistune.lepture.com/en/latest/plugins.html
 DEFAULT_MISTUNE_PLUGINS = [
@@ -128,7 +132,55 @@ def get_data_json_5() -> bool:
     return get_coltrane_settings().get("DATA_JSON5", False)
 
 
-def get_sites() -> Sites:
-    sites = get_coltrane_settings().get("SITES", {})
+# Global config object that is cached in the module
+config: Optional[Config] = None
 
-    return Sites(sites)
+
+def reset_config_cache():
+    global config
+
+    config = None
+
+
+def get_config(base_dir: Optional[Path] = None) -> Config:
+    global config
+
+    if config is not None:
+        return config
+
+    if base_dir is None:
+        from django.conf import settings
+
+        base_dir = settings.BASE_DIR
+
+    if base_dir is None:
+        raise AssertionError(f"Invalid base directory: {base_dir}")
+
+    if isinstance(base_dir, str):
+        base_dir = Path(base_dir)
+
+    config_file_name = getenv("COLTRANE_CONFIG_FILE", "coltrane.toml")
+    config_file_path = Path(config_file_name)
+
+    potential_config_file_paths = [
+        base_dir / "sites" / config_file_path,
+        base_dir / "site" / config_file_path,
+        base_dir / config_file_path,
+    ]
+
+    for path in potential_config_file_paths:
+        if path.exists():
+            try:
+                config = msgspec.toml.decode(path.read_bytes(), type=Config)
+
+                config.base_dir = base_dir
+                config.config_file_name = config_file_name
+                config.config_file_path = path
+                break
+            except msgspec.ValidationError as e:
+                raise ColtraneConfigParseError(str(e)) from e
+
+    if config is None:
+        config = Config(base_dir=base_dir)
+
+    return config

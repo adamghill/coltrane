@@ -1,0 +1,24 @@
+<p>
+  <slot name="my-text">My default text</slot>
+</p>
+
+<div style="border: 1px solid red;">
+  <p>
+    This is a partial: {{ now|date:"c" }}
+  </p>
+
+  <p>
+    Under the hood, it gets pulled in with
+    {% verbatim %}{% include %}{% endverbatim %}
+  </p>
+</div>
+
+<style>
+  p {
+    color: green;
+  }
+
+  :host>* {
+    border: 1px purple solid;
+  }
+</style>

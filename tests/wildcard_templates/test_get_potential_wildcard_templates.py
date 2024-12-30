@@ -1,4 +1,4 @@
-from coltrane.views import _get_potential_wildcard_templates, _sort_potential_templates
+from coltrane.wildcard_templates import _sort_potential_templates, get_potential_wildcard_templates
 
 
 def test_get_potential_wildcard_templates():
@@ -7,7 +7,7 @@ def test_get_potential_wildcard_templates():
     ]
 
     slug = "test"
-    actual = _get_potential_wildcard_templates(slug)
+    actual = get_potential_wildcard_templates(slug)
 
     assert expected == actual
 
@@ -16,7 +16,7 @@ def test_get_potential_wildcard_templates_sub_directory():
     expected = ["test/*.html", "*/this.html", "*/*.html"]
 
     slug = "test/this"
-    actual = _get_potential_wildcard_templates(slug)
+    actual = get_potential_wildcard_templates(slug)
 
     assert expected == actual
 
@@ -32,7 +32,7 @@ def test_get_potential_wildcard_templates_sub_directories():
     ]
 
     slug = "test/this/now"
-    actual = _get_potential_wildcard_templates(slug)
+    actual = get_potential_wildcard_templates(slug)
 
     assert expected == actual
 
