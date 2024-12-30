@@ -8,11 +8,11 @@
 
 ## Bump version
 
-1. `just install` to install the package and all extras
-1. `just test` to run tests
-1. `just docs-build` to build documentation
 1. Update version in `pyproject.toml`
 1. Update CHANGELOG.md
+1. `just update` to install the package and all extras
+1. `just test` to run tests
+1. `just docs-build` to build documentation
 1. Commit changes
 1. Tag commit with new version
 1. Push `git push --tags origin main`

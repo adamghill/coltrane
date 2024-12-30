@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.38.0
+
+- Better support for multiple domains and custom sites.
+- Add `coltrane.toml` settings file.
+
 ## 0.37.0
 
 - Automatically enable `dj-angles` if the library is installed.

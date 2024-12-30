@@ -1,15 +1,15 @@
 import? 'adamghill.justfile'
 import? '../dotfiles/just/justfile'
 
+src := "coltrane"
+
+# List commands
+_default:
+    just --list --unsorted --justfile {{ justfile() }} --list-heading $'Available commands:\n'
+
 # Grab default `adamghill.justfile` from GitHub
 fetch:
   curl https://raw.githubusercontent.com/adamghill/dotfiles/master/just/justfile > adamghill.justfile
-
-src := "coltrane"
-
-install:
-  just sync
-  uv pip install .[docs, deploy, json5, compressor, angles, unicorn]
 
 serve:
   uv run --all-extras python3 example_standalone/app.py runserver 0:8045

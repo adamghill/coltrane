@@ -3,7 +3,7 @@ name = "coltrane"
 authors = [
   {name = "Adam Hill", email = "adam@adamghill.com"}
 ]
-version = "0.37.0"
+version = "0.38.0"
 description = "A minimal app framework for content sites 🎵"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -94,7 +94,7 @@ dev-dependencies = [
 [tool.ruff]
 src = ["coltrane"]
 exclude = []
-target-version = "py38"
+target-version = "py310"
 line-length = 120
 lint.select = [
   "A",
