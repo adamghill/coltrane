@@ -1,4 +1,5 @@
-from typing import Annotated, Dict, Generator, Optional, Union
+from collections.abc import Generator
+from typing import Annotated
 
 import msgspec
 
@@ -8,7 +9,7 @@ from coltrane.config.paths import get_redirects_json
 class Redirect(msgspec.Struct):
     """Data for a redirect"""
 
-    to_url: Optional[str] = msgspec.field(name="url")
+    to_url: str | None = msgspec.field(name="url")
     permanent: bool = False
     from_url: str = ""
 
@@ -20,7 +21,7 @@ def get_redirects() -> Generator[Redirect, None, None]:
         return
 
     with redirects_json_path as f:
-        paths = msgspec.json.decode(f.read_bytes(), type=Annotated[Dict[str, Union[str, Redirect]], msgspec.Meta()])
+        paths = msgspec.json.decode(f.read_bytes(), type=Annotated[dict[str, str | Redirect], msgspec.Meta()])
 
         for from_url, to_url in paths.items():
             if from_url.startswith("/"):

@@ -33,15 +33,15 @@ class Base(msgspec.Struct, forbid_unknown_fields=True, dict=True):
 
 
 class Coltrane(Base):
-    site_url: Optional[str] = None
+    site_url: str | None = None
     is_secure: bool = False
     extra_file_names: list[str] = msgspec.field(default_factory=list)
     data_json5: bool = False
     disable_wildcard_templates: bool = False
     content_directory: str = "content"
     data_directory: str = "data"
-    description: Optional[str] = None
-    title: Optional[str] = None
+    description: str | None = None
+    title: str | None = None
     mistune_plugins: list[str] = msgspec.field(default_factory=get_default_mistune_plugins)
 
 
@@ -55,7 +55,7 @@ class Site(Base):
     folder: str
     hosts: list[str]
 
-    def has_host(self, request_host: Optional[str]) -> bool:
+    def has_host(self, request_host: str | None) -> bool:
         if not request_host:
             logger.warning("The host for the request could not be determined")
 
@@ -120,7 +120,7 @@ class Config(Base):
     is_debug: bool = False
     """Whether the project is in debug mode."""
 
-    config_file_name: Optional[str] = None
+    config_file_name: str | None = None
     """The name of the configuration file. Defaults to coltrane.toml."""
 
     coltrane: Coltrane = msgspec.field(default_factory=Coltrane)

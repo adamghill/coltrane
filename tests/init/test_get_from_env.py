@@ -4,7 +4,7 @@ from coltrane import _get_from_env
 
 
 @patch("coltrane.getenv", return_value="a,b,c")
-def test_get_from_env(getenv):  # noqa: ARG001
+def test_get_from_env(getenv):
     expected = ["a", "b", "c"]
     actual = _get_from_env("TEST_SETTING")
 

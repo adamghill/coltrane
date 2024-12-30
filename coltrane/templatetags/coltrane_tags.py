@@ -1,5 +1,3 @@
-from typing import Dict, List, Optional, Union
-
 from django import template
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import Http404
@@ -20,7 +18,7 @@ class NoParentError(Exception):
     pass
 
 
-def _is_content_slug_in_string(content_slug: str, slugs: Optional[str]) -> bool:
+def _is_content_slug_in_string(content_slug: str, slugs: str | None) -> bool:
     """
     Whether a content slug is included in a string. Handles if `string` is
     comma-delimited list of slugs. Also handles any individual slug
@@ -49,8 +47,8 @@ def _is_content_slug_in_string(content_slug: str, slugs: Optional[str]) -> bool:
 
 @register.simple_tag(takes_context=True)
 def directory_contents(
-    context, directory: Optional[str] = None, exclude: Optional[str] = None, order_by=None
-) -> List[Dict[str, str]]:
+    context, directory: str | None = None, exclude: str | None = None, order_by=None
+) -> list[dict[str, str]]:
     """
     Returns a list of content metadata for a particular directory. Useful for
     listing links to content.
@@ -96,7 +94,7 @@ def directory_contents(
             is_reverse = order_by[0] == "-"
             order_by = order_by[1:]
 
-        def _directory_content_sorter(_metadata: Dict) -> str:
+        def _directory_content_sorter(_metadata: dict) -> str:
             value = _metadata.get(order_by, "") or ""
 
             return str(value)
@@ -107,7 +105,7 @@ def directory_contents(
 
 
 @register.filter()
-def parent(path: Union[str, WSGIRequest] = "") -> str:
+def parent(path: str | WSGIRequest = "") -> str:
     """
     Gets the the directory above `path`.
     """
@@ -322,7 +320,7 @@ def to_html(context: dict, text: str) -> str:
 
 
 @register.simple_tag
-def raise_404(message: Optional[str] = None):
+def raise_404(message: str | None = None):
     """Raise a 404 with an optional message."""
 
     if message:
@@ -348,7 +346,7 @@ def last_path(context: dict) -> str:
 
 
 @register.simple_tag(takes_context=True)
-def paths(context: dict) -> List[str]:
+def paths(context: dict) -> list[str]:
     """Return all parts of the `HTTPRequest` path.
 
     For example, if `request.path` is "/something/cool", ["something", "cool"] would be returned.

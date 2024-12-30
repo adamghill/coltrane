@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from django.contrib.syndication.views import Feed
 
@@ -50,7 +49,7 @@ class ContentFeed(Feed):
 
         return link
 
-    def item_pubdate(self, item: ContentItem) -> Optional[datetime]:
+    def item_pubdate(self, item: ContentItem) -> datetime | None:
         if publish_date := item.metadata.get("publish_date"):
             return publish_date
 
