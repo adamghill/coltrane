@@ -6,7 +6,7 @@ from click.testing import CliRunner
 
 from coltrane.console import APP_DIR, cli
 
-FILES_PATH = Path(__file__).parent.parent.parent / "coltrane/default-files"
+FILES_PATH = Path(__file__).parent.parent.parent / "src/coltrane/default-files"
 
 
 def test_create(tmp_path):
