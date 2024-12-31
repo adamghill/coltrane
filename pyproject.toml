@@ -92,7 +92,7 @@ dev-dependencies = [
 ]
 
 [tool.ruff]
-src = ["coltrane"]
+src = ["src"]
 exclude = []
 target-version = "py310"
 line-length = 120

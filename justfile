@@ -1,7 +1,7 @@
 import? 'adamghill.justfile'
 import? '../dotfiles/just/justfile'
 
-src := "coltrane"
+src := "src/coltrane"
 
 # List commands
 _default:
