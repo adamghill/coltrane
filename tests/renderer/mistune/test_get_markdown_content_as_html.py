@@ -5,7 +5,7 @@ import pytest
 
 from coltrane.config.coltrane import Site
 from coltrane.renderer import MistuneMarkdownRenderer
-from tests.fixtures import default_site  # noqa: F401
+from tests.fixtures import *  # noqa: F403
 
 
 @pytest.fixture

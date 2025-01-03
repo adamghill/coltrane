@@ -21,7 +21,7 @@ def test_empty():
 def test_redirects():
     data = b"""
 [[redirects]]
-from_url = "/test-1" 
+from_url = "/test-1"
 to_url = "/"
 permanent = false
 

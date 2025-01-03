@@ -211,7 +211,7 @@ def test_handle_template_error_exit_with_1(settings, tmp_path, build_command):
     with pytest.raises(SystemExit) as err:
         build_command.handle()
 
-    assert err.type == SystemExit
+    assert err.type is SystemExit
     assert err.value.code == 1
 
 

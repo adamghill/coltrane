@@ -45,8 +45,6 @@ def test_debug_urlpatterns(settings):
 
     importlib.reload(urls)
 
-    print("urls.urlpatterns", urls.urlpatterns)
-
     assert len(urls.urlpatterns) == 5
 
     assert urls.urlpatterns[0].pattern._route == "__reload__/"
