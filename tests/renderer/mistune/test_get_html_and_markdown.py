@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 import pytest
 
 from coltrane.renderer import MistuneMarkdownRenderer
-from tests.fixtures import default_site
+from tests.fixtures import *  # noqa: F403
 
 
 @pytest.fixture

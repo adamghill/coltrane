@@ -4,7 +4,6 @@ from pathlib import Path
 import pytest
 from django.template import TemplateSyntaxError
 
-# from coltrane import _get_default_template_settings
 from coltrane.config.settings import get_config
 
 
@@ -118,12 +117,8 @@ variable: this-is-a-string-in-the-template
 
 def test_include_md_metadata_in_partial(client, settings, tmp_path: Path):
     settings.BASE_DIR = tmp_path
-    # settings.TEMPLATES = deepcopy(_get_default_template_settings(tmp_path))
     coltrane = get_config(base_dir=tmp_path)
     settings.TEMPLATES = deepcopy(coltrane.get_templates_settings())
-
-    print("tmp_path", tmp_path)
-    print("settings.TEMPLATES", settings.TEMPLATES)
 
     (tmp_path / "templates").mkdir()
     (tmp_path / "templates/_partial.md").write_text(
@@ -151,7 +146,7 @@ request: this-is-a-string-in-the-partial
     assert response.status_code == 200
 
     actual = response.content.decode()
-    print(actual)
+
     assert (
         """<h1 id="index">index</h1>
 <p><h2 id="partial">partial</h2>

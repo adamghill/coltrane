@@ -33,7 +33,7 @@ def _run_management_command(command_name, *args):
     run_process([file_path, command_name, *list(args)])  # noqa: S603, PLW1510
 
 
-def _copy_file(file_name, in_app_dir=False) -> Path:
+def _copy_file(file_name, *, in_app_dir=False) -> Path:
     default_file_name = file_name
 
     if file_name.startswith("."):

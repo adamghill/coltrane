@@ -51,7 +51,7 @@ def test_get_caches_env_invalid(env, caches_settings):
 
 
 class TestMemory:
-    def test_get_caches(self, env, caches_settings):
+    def test_get_caches(self, env, caches_settings):  # noqa: ARG002
         environ["CACHE"] = "memory"
 
         expected = {
@@ -64,7 +64,7 @@ class TestMemory:
 
         assert expected == actual
 
-    def test_get_caches_location(self, env, caches_settings):
+    def test_get_caches_location(self, env, caches_settings):  # noqa: ARG002
         environ["CACHE"] = "memory"
         environ["CACHE_LOCATION"] = "frosty-snowflake"
 
@@ -80,7 +80,7 @@ class TestMemory:
 
 
 class TestFilesystem:
-    def test_get_caches(self, env, caches_settings):
+    def test_get_caches(self, env, caches_settings):  # noqa: ARG002
         environ["CACHE"] = "filesystem"
         environ["CACHE_LOCATION"] = "/root/tmp/var"
 
@@ -94,7 +94,7 @@ class TestFilesystem:
 
         assert expected == actual
 
-    def test_get_caches_missing_location(self, env, caches_settings):
+    def test_get_caches_missing_location(self, env, caches_settings):  # noqa: ARG002
         environ["CACHE"] = "filesystem"
 
         with pytest.raises(Exception) as e:
@@ -104,7 +104,7 @@ class TestFilesystem:
 
 
 class TestMemcache:
-    def test_get_caches(self, env, caches_settings):
+    def test_get_caches(self, env, caches_settings):  # noqa: ARG002
         environ["CACHE"] = "memcache"
         environ["CACHE_LOCATION"] = "127.0.0.1"
 
@@ -118,7 +118,7 @@ class TestMemcache:
 
         assert expected == actual
 
-    def test_get_caches_missing_location(self, env, caches_settings):
+    def test_get_caches_missing_location(self, env, caches_settings):  # noqa: ARG002
         environ["CACHE"] = "memcache"
 
         with pytest.raises(Exception) as e:
@@ -128,7 +128,7 @@ class TestMemcache:
 
 
 class TestRedis:
-    def test_get_caches(self, env, caches_settings):
+    def test_get_caches(self, env, caches_settings):  # noqa: ARG002
         environ["CACHE"] = "redis"
         environ["CACHE_LOCATION"] = "127.0.0.1"
 
@@ -142,7 +142,7 @@ class TestRedis:
 
         assert expected == actual
 
-    def test_get_caches_missing_location(self, env, caches_settings):
+    def test_get_caches_missing_location(self, env, caches_settings):  # noqa: ARG002
         environ["CACHE"] = "redis"
 
         with pytest.raises(Exception) as e:

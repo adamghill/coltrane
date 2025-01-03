@@ -2,7 +2,7 @@ from pathlib import Path
 
 from coltrane.config.coltrane import Site
 from coltrane.retriever import get_data
-from tests.fixtures import default_site  # noqa: F401
+from tests.fixtures import *  # noqa: F403
 
 
 def test_get_data_directory(settings, tmp_path: Path, default_site: Site):

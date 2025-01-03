@@ -20,7 +20,6 @@ from coltrane.retriever import get_data
 from coltrane.sitemaps import ContentSitemap
 from coltrane.wildcard_templates import get_potential_wildcard_templates
 
-# logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -143,14 +142,7 @@ def content(request: HttpRequest, slug: str = "index") -> HttpResponse:
             else:
                 potential_templates.extend(potential_wildcard_templates)
 
-        # from django.conf import settings
-
-        # print("settings.tempaltes", settings.TEMPLATES)
-        # print("settings.base_dir", settings.BASE_DIR)
-        # print(f"potential_templates: {potential_templates}")
-
         try:
-            # potential_templates.insert(0, "sites/adamghill/templates/index.html")
             logger.debug(f"potential_templates: {potential_templates}")
             selected_template = select_template(potential_templates)
 

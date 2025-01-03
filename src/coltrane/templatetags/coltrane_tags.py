@@ -1,7 +1,7 @@
 from django import template
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import Http404
-from django.template.base import Node, Template, TextNode, token_kwargs
+from django.template.base import Node, Template, TextNode, Variable, token_kwargs
 from django.template.exceptions import TemplateSyntaxError
 from django.template.loader_tags import BLOCK_CONTEXT_KEY, BlockContext, BlockNode, construct_relative_path
 from django.templatetags.static import StaticNode
@@ -182,7 +182,7 @@ def do_include_md(parser, token):
 
     if len(bits) < 2:  # noqa: PLR2004
         raise TemplateSyntaxError(
-            "%r tag takes at least one argument: the name of the template to be included." % bits[0]
+            f"{bits[0]!r} tag takes at least one argument: the name of the template to be included."
         )
 
     bits[1] = construct_relative_path(parser.origin.template_name, bits[1])
@@ -271,9 +271,9 @@ def do_include(parser, token):
 
     bits = token.split_contents()
 
-    if len(bits) < 2:
+    if len(bits) < 2:  # noqa: PLR2004
         raise TemplateSyntaxError(
-            "%r tag takes at least one argument: the name of the template to be included." % bits[0]
+            f"{bits[0]!r} tag takes at least one argument: the name of the template to be included."
         )
 
     options = {}
@@ -283,16 +283,16 @@ def do_include(parser, token):
         option = remaining_bits.pop(0)
 
         if option in options:
-            raise TemplateSyntaxError("The %r option was specified more than once." % option)
+            raise TemplateSyntaxError(f"The {option!r} option was specified more than once.")
         if option == "with":
             value = token_kwargs(remaining_bits, parser, support_legacy=False)
 
             if not value:
-                raise TemplateSyntaxError('"with" in %r tag needs at least one keyword argument.' % bits[0])
+                raise TemplateSyntaxError(f'"with" in {bits[0]!r} tag needs at least one keyword argument.')
         elif option == "only":
             value = True
         else:
-            raise TemplateSyntaxError("Unknown argument for %r tag: %r." % (bits[0], option))
+            raise TemplateSyntaxError(f"Unknown argument for {bits[0]!r} tag: {option!r}.")
 
         options[option] = value
 
@@ -433,7 +433,7 @@ class ExtendsNode(Node):
         self.blocks = {n.name: n for n in nodelist.get_nodes_by_type(BlockNode)}
 
     def __repr__(self):
-        return "<%s: extends %s>" % (self.__class__.__name__, self.parent_name.token)
+        return f"<{self.__class__.__name__}: extends {self.parent_name.token}>"
 
     def find_template(self, template_name, context):
         """
@@ -459,10 +459,10 @@ class ExtendsNode(Node):
         parent = self.parent_name.resolve(context)
 
         if not parent:
-            error_msg = "Invalid template name in 'extends' tag: %r." % parent
+            error_msg = f"Invalid template name in 'extends' tag: {parent!r}."
 
             if self.parent_name.filters or isinstance(self.parent_name.var, Variable):
-                error_msg += " Got this from the '%s' variable." % self.parent_name.token
+                error_msg = f"{error_msg} Got this from the '{self.parent_name.token}' variable."
 
             raise TemplateSyntaxError(error_msg)
 
@@ -522,14 +522,14 @@ def do_extends(parser, token):
 
     bits = token.split_contents()
 
-    if len(bits) != 2:
-        raise TemplateSyntaxError("'%s' takes one argument" % bits[0])
+    if len(bits) != 2:  # noqa: PLR2004
+        raise TemplateSyntaxError(f"'{bits[0]}' takes one argument")
 
     bits[1] = construct_relative_path(parser.origin.template_name, bits[1])
     parent_name = parser.compile_filter(bits[1])
     nodelist = parser.parse()
 
     if nodelist.get_nodes_by_type(ExtendsNode):
-        raise TemplateSyntaxError("'%s' cannot appear more than once in the same template" % bits[0])
+        raise TemplateSyntaxError(f"'{bits[0]}' cannot appear more than once in the same template")
 
     return ExtendsNode(nodelist, parent_name)
