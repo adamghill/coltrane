@@ -89,6 +89,7 @@ dev-dependencies = [
   "django-stubs >= 5",
   "types-toml > 0",
   "types-dateparser > 1",
+  "django-stubs[compatible-mypy]>=5.0.4",
 ]
 
 [tool.ruff]
