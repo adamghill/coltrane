@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.38.1
+
+- Clean up code.
+
 ## 0.38.0
 
 - Better support for multiple domains and custom sites.
