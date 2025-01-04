@@ -73,7 +73,6 @@ def get_data(site: Site) -> dict:
             return data
 
     data_directory = get_data_directory(site=site)
-    # print("data_directory", data_directory)
 
     for path in data_directory.rglob("*.json5"):
         _add_data_from_path(data, data_directory, path)

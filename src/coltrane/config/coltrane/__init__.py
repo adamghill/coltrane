@@ -2,7 +2,7 @@ import logging
 from enum import Enum
 from os import environ
 from pathlib import Path
-from typing import Optional, get_type_hints
+from typing import get_type_hints
 
 import msgspec
 from django.http import HttpRequest
@@ -78,32 +78,17 @@ class Site(Base):
         return self.config.has_custom_sites and self.folder != ""
 
     def get_template_name(self, template_name: str, *, verify: bool = True):
-        # print("testt----template_name 1", template_name)
-
         if template_name in ["coltrane/content.html", "coltrane/base.html"]:
             return template_name
 
         if self.is_custom:
             template_name = f"{self.config.base_dir}/{self.folder}/templates/{template_name}"
 
-        # print("testt----template_name 2", template_name)
-
         if verify:
-            # print("test---go here")
             selected_template = select_template([template_name])
             template_name = selected_template.template.name
 
-            # print("testt----template_name 3", template_name)
-
-        # print("testt----template_name 4", template_name)
-
         return template_name
-
-    # def get_template(self, template_name: str):
-    #     template_name = self.get_template_name(template_name)
-    #     selected_template = select_template([template_name])
-
-    #     return selected_template.template.name
 
 
 class Config(Base):

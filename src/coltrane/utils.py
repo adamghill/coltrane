@@ -24,23 +24,24 @@ def dict_merge(
     if path is None:
         path = []
 
-    for key in destination:
+    for key, value in destination.items():
         if key in source:
-            if isinstance(source[key], dict) and isinstance(destination[key], dict):
+            if isinstance(source[key], dict) and isinstance(value, dict):
                 dict_merge(
                     source=source[key],
-                    destination=destination[key],
+                    destination=value,
                     destination_overrides_source=destination_overrides_source,
                     path=[*path, str(key)],
                 )
-            elif source[key] == destination[key]:
+            elif source[key] == value:
                 pass  # same leaf value
             elif destination_overrides_source:
-                source[key] = destination[key]
+                source[key] = value
             else:
-                raise Exception("Conflict at %s" % ".".join([*path, str(key)]))
+                msg = "Conflict at {}".format(".".join([*path, str(key)]))
+                raise Exception(msg)
         else:
-            source[key] = destination[key]
+            source[key] = value
 
     return source
 

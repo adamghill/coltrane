@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class TemplatesConfigurator:
-    def __init__(self, config: "Config", *args, **kwargs):
+    def __init__(self, config: "Config", *args, **kwargs):  # noqa: ARG002
         self.config = config
 
     def _get_template_tag_module_name(self, file: Path) -> str:

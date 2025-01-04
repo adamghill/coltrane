@@ -78,8 +78,6 @@ class MarkdownRenderer:
 
         path = get_content_directory(site) / f"{slug}.md"
 
-        # print("test---path", path)
-
         return self.render_markdown_path(path)
 
     def pre_process_markdown(self, text: str) -> str:
@@ -155,9 +153,8 @@ class MarkdownRenderer:
         """
 
         site = get_config(base_dir=Path(".")).get_site(request)
-        # print("testtt-site", site)
-        # print("GOT SITE WHEN RENDER", site)
-        assert site, "Missing site"
+        if not site:
+            raise AssertionError("Missing site")
 
         (html, metadata) = self.get_html_and_markdown(slug, site)
         context = {"debug": settings.DEBUG, "coltrane": settings.COLTRANE}
@@ -358,7 +355,7 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
 
         if strings:
             toc_html = "".join(strings)
-            metadata["toc"] = mark_safe(toc_html)
+            metadata["toc"] = mark_safe(toc_html)  # noqa: S308
 
         content = str(html)
 
