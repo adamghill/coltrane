@@ -135,6 +135,11 @@ class Config(Base):
             if site.has_host(request_host):
                 return site
 
+        if self.sites:
+            # The first site is considered the default
+            return self.sites[0]
+
+        logger.error("Unknown site for request headers: {request.headers}")
         raise AssertionError(f"Missing default site; current sites: {self.sites}")
 
     def get_templates_settings(self) -> list[dict]:
