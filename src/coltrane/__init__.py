@@ -230,14 +230,18 @@ def _merge_settings(base_dir: Path, django_settings: dict[str, Any]) -> dict[str
     # Assume that `argv[1] == "build"` means that the `build`
     # management command is currently being run
     is_build_management_command = _get_current_command() == "build"
+    is_collectstatic_management_command = _get_current_command() == "collectstatic"
 
     debug = django_settings.get("DEBUG", getenv("DEBUG", "True") == "True")
     time_zone = django_settings.get("TIME_ZONE", getenv("TIME_ZONE", "UTC"))
 
     config = get_config(base_dir)
 
-    # Add base directory for static files, the overriden static templatetag will handle the rest
-    staticfiles_dirs = [base_dir]
+    staticfiles_dirs = []
+
+    if not is_build_management_command and not is_collectstatic_management_command:
+        # Add base directory for static files, the overriden static templatetag will handle the rest
+        staticfiles_dirs = [base_dir]
 
     middleware = deepcopy(DEFAULT_MIDDLEWARE)
     installed_apps = deepcopy(DEFAULT_INSTALLED_APPS)
