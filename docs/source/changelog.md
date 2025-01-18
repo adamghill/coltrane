@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.38.3
+
+- Re-publish.
+
+## 0.38.2
+
+- Default to the first site if the request header is unknown.
+
 ## 0.38.1
 
 - Clean up code.
