@@ -14,5 +14,4 @@
 1. Commit changes
 1. Tag commit with new version
 1. Push `git push --tags origin main`
-1. `just publish`
-1. Update [GitHub Releases](https://github.com/adamghill/coltrane/releases/new)
+1. Create a [GitHub Releases](https://github.com/adamghill/coltrane/releases/new) which will publish the newest version to PyPI
