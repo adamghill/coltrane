@@ -177,5 +177,8 @@ class Config(Base):
         for site in self.sites:
             site.config = self
 
+            if site.folder != "":
+                self.site_type = Config.SiteType.SITES
+
         self.update_from_settings()  # this is currently a no-op
         self.update_from_env()

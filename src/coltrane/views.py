@@ -96,9 +96,10 @@ def content(request: HttpRequest, slug: str = "index") -> HttpResponse:
     logger.debug(f"request: {request}")
 
     config = get_config()
+    logger.debug(f"config: {config}")
+
     site = config.get_site(request)
     logger.debug(f"site: {site}")
-    logger.debug(f"base_dir {config.base_dir}")
 
     template: str = ""
     context: dict = {}
