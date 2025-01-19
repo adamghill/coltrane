@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.38.5
+
+- Better support for multiple sites.
+
 ## 0.38.4
 
 - Do not add the base directory when running collectstatic.

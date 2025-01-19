@@ -3,7 +3,7 @@ name = "coltrane"
 authors = [
   {name = "Adam Hill", email = "adam@adamghill.com"}
 ]
-version = "0.38.4"
+version = "0.38.5"
 description = "A minimal app framework for content sites 🎵"
 readme = "README.md"
 license = {file = "LICENSE"}
