@@ -330,12 +330,19 @@ def _merge_settings(base_dir: Path, django_settings: dict[str, Any]) -> dict[str
         default_settings["WHITENOISE_MANIFEST_STRICT"] = False
         default_settings["STATICFILES_STORAGE"] = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+    default_settings["STATICFILES_FINDERS"] = (
+        "django.contrib.staticfiles.finders.FileSystemFinder",
+        "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+        "coltrane.finders.ColtraneSiteFinder",
+    )
+
     if is_django_compressor_installed():
         default_settings["COMPRESS_ENABLED"] = True
 
         default_settings["STATICFILES_FINDERS"] = (
             "django.contrib.staticfiles.finders.FileSystemFinder",
             "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+            "coltrane.finders.ColtraneSiteFinder",
             "compressor.finders.CompressorFinder",
         )
 
