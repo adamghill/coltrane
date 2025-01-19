@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.38.6
+
+- Use a custom staticfiles finder so `collectstatic` will copy static files for each site.
+
 ## 0.38.5
 
 - Better support for multiple sites.
