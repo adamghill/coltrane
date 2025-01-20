@@ -8,7 +8,10 @@ def is_module_available(module_name: str) -> bool:
     Could be an installed package or an available module.
     """
 
-    return find_spec(module_name) is not None
+    try:
+        return find_spec(module_name) is not None
+    except ImportError:
+        return False
 
 
 def is_whitenoise_installed() -> bool:

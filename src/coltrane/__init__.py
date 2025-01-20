@@ -17,6 +17,7 @@ from coltrane.config.settings import DEFAULT_COLTRANE_SETTINGS, get_config
 from coltrane.module_finder import (
     is_django_compressor_installed,
     is_django_unicorn_installed,
+    is_module_available,
     is_unicorn_module_available,
     is_whitenoise_installed,
 )
@@ -251,6 +252,13 @@ def _merge_settings(base_dir: Path, django_settings: dict[str, Any]) -> dict[str
 
         if is_unicorn_module_available():
             installed_apps.append("unicorn")
+
+        if config.has_custom_sites:
+            for site in config.sites:
+                site_unicorn_module = site.folder + ".unicorn"
+
+                if is_module_available(site_unicorn_module):
+                    installed_apps.append(site_unicorn_module)
 
     if is_whitenoise_installed():
         middleware.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
