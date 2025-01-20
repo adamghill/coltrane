@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.38.7
+
+- Better handling of including partials with custom sites.
+- Add support for `CSRF_TRUSTED_ORIGINS`.
+- Support `django-unicorn` components in a custom site.
+
 ## 0.38.6
 
 - Use a custom staticfiles finder so `collectstatic` will copy static files for each site.
