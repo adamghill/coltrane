@@ -34,7 +34,6 @@ DEFAULT_COLTRANE_SETTINGS = {
     "DISABLE_WILDCARD_TEMPLATES": False,
     "IS_SECURE": False,
     "DATA_JSON5": False,
-    "SITES": {},
 }
 
 
