@@ -202,31 +202,8 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
             import pygments
             from pygments.formatters import HtmlFormatter
 
-            class HtmlCodeFormatter(HtmlFormatter):
-                def _wrap_code(self, inner):
-                    """
-                    A function for use in a Pygments Formatter which wraps in <code> tags.
-                    """
-
-                    yield 0, "<code>"
-                    yield from inner
-                    yield 0, "</code>"
-
-                def _add_newline(self, inner):
-                    # Add newlines around the inner contents so that _strict_tag_block_re matches the outer div.
-                    yield 0, "\n"
-                    yield from inner
-                    yield 0, "\n"
-
-                def wrap(self, source):
-                    """
-                    Return the source with a code, pre, and div.
-                    """
-
-                    return self._add_newline(self._wrap_pre(self._wrap_code(source)))
-
             formatter_opts.setdefault("cssclass", "codehilite")
-            formatter = HtmlCodeFormatter(**formatter_opts)
+            formatter = HtmlFormatter(**formatter_opts)
 
             return pygments.highlight(codeblock, lexer, formatter)
 
@@ -245,11 +222,13 @@ class MistuneMarkdownRenderer(MarkdownRenderer):
                     try:
                         lexer = get_lexer_by_name(language)
 
-                        return self._color_with_pygments(code, lexer)
+                        p = self._color_with_pygments(code, lexer)
+
+                        return p
                     except ClassNotFound:
                         pass
 
-            return f"<pre><code>{code}</code></pre>\n"
+            return f"<code><pre>{code}</pre></code>\n"
 
     def __init__(self):
         import mistune
