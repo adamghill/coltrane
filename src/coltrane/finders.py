@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from django.conf import settings
 from django.contrib.staticfiles import utils
 from django.contrib.staticfiles.finders import BaseFinder
 from django.core.files.storage import FileSystemStorage
@@ -28,8 +29,8 @@ class ColtraneSiteFinder(BaseFinder):
 
         if config.site_type == config.SiteType.SITES:
             for site in config.sites:
-                folder = Path(site.folder) / "static"
-                prefix = Path(site.folder) / "static"
+                folder = settings.BASE_DIR / site.folder / "static"
+                prefix = settings.BASE_DIR / site.folder / "static"
 
                 self.locations.append((prefix, folder))
 
