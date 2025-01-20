@@ -36,8 +36,8 @@ this is a lot of code
 
     (content, metadata) = markdown_renderer.render_markdown_text(markdown_content)
     expected = """<h1 id="title">{{ title }}</h1>
-{% verbatim %}<pre><code>this is a lot of code
-</code></pre>{% endverbatim %}
+{% verbatim %}<code><pre>this is a lot of code
+</pre></code>{% endverbatim %}
 """
 
     assert metadata.get("title") == "My test markdown title"
@@ -59,11 +59,9 @@ def blob():
 
     (content, metadata) = markdown_renderer.render_markdown_text(markdown_content)
     expected = """<h1 id="title">{{ title }}</h1>
-{% verbatim %}<div class="codehilite">
-<pre><span></span><code><span class="k">def</span> <span class="nf">blob</span><span class="p">():</span>
+{% verbatim %}<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">blob</span><span class="p">():</span>
     <span class="k">pass</span>
-</code></pre>
-</div>{% endverbatim %}
+</pre></div>{% endverbatim %}
 """
 
     assert metadata.get("title") == "My test markdown title"
@@ -88,14 +86,12 @@ function App() {
 
     (content, metadata) = markdown_renderer.render_markdown_text(markdown_content)
     expected = """<h1 id="title">{{ title }}</h1>
-{% verbatim %}<div class="codehilite">
-<pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+{% verbatim %}<div class="codehilite"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
 <span class="w">    </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">style</span><span class="o">=</span><span class="p">{{</span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="s2">"16px"</span><span class="p">}}</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span>
 <span class="w">  </span><span class="p">);</span>
 <span class="p">}</span>
-</code></pre>
-</div>{% endverbatim %}
+</pre></div>{% endverbatim %}
 """  # noqa: E501
 
     assert metadata.get("title") == "My test markdown title"
