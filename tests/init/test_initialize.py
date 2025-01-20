@@ -29,6 +29,7 @@ DEFAULT_SETTINGS = {
     "TEMPLATES": deepcopy(config.get_templates_settings()),
     "INTERNAL_IPS": [],
     "ALLOWED_HOSTS": [],
+    "CSRF_TRUSTED_ORIGINS": [],
     "STATIC_ROOT": ANY,
     "STATIC_URL": ANY,
     "STATICFILES_DIRS": ANY,

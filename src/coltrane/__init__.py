@@ -299,6 +299,7 @@ def _merge_settings(base_dir: Path, django_settings: dict[str, Any]) -> dict[str
         "TEMPLATES": templates,
         "INTERNAL_IPS": _get_from_env("INTERNAL_IPS"),
         "ALLOWED_HOSTS": _get_from_env("ALLOWED_HOSTS"),
+        "CSRF_TRUSTED_ORIGINS": _get_from_env("CSRF_TRUSTED_ORIGINS"),
         "STATIC_ROOT": base_dir / "output" / "static",
         "STATIC_URL": "static/",
         "STATICFILES_DIRS": staticfiles_dirs,
