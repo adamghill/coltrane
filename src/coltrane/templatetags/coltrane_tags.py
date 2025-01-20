@@ -1,8 +1,10 @@
 from django import template
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import Http404
+from django.template import TemplateDoesNotExist
 from django.template.base import Node, Template, TextNode, Variable, token_kwargs
 from django.template.exceptions import TemplateSyntaxError
+from django.template.loader import select_template
 from django.template.loader_tags import BLOCK_CONTEXT_KEY, BlockContext, BlockNode, construct_relative_path
 from django.templatetags.static import StaticNode
 from django.utils.safestring import SafeString, mark_safe
@@ -199,6 +201,7 @@ class IncludeNode(Node):
         self.template = template
         self.extra_context = extra_context or {}
         self.isolated_context = isolated_context
+
         super().__init__(*args, **kwargs)
 
     def __repr__(self):
@@ -221,11 +224,14 @@ class IncludeNode(Node):
         if not callable(getattr(template, "render", None)):
             # If not, try the cache and select_template().
             template_name = template or ()
+            original_template_name = template_name
 
             if isinstance(template_name, str):
+                origin_template_name = self.origin.template_name or ""
+
                 template_name = (
                     construct_relative_path(
-                        self.origin.template_name,
+                        origin_template_name,
                         template_name,
                     ),
                 )
@@ -236,8 +242,18 @@ class IncludeNode(Node):
             template = cache.get(template_name)
 
             if template is None:
-                template = context.template.engine.select_template(template_name)
-                cache[template_name] = template
+                try:
+                    template = context.template.engine.select_template(template_name)
+                    cache[template_name] = template
+                except TemplateDoesNotExist:
+                    # Try to find the template based on the original template name
+                    template = select_template([original_template_name])
+                    cache[template_name] = template
+
+                    values = {name: var.resolve(context) for name, var in self.extra_context.items()}
+
+                    with context.push(**values):
+                        return template.render(context.flatten())
 
         # Use the base.Template of a backends.django.Template.
         elif hasattr(template, "template"):
