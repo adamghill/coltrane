@@ -46,4 +46,4 @@ If there are JSON files in sub-directories, the directory names will be included
 
 ## JSON5 support
 
-[JSON5](https://json5.org) data files are supported if the [`json5` extra](installation.md#json5) is installed and the [`COLTRANE_JSON5_DATA` environment setting](env.md#coltrane_data_json5) is set to `True`.
+[JSON5](https://json5.org) data files are supported if the [`json5` extra](installation.md#json5) is installed and the [`COLTRANE_DATA_JSON5` environment setting](env.md#coltrane_data_json5) is set to `True`.
