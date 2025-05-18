@@ -62,7 +62,7 @@ def blob():
 {% verbatim %}<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">blob</span><span class="p">():</span>
     <span class="k">pass</span>
 </pre></div>{% endverbatim %}
-"""
+"""  # noqa: E501
 
     assert metadata.get("title") == "My test markdown title"
     assert content == expected

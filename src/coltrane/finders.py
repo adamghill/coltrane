@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 from django.conf import settings
 from django.contrib.staticfiles import utils
@@ -41,10 +40,10 @@ class ColtraneSiteFinder(BaseFinder):
 
         super().__init__(*args, **kwargs)
 
-    def check(self, **kwargs):
+    def check(self, **kwargs):  # noqa: ARG002
         return []
 
-    def find(self, path, find_all=False, **kwargs):
+    def find(self, path, *, find_all=False, **kwargs):
         """
         Look for files in the extra locations as defined in STATICFILES_DIRS.
         """
