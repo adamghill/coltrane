@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.39.0
+
+- Fix `to_html` filter.
+
+
 ## 0.38.7
 
 - Better handling of including partials with custom sites.
