@@ -106,7 +106,7 @@ def directory_contents(
     return contents
 
 
-@register.filter()
+@register.filter(name="parent")
 def parent(path: str | WSGIRequest = "") -> str:
     """
     Gets the the directory above `path`.
@@ -323,14 +323,14 @@ def do_include(parser, token):
     )
 
 
-@register.filter(takes_context=True)
-def to_html(context: dict, text: str) -> str:
+@register.filter(name="to_html", is_safe=True)
+def to_html(text: str) -> str:
     """
-    Converts markdown to HTML.
+    Convert markdown to HTML.
     """
 
     (html, metadata) = MarkdownRenderer.instance().render_markdown_text(text)
-    rendered_html = MarkdownRenderer.instance().render_html_with_django(html, metadata, request=context["request"])
+    rendered_html = MarkdownRenderer.instance().render_html_with_django(html, metadata)
 
     return mark_safe(rendered_html)  # noqa: S308
 

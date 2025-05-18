@@ -8,5 +8,5 @@ title: My test markdown title
 
 # {{ title }}
 """
-    html = to_html(context={"request": request}, text=text)
+    html = to_html(text=text)
     assert html.strip() == '<h1 id="title">My test markdown title</h1>'
