@@ -59,7 +59,7 @@ def blob():
 
     (content, metadata) = markdown_renderer.render_markdown_text(markdown_content)
     expected = """<h1 id="title">{{ title }}</h1>
-{% verbatim %}<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">blob</span><span class="p">():</span>
+{% verbatim %}<div class="codehilite"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">blob</span><span class="p">():</span>
     <span class="k">pass</span>
 </pre></div>{% endverbatim %}
 """  # noqa: E501
