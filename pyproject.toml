@@ -137,6 +137,8 @@ lint.ignore = [
   "F841",
    # Ignore exception strings
   "EM101", "EM102",
+  # Allow imports inside functions/classes (used for optional dependencies)
+  "PLC0415",
 ]
 lint.unfixable = [
   # Don't touch unused imports
