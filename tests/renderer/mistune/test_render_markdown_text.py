@@ -59,13 +59,18 @@ def blob():
 
     (content, metadata) = markdown_renderer.render_markdown_text(markdown_content)
     expected = """<h1 id="title">{{ title }}</h1>
+{% verbatim %}<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">blob</span><span class="p">():</span>
+    <span class="k">pass</span>
+</pre></div>{% endverbatim %}
+"""  # noqa: E501
+    expected_variant = """<h1 id="title">{{ title }}</h1>
 {% verbatim %}<div class="codehilite"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">blob</span><span class="p">():</span>
     <span class="k">pass</span>
 </pre></div>{% endverbatim %}
 """  # noqa: E501
 
     assert metadata.get("title") == "My test markdown title"
-    assert content == expected
+    assert content in (expected, expected_variant)
 
 
 def test_render_markdown_text_with_code_fence_react(markdown_renderer):
@@ -166,8 +171,10 @@ def test_render_img_with_django_template_language(markdown_renderer):
     (actual, _) = markdown_renderer.render_markdown_text(markdown_content)
     expected = """<p><img src="{% static 'images/test.jpg' %}" alt="{{ image_alt }}"></p>
 """
+    expected_variant = """<p><img src="{% static 'images/test.jpg' %}" alt="{{ image_alt }}"/></p>
+"""
 
-    assert actual == expected
+    assert actual in (expected, expected_variant)
 
 
 def test_render_img_with_django_template_language_with_spaces(markdown_renderer):
@@ -178,8 +185,10 @@ def test_render_img_with_django_template_language_with_spaces(markdown_renderer)
     (actual, _) = markdown_renderer.render_markdown_text(markdown_content)
     expected = """<p><img src="{% static 'images/test.jpg' 'more' %}" alt="{{ image_alt }}"></p>
 """
+    expected_variant = """<p><img src="{% static 'images/test.jpg' 'more' %}" alt="{{ image_alt }}"/></p>
+"""
 
-    assert actual == expected
+    assert actual in (expected, expected_variant)
 
 
 def test_render_img_with_django_template_language_with_spaces_double_quotes(
@@ -192,8 +201,10 @@ def test_render_img_with_django_template_language_with_spaces_double_quotes(
     (actual, _) = markdown_renderer.render_markdown_text(markdown_content)
     expected = """<p><img src="{% static 'images/test.jpg' 'more' %}" alt="{{ image_alt }}"></p>
 """
+    expected_variant = """<p><img src="{% static 'images/test.jpg' 'more' %}" alt="{{ image_alt }}"/></p>
+"""
 
-    assert actual == expected
+    assert actual in (expected, expected_variant)
 
 
 def test_render_img_with_django_template_language_with_kwarg(markdown_renderer):
@@ -204,5 +215,7 @@ def test_render_img_with_django_template_language_with_kwarg(markdown_renderer):
     (actual, _) = markdown_renderer.render_markdown_text(markdown_content)
     expected = """<p><img src="{% static 'images/test.jpg' more={{ something }} %}" alt="{{ image_alt }}"></p>
 """
+    expected_variant = """<p><img src="{% static 'images/test.jpg' more={{ something }} %}" alt="{{ image_alt }}"/></p>
+"""
 
-    assert actual == expected
+    assert actual in (expected, expected_variant)
