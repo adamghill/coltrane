@@ -20,7 +20,7 @@ def get_redirects() -> Generator[Redirect, None, None]:
     if not redirects_json_path.exists():
         return
 
-    with redirects_json_path as f:
+    with open(redirects_json_path) as f:
         paths = msgspec.json.decode(f.read_bytes(), type=Annotated[dict[str, str | Redirect], msgspec.Meta()])
 
         for from_url, to_url in paths.items():
