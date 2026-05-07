@@ -67,17 +67,6 @@ angles = [
 unicorn = [
   "django-unicorn > 0"
 ]
-docs = [
-  "Sphinx > 7",
-  "linkify-it-py > 0",
-  "myst-parser > 0",
-  "furo > 0",
-  "sphinx-copybutton > 0",
-  "sphinx-autobuild > 0",
-  "toml > 0",
-  "attrs > 0",
-  "sphinx-inline-tabs > 0"
-]
 
 [dependency-groups]
 dev = [
@@ -90,6 +79,17 @@ dev = [
   "types-toml > 0",
   "types-dateparser > 1",
   "django-stubs[compatible-mypy]>=5.0.4",
+]
+docs = [
+  "Sphinx > 7",
+  "linkify-it-py > 0",
+  "myst-parser > 0",
+  "furo > 0",
+  "sphinx-copybutton > 0",
+  "sphinx-autobuild > 0",
+  "toml > 0",
+  "attrs > 0",
+  "sphinx-inline-tabs > 0"
 ]
 
 [tool.ruff]
