@@ -1,9 +1,13 @@
 # Changelog
 
+## 0.40.0
+
+- Fix support for Python 3.14 ([MooseTheRebel](https://github.com/MooseTheRebel)).
+- Fix bug opening `redirects.json`.
+
 ## 0.39.0
 
 - Fix `to_html` filter.
-
 
 ## 0.38.7
 
