@@ -1,5 +1,10 @@
 [project]
 name = "__app_name__"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.10"
+
 dependencies = [
     "coltrane <= 1"
 ]
