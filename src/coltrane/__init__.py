@@ -384,7 +384,8 @@ def _configure_settings(django_settings: dict[str, Any]) -> None:
     settings.configure(**django_settings)
 
 
-def _load_environment_variables(django_settings: dict[str, Any]) -> None:
+def _load_environment_variables(base_dir: Path, django_settings: dict[str, Any]) -> None:
+    load_dotenv(base_dir / ".env")
     load_dotenv(".env")
 
     if "ENV" not in django_settings:
@@ -399,7 +400,7 @@ def initialize(**django_settings) -> WSGIHandler:
     """
 
     base_dir = _get_base_dir(django_settings.get("BASE_DIR"))
-    _load_environment_variables(django_settings=django_settings)
+    _load_environment_variables(base_dir=base_dir, django_settings=django_settings)
 
     # coltrane_sites = django_settings.get("COLTRANE_SITES", {})
 
