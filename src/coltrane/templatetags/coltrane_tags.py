@@ -1,13 +1,11 @@
 from django import template
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import Http404
-from django.template import TemplateDoesNotExist
-from django.template.base import Node, Template, TextNode, Variable, token_kwargs
+from django.template.base import Node, SafeString
 from django.template.exceptions import TemplateSyntaxError
-from django.template.loader import select_template
-from django.template.loader_tags import BLOCK_CONTEXT_KEY, BlockContext, BlockNode, construct_relative_path
+from django.template.loader_tags import construct_relative_path, do_extends, do_include
 from django.templatetags.static import StaticNode
-from django.utils.safestring import SafeString, mark_safe
+from django.utils.safestring import mark_safe
 
 from coltrane.config.settings import get_config
 from coltrane.renderer import MarkdownRenderer
@@ -194,133 +192,49 @@ def do_include_md(parser, token):
     )
 
 
-class IncludeNode(Node):
-    context_key = "__include_context"
+class TemplateNameWrapper:
+    """
+    A wrapper for a template name (usually a `FilterExpression`) that resolves
+    to a site-specific template name if a request is in the context.
+    """
 
-    def __init__(self, template, *args, extra_context=None, isolated_context=False, **kwargs):
-        self.template = template
-        self.extra_context = extra_context or {}
-        self.isolated_context = isolated_context
+    def __init__(self, wrapped):
+        self.wrapped = wrapped
 
-        super().__init__(*args, **kwargs)
+    def resolve(self, context, ignore_failures=False):
+        template_name = self.wrapped.resolve(context, ignore_failures)
 
-    def __repr__(self):
-        return f"<{self.__class__.__qualname__}: template={self.template!r}>"
-
-    def render(self, context):
-        """
-        Render the specified template and context. Cache the template object
-        in render_context to avoid reparsing and loading when used in a for
-        loop.
-        """
-
-        template = self.template.resolve(context)
-
-        if isinstance(template, str) or isinstance(template, SafeString):
+        if isinstance(template_name, str | SafeString):
             if request := context.get("request"):
-                template = get_config().get_site(request).get_template_name(template)
+                template_name = get_config().get_site(request).get_template_name(template_name, verify=False)
 
-        # Does this quack like a Template?
-        if not callable(getattr(template, "render", None)):
-            # If not, try the cache and select_template().
-            template_name = template or ()
-            original_template_name = template_name
+        return template_name
 
-            if isinstance(template_name, str):
-                origin_template_name = self.origin.template_name or ""
-
-                template_name = (
-                    construct_relative_path(
-                        origin_template_name,
-                        template_name,
-                    ),
-                )
-            else:
-                template_name = tuple(template_name)
-
-            cache = context.render_context.dicts[0].setdefault(self, {})
-            template = cache.get(template_name)
-
-            if template is None:
-                try:
-                    template = context.template.engine.select_template(template_name)
-                    cache[template_name] = template
-                except TemplateDoesNotExist:
-                    # Try to find the template based on the original template name
-                    template = select_template([original_template_name])
-                    cache[template_name] = template
-
-                    values = {name: var.resolve(context) for name, var in self.extra_context.items()}
-
-                    with context.push(**values):
-                        return template.render(context.flatten())
-
-        # Use the base.Template of a backends.django.Template.
-        elif hasattr(template, "template"):
-            template = template.template
-
-        values = {name: var.resolve(context) for name, var in self.extra_context.items()}
-
-        if self.isolated_context:
-            return template.render(context.new(values))
-
-        with context.push(**values):
-            return template.render(context)
+    def __getattr__(self, name):
+        return getattr(self.wrapped, name)
 
 
-@register.tag("include")
-def do_include(parser, token):
+@register.tag("site_include")
+def do_site_include(parser, token):
     """
     Load a template and render it with the current context. You can pass
     additional context using keyword arguments.
 
     Example:
-        {% include "foo/some_include" %}
-        {% include "foo/some_include" with bar="BAZZ!" baz="BING!" %}
+        {% site_include "foo/some_include" %}
+        {% site_include "foo/some_include" with bar="BAZZ!" baz="BING!" %}
 
     Use the `only` argument to exclude the current context when rendering
     the included template::
 
-        {% include "foo/some_include" only %}
-        {% include "foo/some_include" with bar="1" only %}
+        {% site_include "foo/some_include" only %}
+        {% site_include "foo/some_include" with bar="1" only %}
     """
 
-    bits = token.split_contents()
+    node = do_include(parser, token)
+    node.template = TemplateNameWrapper(node.template)
 
-    if len(bits) < 2:  # noqa: PLR2004
-        raise TemplateSyntaxError(
-            f"{bits[0]!r} tag takes at least one argument: the name of the template to be included."
-        )
-
-    options = {}
-    remaining_bits = bits[2:]
-
-    while remaining_bits:
-        option = remaining_bits.pop(0)
-
-        if option in options:
-            raise TemplateSyntaxError(f"The {option!r} option was specified more than once.")
-        if option == "with":
-            value = token_kwargs(remaining_bits, parser, support_legacy=False)
-
-            if not value:
-                raise TemplateSyntaxError(f'"with" in {bits[0]!r} tag needs at least one keyword argument.')
-        elif option == "only":
-            value = True
-        else:
-            raise TemplateSyntaxError(f"Unknown argument for {bits[0]!r} tag: {option!r}.")
-
-        options[option] = value
-
-    isolated_context = options.get("only", False)
-    namemap = options.get("with", {})
-    bits[1] = construct_relative_path(parser.origin.template_name, bits[1])
-
-    return IncludeNode(
-        parser.compile_filter(bits[1]),
-        extra_context=namemap,
-        isolated_context=isolated_context,
-    )
+    return node
 
 
 @register.filter(name="to_html", is_safe=True)
@@ -385,7 +299,7 @@ def paths(context: dict) -> list[str]:
     return _paths
 
 
-class ColtraneStaticNode(StaticNode):
+class SiteStaticNode(StaticNode):
     """Used for the custom static templatetag which knows how to deal with per-site static directory. Using
     the typical Django static template tag would require having nested directories in every static directory
     to prevent different sites from using the incorrect file.
@@ -416,136 +330,41 @@ class ColtraneStaticNode(StaticNode):
         return self.handle_simple(path)
 
 
-@register.tag("static")
-def do_static(parser, token):
+@register.tag("site_static")
+def do_site_static(parser, token):
     """
-    Coltrane's override for the regular Django static templatetag.
+    Coltrane's static templatetag.
 
     Join the given path with the STATIC_URL setting.
 
     Usage::
 
-        {% static path [as varname] %}
+        {% site_static path [as varname] %}
 
     Examples::
 
-        {% static "myapp/css/base.css" %}
-        {% static variable_with_path %}
-        {% static "myapp/css/base.css" as admin_base_css %}
-        {% static variable_with_path as varname %}
+        {% site_static "myapp/css/base.css" %}
+        {% site_static variable_with_path %}
+        {% site_static "myapp/css/base.css" as admin_base_css %}
+        {% site_static variable_with_path as varname %}
     """
 
-    return ColtraneStaticNode.handle_token(parser, token)
+    return SiteStaticNode.handle_token(parser, token)
 
 
-class ExtendsNode(Node):
-    must_be_first = True
-    context_key = "extends_context"
-
-    def __init__(self, nodelist, parent_name, template_dirs=None):
-        self.nodelist = nodelist
-        self.parent_name = parent_name
-        self.template_dirs = template_dirs
-        self.blocks = {n.name: n for n in nodelist.get_nodes_by_type(BlockNode)}
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__}: extends {self.parent_name.token}>"
-
-    def find_template(self, template_name, context):
-        """
-        This is a wrapper around engine.find_template(). A history is kept in
-        the render_context attribute between successive extends calls and
-        passed as the skip argument. This enables extends to work recursively
-        without extending the same template twice.
-        """
-
-        history = context.render_context.setdefault(
-            self.context_key,
-            [self.origin],
-        )
-        template, origin = context.template.engine.find_template(
-            template_name,
-            skip=history,
-        )
-        history.append(origin)
-
-        return template
-
-    def get_parent(self, context):
-        parent = self.parent_name.resolve(context)
-
-        if not parent:
-            error_msg = f"Invalid template name in 'extends' tag: {parent!r}."
-
-            if self.parent_name.filters or isinstance(self.parent_name.var, Variable):
-                error_msg = f"{error_msg} Got this from the '{self.parent_name.token}' variable."
-
-            raise TemplateSyntaxError(error_msg)
-
-        if isinstance(parent, Template):
-            # parent is a django.template.Template
-            return parent
-
-        if isinstance(getattr(parent, "template", None), Template):
-            # parent is a django.template.backends.django.Template
-            return parent.template
-
-        # If the current request is for a custom site, target that site's template folder
-        if request := context.get("request"):
-            parent = get_config().get_site(request).get_template_name(parent, verify=False)
-
-        return self.find_template(parent, context)
-
-    def render(self, context):
-        compiled_parent = self.get_parent(context)
-
-        if BLOCK_CONTEXT_KEY not in context.render_context:
-            context.render_context[BLOCK_CONTEXT_KEY] = BlockContext()
-
-        block_context = context.render_context[BLOCK_CONTEXT_KEY]
-
-        # Add the block nodes from this node to the block context
-        block_context.add_blocks(self.blocks)
-
-        # If this block's parent doesn't have an extends node it is the root,
-        # and its block nodes also need to be added to the block context.
-        for node in compiled_parent.nodelist:
-            # The ExtendsNode has to be the first non-text node.
-            if not isinstance(node, TextNode):
-                if not isinstance(node, ExtendsNode):
-                    blocks = {n.name: n for n in compiled_parent.nodelist.get_nodes_by_type(BlockNode)}
-                    block_context.add_blocks(blocks)
-
-                break
-
-        # Call Template._render explicitly so the parser context stays
-        # the same.
-        with context.render_context.push_state(compiled_parent, isolated_context=False):
-            return compiled_parent._render(context)
-
-
-@register.tag("extends")
-def do_extends(parser, token):
+@register.tag("site_extends")
+def do_site_extends(parser, token):
     """
     Signal that this template extends a parent template.
 
-    This tag may be used in two ways: ``{% extends "base" %}`` (with quotes)
+    This tag may be used in two ways: ``{% site_extends "base" %}`` (with quotes)
     uses the literal value "base" as the name of the parent template to extend,
-    or ``{% extends variable %}`` uses the value of ``variable`` as either the
+    or ``{% site_extends variable %}`` uses the value of ``variable`` as either the
     name of the parent template to extend (if it evaluates to a string) or as
     the parent template itself (if it evaluates to a Template object).
     """
 
-    bits = token.split_contents()
+    node = do_extends(parser, token)
+    node.parent_name = TemplateNameWrapper(node.parent_name)
 
-    if len(bits) != 2:  # noqa: PLR2004
-        raise TemplateSyntaxError(f"'{bits[0]}' takes one argument")
-
-    bits[1] = construct_relative_path(parser.origin.template_name, bits[1])
-    parent_name = parser.compile_filter(bits[1])
-    nodelist = parser.parse()
-
-    if nodelist.get_nodes_by_type(ExtendsNode):
-        raise TemplateSyntaxError(f"'{bits[0]}' cannot appear more than once in the same template")
-
-    return ExtendsNode(nodelist, parent_name)
+    return node

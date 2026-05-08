@@ -1,3 +1,4 @@
+import logging
 import os
 
 from django.conf import settings
@@ -7,6 +8,8 @@ from django.core.files.storage import FileSystemStorage
 from django.utils._os import safe_join
 
 from coltrane.config.settings import get_config
+
+logger = logging.getLogger(__name__)
 
 searched_locations = []
 
@@ -29,7 +32,7 @@ class ColtraneSiteFinder(BaseFinder):
         if config.site_type == config.SiteType.SITES:
             for site in config.sites:
                 folder = settings.BASE_DIR / site.folder / "static"
-                prefix = settings.BASE_DIR / site.folder / "static"
+                prefix = f"{site.folder}/static"
 
                 self.locations.append((prefix, folder))
 
@@ -37,6 +40,8 @@ class ColtraneSiteFinder(BaseFinder):
                 filesystem_storage.prefix = prefix
 
                 self.storages[folder] = filesystem_storage
+
+        logger.debug(f"ColtraneSiteFinder initialized with locations: {self.locations}")
 
         super().__init__(*args, **kwargs)
 

@@ -54,6 +54,11 @@ class Redirect(Base):
 class Site(Base):
     folder: str
     hosts: list[str]
+    title: str | None = None
+    description: str | None = None
+    site_url: str | None = None
+    redirects: list[Redirect] = msgspec.field(default_factory=list)
+    data: dict = msgspec.field(default_factory=dict)
 
     def has_host(self, request_host: str | None) -> bool:
         if not request_host:

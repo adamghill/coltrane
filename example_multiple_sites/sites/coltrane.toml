@@ -1,0 +1,29 @@
+[coltrane]
+# data_directory = "data"
+
+[[sites]]
+folder = "site1"
+title = "Site 1 Title from TOML"
+hosts = [
+  "localhost:8050",
+  "127.0.0.1:8050",
+  "0.0.0.0:8050"
+]
+
+[[sites]]
+folder = "site2"
+title = "Site 2 Title from TOML"
+hosts = [
+  "localhost:8051",
+  "127.0.0.1:8051",
+  "0.0.0.0:8051"
+]
+
+[[redirects]]
+from_url = "/test-1"
+to_url = "/"
+permanent = false
+
+[[redirects]]
+from_url = "/test-2"
+to_url = "/"

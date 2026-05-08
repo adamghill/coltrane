@@ -157,7 +157,7 @@ This is a partial
     (settings.BASE_DIR / "example/templates/include-1.html").write_text("""
 template 1
 
-{% include '_partial.html' %}
+{% site_include '_partial.html' %}
 """)
 
     response = _client_get(client, "/include-1")
@@ -174,7 +174,7 @@ def test_static(client, settings, tmp_path: Path):
     text = """
 static 1
 
-<img src="{% static 'img/example.png' %}" />
+<img src="{% site_static 'img/example.png' %}" />
 """
     _write_text(settings.BASE_DIR / "example/templates/static-1.html", text)
 

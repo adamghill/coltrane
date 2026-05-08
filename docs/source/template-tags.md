@@ -4,9 +4,75 @@ Template tags are the way for Django templates to use Python code. Django has a 
 
 ## Humanize template tags
 
-`django.contrib.humanize` [includes a useful template tags](https://docs.djangoproject.com/en/stable/ref/contrib/humanize/) to format numbers and dates in human-friendly ways. Normally it needs to be enabled and loaded in templates manually, but `coltrane` enables it by default so it is available to use in markdown content files automatically.
+`django.contrib.humanize` [includes a useful template tags](https://docs.djangoproject.com/en/stable/ref/contrib/humanize/) to format numbers and dates in human-friendly ways. `coltrane` enables it by default so it is available to use in markdown content files.
+
+## Site template tags
+
+For multi-site deployments, these template tags are required so that references to templates and static files for the current site work correctly.
+
+### `site_extends`
+
+Extend a template from the current site.
+
+**Extend a template from the current site**
+
+```markdown
+{% site_include "partials/header.html" %}
+```
+
+### `site_include`
+
+Include a template from the current site.
+
+**Include a template from the current site**
+
+```markdown
+{% site_include "partials/header.html" %}
+```
+
+### `site_static`
+
+Reference a static file from the current site.
+
+**Reference a static file from the current site**
+
+```markdown
+{% site_static "myapp/css/base.css" %}
+```
 
 ## Coltrane template tags
+
+### `directory_contents`
+
+A list of the content at a particular directory.
+
+**List markdown files based on the request path**
+
+If the request url is https://localhost:8000/ and there are these files:
+
+- content/test1.md
+- content/test2.md
+
+```markdown
+# Contents
+
+{% directory_contents as directory_contents %}
+
+{% for content in directory_contents %}
+
+- {{ content.slug }}
+
+{% endfor %}
+```
+
+```html
+<h1 id="contents">Contents</h1>
+
+<ul>
+  <li>test1</li>
+  <li>test2</li>
+</ul>
+```
 
 ### `directory_contents`
 

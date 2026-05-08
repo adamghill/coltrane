@@ -99,8 +99,8 @@ def create(force):
         click.secho("- Create README.md")
         _copy_file("README.md")
 
-        click.secho(f"- Create {APP_DIR}/.env")
-        env_file = _copy_file(".env", in_app_dir=True)
+        click.secho("- Create .env")
+        env_file = _copy_file(".env")
 
         # Add randomly generated secret key
         with env_file.open("a") as f:

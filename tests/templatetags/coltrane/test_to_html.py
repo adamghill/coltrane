@@ -1,7 +1,7 @@
 from coltrane.templatetags.coltrane_tags import to_html
 
 
-def test_to_html(request):
+def test_to_html():
     text = """---
 title: My test markdown title
 ---

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{{ coltrane_config.TITLE }}{% endblock %}</title>
+    <link rel="stylesheet" href="{% site_static 'style.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Site 1 Header</h1>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>Footer</p>
+    </footer>
+</body>
+</html>

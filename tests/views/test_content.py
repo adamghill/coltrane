@@ -271,7 +271,7 @@ This is a partial
     (settings.BASE_DIR / "templates/include-1.html").write_text("""
 template 1
 
-{% include '_partial.html' %}
+{% site_include '_partial.html' %}
 """)
 
     response = client.get("/include-1")
@@ -288,7 +288,7 @@ def test_static(client, settings, tmp_path: Path):
     text = """
 static 1
 
-<img src="{% static 'img/example.png' %}" />
+<img src="{% site_static 'img/example.png' %}" />
 """
     (settings.BASE_DIR / "templates").mkdir(parents=True)
     (settings.BASE_DIR / "templates/static-1.html").write_text(text)
@@ -297,3 +297,23 @@ static 1
 
     assert 200 == actual.status_code
     assert '<img src="static/img/example.png" />' in actual.content.decode()
+
+
+def test_standard_static(client, settings, tmp_path: Path):
+    _setup_settings(settings, tmp_path)
+    settings.STATIC_URL = "/static/"
+
+    text = """
+static 2
+
+<img src="{% static 'img/example.png' %}" />
+"""
+    (settings.BASE_DIR / "templates").mkdir(parents=True)
+    (settings.BASE_DIR / "templates/static-2.html").write_text(text)
+
+    actual = client.get("/static-2")
+
+    assert 200 == actual.status_code
+    # Standard static tag behavior (STATIC_URL + path)
+    # Assuming STATIC_URL is /static/ left in settings
+    assert '<img src="/static/img/example.png" />' in actual.content.decode()

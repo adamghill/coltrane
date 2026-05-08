@@ -80,7 +80,7 @@ class TemplatesConfigurator:
         builtins = [
             "django.contrib.humanize.templatetags.humanize",
             "django.templatetags.static",
-            "coltrane.templatetags.coltrane_tags",  # this needs to be last so it overrides the Django templatetags
+            "coltrane.templatetags.coltrane_tags",
         ]
         builtins.extend(template_tags)
 
