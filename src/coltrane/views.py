@@ -33,9 +33,6 @@ def _normalize_slug(slug: str) -> str:
     if slug.startswith("/"):
         slug = slug[1:]
 
-    if slug == "":
-        slug = "index"
-
     return slug
 
 

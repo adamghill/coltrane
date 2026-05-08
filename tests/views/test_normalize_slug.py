@@ -2,14 +2,14 @@ from coltrane.views import _normalize_slug
 
 
 def test_normalize_slug_default():
-    expected = "index"
+    expected = ""
     actual = _normalize_slug("")
 
     assert actual == expected
 
 
 def test_normalize_slug_forward_slash():
-    expected = "index"
+    expected = ""
     actual = _normalize_slug("/")
 
     assert actual == expected
@@ -37,7 +37,7 @@ def test_normalize_slug_endswith_slash():
 
 
 def test_normalize_slug_none():
-    expected = "index"
+    expected = ""
     actual = _normalize_slug(None)
 
     assert actual == expected
