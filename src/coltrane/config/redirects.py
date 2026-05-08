@@ -20,17 +20,18 @@ def get_redirects() -> Generator[Redirect, None, None]:
     if not redirects_json_path.exists():
         return
 
-    with open(redirects_json_path) as f:
-        paths = msgspec.json.decode(f.read_bytes(), type=Annotated[dict[str, str | Redirect], msgspec.Meta()])
+    paths = msgspec.json.decode(
+        redirects_json_path.read_bytes(), type=Annotated[dict[str, str | Redirect], msgspec.Meta()]
+    )
 
-        for from_url, to_url in paths.items():
-            if from_url.startswith("/"):
-                from_url = from_url[1:]  # noqa: PLW2901
+    for from_url, to_url in paths.items():
+        if from_url.startswith("/"):
+            from_url = from_url[1:]  # noqa: PLW2901
 
-            if isinstance(to_url, Redirect):
-                redirect = to_url
-                redirect.from_url = from_url
-            else:
-                redirect = Redirect(from_url=from_url, to_url=to_url, permanent=False)
+        if isinstance(to_url, Redirect):
+            redirect = to_url
+            redirect.from_url = from_url
+        else:
+            redirect = Redirect(from_url=from_url, to_url=to_url, permanent=False)
 
-            yield redirect
+        yield redirect
