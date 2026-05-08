@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-dev
+- Remove support for `redirects.json` file. Redirects are now configured in `coltrane.toml`.
+- Better multiple site support.
+- Explicit static, includes, template tags to prevent overriding Django's default behavior.
+
 ## 0.40.0
 
 - Fix support for Python 3.14 ([MooseTheRebel](https://github.com/MooseTheRebel)).
