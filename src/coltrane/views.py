@@ -3,7 +3,15 @@ import logging
 from django.contrib.sitemaps.views import _get_latest_lastmod, x_robots_tag
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.paginator import EmptyPage, PageNotAnInteger
-from django.http import FileResponse, Http404, HttpRequest, HttpResponse, JsonResponse
+from django.http import (
+    FileResponse,
+    Http404,
+    HttpRequest,
+    HttpResponse,
+    HttpResponsePermanentRedirect,
+    HttpResponseRedirect,
+    JsonResponse,
+)
 from django.shortcuts import render
 from django.template import TemplateDoesNotExist
 from django.template.loader import select_template
@@ -14,6 +22,7 @@ from django.utils.timezone import now
 
 from coltrane.config.cache import ViewCache
 from coltrane.config.paths import get_file_path
+from coltrane.config.redirects import get_redirect
 from coltrane.config.settings import get_config, get_disable_wildcard_templates
 from coltrane.renderer import MarkdownRenderer
 from coltrane.retriever import get_data
@@ -101,6 +110,17 @@ def content(request: HttpRequest, slug: str = "index") -> HttpResponse:
     template: str = ""
     context: dict = {}
     slug = _normalize_slug(slug)
+
+    # Check for redirect
+    if redirect := get_redirect(slug, site=site):
+        if redirect.permanent:
+            return HttpResponsePermanentRedirect(redirect.to_url)
+
+        return HttpResponseRedirect(redirect.to_url)
+
+    if slug == "":
+        slug = "index"
+
     slug_with_index = f"{slug}/index"
 
     (template, context) = _get_from_cache_if_enabled(slug)

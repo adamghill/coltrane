@@ -1,9 +1,12 @@
 from collections.abc import Generator
-from typing import Annotated
+from typing import TYPE_CHECKING
 
 import msgspec
 
-from coltrane.config.paths import get_redirects_json
+from coltrane.config.settings import get_config
+
+if TYPE_CHECKING:
+    from coltrane.config.coltrane import Site
 
 
 class Redirect(msgspec.Struct):
@@ -15,23 +18,29 @@ class Redirect(msgspec.Struct):
 
 
 def get_redirects() -> Generator[Redirect, None, None]:
-    redirects_json_path = get_redirects_json()
+    """Yield redirects from coltrane.toml configuration"""
+    for redirect in get_config().redirects:
+        from_url = redirect.from_url
 
-    if not redirects_json_path.exists():
-        return
-
-    paths = msgspec.json.decode(
-        redirects_json_path.read_bytes(), type=Annotated[dict[str, str | Redirect], msgspec.Meta()]
-    )
-
-    for from_url, to_url in paths.items():
         if from_url.startswith("/"):
-            from_url = from_url[1:]  # noqa: PLW2901
+            from_url = from_url[1:]
 
-        if isinstance(to_url, Redirect):
-            redirect = to_url
-            redirect.from_url = from_url
-        else:
-            redirect = Redirect(from_url=from_url, to_url=to_url, permanent=False)
+        yield Redirect(from_url=from_url, to_url=redirect.to_url, permanent=redirect.permanent)
 
-        yield redirect
+
+def get_redirect(path: str, site: "Site | None" = None) -> Redirect | None:
+    if path.startswith("/"):
+        path = path[1:]
+
+    # Check site-specific redirects first
+    if site:
+        for redirect in site.redirects:
+            if redirect.from_url.strip("/") == path:
+                return Redirect(to_url=redirect.to_url, permanent=redirect.permanent, from_url=redirect.from_url)
+
+    # Check global redirects (from coltrane.toml)
+    for redirect in get_redirects():
+        if redirect.from_url.strip("/") == path:
+            return redirect
+
+    return None
